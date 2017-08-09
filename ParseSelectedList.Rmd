@@ -1203,6 +1203,7 @@ for (i in row.names(df_COI)){
   nt=paste(nt,paste(rep("N",(3-(str_length(nt) %% 3))%%3),collapse=""),sep ="")
   df_COI[i,]$sequence=nt
 }
+
 ```
 
 Concatinating COI pieces
@@ -1234,7 +1235,6 @@ df_COI = df_COI[-which(df_COI$accession %in% COI_links$partB),]
 dataname=paste(TAXA,"COI",sep=".")
 create.fasta(dataname,df_COI)
 ```
-
 
 ```{r, eval=FALSE, tidy=TRUE}
 
