@@ -1,0 +1,898 @@
+### NOTES ###
+
+ssh biancani@cbcbsub00.umiacs.umd.edu
+or
+ssh biancani@cbcbsub01.umiacs.umd.edu
+
+NOT: ssh biancani@ibissub00.umiacs.umd.edu
+!!!!!!! CBCB Torque Resources are now Deprecated !!!!!!!!
+Please see https://wiki.umiacs.umd.edu/cbcb-private/index.php/Slurm on 
+how to get started using SLURM in CBCB.
+######
+
+
+pwd
+/cbcb/project2-scratch/biancani/COI_20170410
+
+#add alignment files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170326_edited/COI_with_outgroup/SL20170326.COI.fasta.mafft.aln biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/COI_20170410
+
+# create job:
+nano raxml_COI_mafft.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_COI_mafft
+cd /cbcb/project2-scratch/biancani/COI_20170410
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 6 -s SL20170326.COI.fasta.mafft.aln -n SL20170326.COI.fasta.mafft.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+qsub raxml_COI_mafft.sh 
+1183100.cbcbsrv.umiacs.umd.edu
+
+#add alignment files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170326_edited/COI_with_outgroup/SL20170326.COI.fasta.revtrans.aln biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/COI_20170410
+
+# create job:
+nano raxml_COI_revtrans.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_COI_revtrans
+cd /cbcb/project2-scratch/biancani/COI_20170410
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 6 -s SL20170326.COI.fasta.revtrans.aln -n SL20170326.COI.fasta.revtrans.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+qsub raxml_COI_revtrans.sh 
+1183101.cbcbsrv.umiacs.umd.edu
+
+
+
+# copy trees to mac
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/COI_20170410/RAxML_bipartitions.* /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170326_edited/COI_with_outgroup/
+
+#reroot trees with phyutility:
+
+# copy trees
+cp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170326_edited/COI_with_outgroup/RAxML_analysis/*.tree .
+
+# create outgroup file:
+nano outgroup
+####
+ISOPODA
+####
+
+
+for tree in *.tree; do
+echo $tree
+out_names=`sed 's/[(]*//g
+s/:[^,;]*[,;]/\'$'\n/g' $tree | grep -f outgroup | tr '\n' ' '`
+java -jar phyutility.jar -rr -in $tree -out "reroot."$tree -names $out_names
+done
+
+# copy rerooted trees to Box:
+cp reroot.* /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170326_edited/COI_with_outgroup/RAxML_analysis/
+
+ssh biancani@ibissub00.umiacs.umd.edu
+
+-----------------------------------------------------------------------------------------
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/
+-----------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------
+mkdir 20170413
+-----------------------------------------------------------------------------------------
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413
+
+#transfer to mac
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413 ~/Desktop/sandbox/COI/
+
+
+##### Initial linsi alignment of all COI sequences:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413/linsi_all
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170326.COI.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413/linsi_all
+
+# create job:
+nano linsi_COI_all
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=04:00:00
+#PBS -N linsi_COI_all
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413/linsi_all
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 6 --localpair --maxiterate 1000 --reorder SL20170326.COI.fasta > SL20170326.COI.aln.fasta
+#####
+# run job:
+qsub linsi_COI_all 
+1190818.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:28:40
+resources_used.mem=473016kb
+resources_used.vmem=1141308kb
+resources_used.walltime=00:05:41
+
+##### make tree:
+# create job:
+nano raxml_linsi_COI_all
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_linsi_COI_all
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413/linsi_all
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170326.COI.aln.fasta -n SL20170326.COI.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_linsi_COI_all 
+1190821.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=62:15:47
+resources_used.mem=217676kb
+resources_used.vmem=985356kb
+resources_used.walltime=05:11:41
+
+******************************************************************************************
+
+##### linsi alignment of long COI sequences w/ addfragments by size:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413/linsi_bysize
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170326.COI_* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413/linsi_bysize
+
+# create job:
+nano linsi_COI_bysize
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=04:00:00
+#PBS -N linsi_COI_bysize
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413/linsi_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 6 --localpair --maxiterate 1000 --reorder SL20170326.COI_long900.fasta > SL20170326.COI_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170326.COI_800_900.fasta --reorder SL20170326.COI_long900.aln.fasta > SL20170326.COI_800_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170326.COI_700_800.fasta --reorder SL20170326.COI_800_long900.aln.fasta > SL20170326.COI_700_800_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170326.COI_600_700.fasta --reorder SL20170326.COI_700_800_long900.aln.fasta > SL20170326.COI_600_700_800_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170326.COI_frag600.fasta --reorder SL20170326.COI_600_700_800_long900.aln.fasta > SL20170326.COI_frag600_700_800_long900.aln.fasta
+#####
+# run job:
+qsub linsi_COI_bysize 
+1190820.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:11:41
+resources_used.mem=67380kb
+resources_used.vmem=620988kb
+resources_used.walltime=00:02:51
+
+##### make tree:
+# create job:
+nano raxml_linsi_COI_bysize
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_linsi_COI_bysize
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170413/linsi_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170326.COI_frag600_700_800_long900.aln.fasta -n SL20170326.COI_600_700_800_900.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_linsi_COI_bysize 
+1190822.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=64:25:18
+resources_used.mem=224876kb
+resources_used.vmem=985656kb
+resources_used.walltime=05:22:28
+
+
+-----------------------------------------------------------------------------------------
+mkdir 20170414
+-----------------------------------------------------------------------------------------
+#transfer to mac
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170414 ~/Desktop/sandbox/COI/
+
+
+##### linsi alignment of long COI sequences w/ addfragments by size (tweaked to accomodate 4 very short 3` end seqs):
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170414/linsi_bysize
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170326.COI_* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170414/linsi_bysize
+
+# create job:
+nano linsi_COI_bysize
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=04:00:00
+#PBS -N linsi_COI_bysize
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170414/linsi_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 6 --localpair --maxiterate 1000 --reorder SL20170326.COI_long1200.fasta > SL20170326.COI_long1200.aln.fasta
+mafft --thread 6 --addfragments SL20170326.COI_frag200.fasta --reorder SL20170326.COI_long1200.aln.fasta > SL20170326.COI_long1200_frag200.aln.fasta
+mafft --thread 6 --addfragments SL20170326.COI_900_1200.fasta --reorder SL20170326.COI_long1200_frag200.aln.fasta > SL20170326.COI_900_long1200.aln.fasta
+mafft --thread 6 --addfragments SL20170326.COI_700_900.fasta --reorder SL20170326.COI_900_long1200.aln.fasta > SL20170326.COI_700_900_long1200.aln.fasta
+mafft --thread 6 --addfragments SL20170326.COI_600_700.fasta --reorder SL20170326.COI_700_900_long1200.aln.fasta > SL20170326.COI_600_700_900_long1200.aln.fasta
+mafft --thread 6 --addfragments SL20170326.COI_200_600.fasta --reorder SL20170326.COI_600_700_900_long1200.aln.fasta > SL20170326.COI_200_600_700_900_long1200.aln.fasta
+#####
+# run job:
+qsub linsi_COI_bysize 
+1190862.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:11:31
+resources_used.mem=69048kb
+resources_used.vmem=621104kb
+resources_used.walltime=00:02:46
+
+##### make tree:
+# create job:
+nano raxml_linsi_COI_all
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=6:00:00
+#PBS -q large
+#PBS -N raxml_linsi_COI_all
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170414/linsi_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170326.COI_200_600_700_900_long1200.aln.fasta -n SL20170326.COI_200_600_700_900_long1200.tree -m GTRGAMMA -f a -N 10 -p 321 -x 654
+#####
+# run job:
+qsub raxml_linsi_COI_all
+1190864.cbcbsrv.umiacs.umd.edu
+
+*************
+-----------------------------------------------------------------------------------------
+mkdir 20170415
+-----------------------------------------------------------------------------------------
+## New data set: SL20170415 (removed very short COI, add other COI reps from those species, add one Isopod COI)
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415
+
+#transfer to mac
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415 ~/Desktop/sandbox/COI/
+
+##### linsi alignment of long COI sequences w/ addfragments by size:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_bysize
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170415.COI_* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_bysize
+
+# create job:
+nano linsi_COI_bysize
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=04:00:00
+#PBS -N linsi_COI_bysize
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 6 --localpair --maxiterate 1000 --reorder SL20170415.COI_long900.fasta > SL20170415.COI_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170415.COI_800_900.fasta --reorder SL20170415.COI_long900.aln.fasta > SL20170415.COI_800_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170415.COI_700_800.fasta --reorder SL20170415.COI_800_long900.aln.fasta > SL20170415.COI_700_800_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170415.COI_600_700.fasta --reorder SL20170415.COI_700_800_long900.aln.fasta > SL20170415.COI_600_700_800_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170415.COI_frag600.fasta --reorder SL20170415.COI_600_700_800_long900.aln.fasta > SL20170415.COI_frag600_700_800_long900.aln.fasta
+#####
+# run job:
+qsub linsi_COI_bysize 
+1190923.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:06:39
+resources_used.mem=74656kb
+resources_used.vmem=620984kb
+resources_used.walltime=00:01:34
+
+
+##### make tree:
+# create job:
+nano raxml_linsi_COI_bysize
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_linsi_COI_bysize
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170415.COI_frag600_700_800_long900.aln.fasta -n SL20170415.COI_600_700_800_900.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_linsi_COI_bysize 
+1190925.cbcbsrv.umiacs.umd.edu
+
+
+####################################
+##### linsi alignment of long COI_aa sequences w/ addfragments by size:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170415.COI_aa_* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize
+# add nucleotide sequence file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170415.COI.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize
+
+
+# create job:
+nano linsi_COI_aa_bysize
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=04:00:00
+#PBS -N linsi_COI_aa_bysize
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 6 --localpair --maxiterate 1000 --reorder SL20170415.COI_aa_long900.fasta > SL20170415.COI_aa_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170415.COI_aa_800_900.fasta --reorder SL20170415.COI_aa_long900.aln.fasta > SL20170415.COI_aa_800_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170415.COI_aa_700_800.fasta --reorder SL20170415.COI_aa_800_long900.aln.fasta > SL20170415.COI_aa_700_800_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170415.COI_aa_600_700.fasta --reorder SL20170415.COI_aa_700_800_long900.aln.fasta > SL20170415.COI_aa_600_700_800_long900.aln.fasta
+mafft --thread 6 --addfragments SL20170415.COI_aa_frag600.fasta --reorder SL20170415.COI_aa_600_700_800_long900.aln.fasta > SL20170415.COI_aa_frag600_700_800_long900.aln.fasta
+# Reverse translate
+python /cbcb/project2-scratch/biancani/RevTrans1.4/revtrans.py SL20170415.COI.fasta SL20170415.COI_aa_frag600_700_800_long900.aln.fasta -O fasta -mtx 5 -match name > SL20170415.COI_aa_frag600_700_800_long900.aln.revtrans.fasta
+#####
+# run job:
+qsub linsi_COI_aa_bysize 
+1190908.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:00:54
+resources_used.mem=0kb
+resources_used.vmem=0kb
+resources_used.walltime=00:00:31
+
+#Not used - command moved to alignment script:
+nano revtrans.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=1,mem=1gb,walltime=01:00:00
+#PBS -N revtrans
+#PBS -q workstation
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize
+python /cbcb/project2-scratch/biancani/RevTrans1.4/revtrans.py SL20170415.COI.fasta SL20170415.COI_aa_frag600_700_800_long900.aln.fasta -O fasta -mtx 5 -match name > SL20170415.COI_aa_frag600_700_800_long900.aln.revtrans.fasta
+#####
+
+
+##### make tree:
+# create job:
+nano raxml_linsi_COI_aa_revtrans
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_linsi_COI_aa_revtrans
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170415.COI_aa_frag600_700_800_long900.aln.revtrans.fasta -n SL20170415.COI_aa_frag600_700_800_long900.revtrans.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_linsi_COI_aa_revtrans 
+1190909.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=93:43:12
+resources_used.mem=222032kb
+resources_used.vmem=985604kb
+resources_used.walltime=07:51:53
+
+### Partition by codon position:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize/partitioned
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize/partitioned
+
+# copy files:
+cp ../SL20170415.COI_aa_frag600_700_800_long900.aln.revtrans.fasta .
+
+# create partition file:
+nano partitions.txt
+#####
+DNA, codon1 = 1-1653\3
+DNA, codon2 = 2-1653\3
+DNA, codon3 = 3-1653\3
+#####
+
+##### make tree:
+# create job:
+nano raxml_COI_aa_partitioned
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=18:00:00
+#PBS -q large
+#PBS -N raxml_COI_aa_partitioned
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize/partitioned
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170415.COI_aa_frag600_700_800_long900.aln.revtrans.fasta -n SL20170415.COI_aa_partitioned.revtrans.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654 -q partitions.txt
+#####
+# run job:
+qsub raxml_COI_aa_partitioned 
+1190927.cbcbsrv.umiacs.umd.edu
+
+### Trimmed aa revtrans alignment:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize/trimmed
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize/trimmed
+
+# add files:
+scp /Users/Freya/Desktop/sandbox/COI/20170415/linsi_aa_bysize/SL20170415.COI_aa_frag600_700_800_long900.aln.revtrans.trimmed.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize/trimmed
+
+##### make tree:
+# create job:
+nano raxml_COI_aa_trimmed
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_COI_aa_trimmed
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170415/linsi_aa_bysize/trimmed
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170415.COI_aa_frag600_700_800_long900.aln.revtrans.trimmed.fasta -n SL20170415.COI_aa_trimmed.revtrans.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_COI_aa_trimmed 
+1190933.cbcbsrv.umiacs.umd.edu
+
+
+-----------------------------------------------------------------------------------------
+mkdir 20170417
+-----------------------------------------------------------------------------------------
+## New data set: SL20170417 (removed repeat reps for single genus, added newly available sequences)
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417
+
+#transfer to mac
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417 ~/Desktop/sandbox/COI/
+
+##### linsi alignment of long COI sequences w/ addfragments by size:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_bysize
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170417.COI_* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_bysize
+
+# create job:
+nano linsi_COI_bysize
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=04:00:00
+#PBS -N linsi_COI_bysize
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 6 --localpair --maxiterate 1000 --reorder SL20170417.COI_long750.fasta > SL20170417.COI_long750.aln.fasta
+mafft --thread 6 --addfragments SL20170417.COI_600_750.fasta --reorder SL20170417.COI_long750.aln.fasta > SL20170417.COI_600_long750.aln.fasta
+mafft --thread 6 --addfragments SL20170417.COI_frag600.fasta --reorder SL20170417.COI_600_long750.aln.fasta > SL20170417.COI_frag600_long750.aln.fasta
+#####
+# run job:
+qsub linsi_COI_bysize 
+1191065.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:04:47
+resources_used.mem=63944kb
+resources_used.vmem=619208kb
+resources_used.walltime=00:01:11
+
+##### make tree:
+# create job:
+nano raxml_linsi_COI_bysize
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_linsi_COI_bysize
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170417.COI_frag600_long750.aln.fasta -n SL20170417.COI_frag600_long750.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_linsi_COI_bysize 
+1191067.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=60:14:39
+resources_used.mem=179748kb
+resources_used.vmem=961648kb
+resources_used.walltime=05:02:36
+
+####################################
+##### linsi alignment of long COI_aa sequences w/ addfragments by size:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_aa_bysize
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170417.COI_aa_* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_aa_bysize
+# add nucleotide sequence file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170417.COI.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_aa_bysize
+
+
+# create job:
+nano linsi_COI_aa_bysize
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=04:00:00
+#PBS -N linsi_COI_aa_bysize
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_aa_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 6 --localpair --maxiterate 1000 --reorder SL20170417.COI_aa_long750.fasta > SL20170417.COI_aa_long750.aln.fasta
+mafft --thread 6 --addfragments SL20170417.COI_aa_600_750.fasta --reorder SL20170417.COI_aa_long750.aln.fasta > SL20170417.COI_aa_600_long750.aln.fasta
+mafft --thread 6 --addfragments SL20170417.COI_aa_frag600.fasta --reorder SL20170417.COI_aa_600_long750.aln.fasta > SL20170417.COI_aa_frag600_long750.aln.fasta
+# Reverse translate
+python /cbcb/project2-scratch/biancani/RevTrans1.4/revtrans.py SL20170417.COI.fasta SL20170417.COI_aa_frag600_long750.aln.fasta -O fasta -mtx 5 -match name > SL20170417.COI_aa_frag600_long750.aln.revtrans.fasta
+#####
+# run job:
+qsub linsi_COI_aa_bysize 
+1191066.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:00:36
+resources_used.mem=0kb
+resources_used.vmem=0kb
+resources_used.walltime=00:00:27
+
+##### make tree:
+# create job:
+nano raxml_linsi_COI_aa_revtrans
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_linsi_COI_aa_revtrans
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_aa_bysize
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170417.COI_aa_frag600_long750.aln.revtrans.fasta -n SL20170417.COI_aa_frag600_long750.revtrans.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_linsi_COI_aa_revtrans 
+1191068.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=62:30:33
+resources_used.mem=176640kb
+resources_used.vmem=961408kb
+resources_used.walltime=05:13:57
+
+### Partition by codon position:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_aa_bysize/partitioned
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_aa_bysize/partitioned
+
+# copy files:
+cp ../SL20170417.COI_aa_frag600_long750.aln.revtrans.fasta .
+
+# create partition file:
+nano partitions.txt
+#####
+DNA, codon1 = 1-1611\3
+DNA, codon2 = 2-1611\3
+DNA, codon3 = 3-1611\3
+#####
+
+##### make tree:
+# create job:
+nano raxml_COI_aa_partitioned
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=18:00:00
+#PBS -q large
+#PBS -N raxml_COI_aa_partitioned
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170417/linsi_aa_bysize/partitioned
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170417.COI_aa_frag600_long750.aln.revtrans.fasta -n SL20170417.COI_aa_partitioned.revtrans.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654 -q partitions.txt
+#####
+# run job:
+qsub raxml_COI_aa_partitioned 
+1191069.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=57:43:22
+resources_used.mem=181340kb
+resources_used.vmem=961884kb
+resources_used.walltime=04:48:58
+
+-----------------------------------------------------------------------------------------
+mkdir 20170418
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170418
+
+#copy files to mac:
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170418 ~/Desktop/sandbox/COI/
+
+#Leucothoe COI alignment & tree:
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170418/Leu
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170418/Leu
+
+nano Leu_COI.fasta
+####
+#paste Leu COI sequences & 1 outgroup sequence
+####
+
+# create job:
+nano Leu_COI.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=12:00:00
+#PBS -N Leu_COI
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170418/Leu
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+mafft --thread 6 --localpair --maxiterate 1000 --reorder Leu_COI.fasta > Leu_COI.aln.fasta
+RAxML -T 6 -s Leu_COI.aln.fasta -n Leu_COI.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+qsub Leu_COI.sh 
+1191452.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:57:47
+resources_used.mem=64196kb
+resources_used.vmem=462836kb
+resources_used.walltime=00:09:59
+
+-----------------------------------------------------------------------------------------
+mkdir 20170728
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728
+
+#copy files to mac:
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728 ~/Desktop/sandbox/COI/
+
+#Physocephalata COI alignment & tree:
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Physocephalata
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Physocephalata
+
+#add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170726.COI_Physocephalata.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Physocephalata
+
+# create job:
+nano Physocephalata_COI.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=Physocephalata_COI
+#SBATCH --qos=default
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Physocephalata
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=4G
+#SBATCH --time=01:00:00
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --thread 4 --localpair --maxiterate 1000 --reorder SL20170726.COI_Physocephalata.fasta > SL20170726.COI_Physocephalata.aln.fasta
+RAxML -T 4 -s SL20170726.COI_Physocephalata.aln.fasta -n SL20170726.COI_Physocephalata.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+sbatch Physocephalata_COI.sh
+
+Submitted batch job 19355
+squeue --job 19355
+
+
+#Hyperiidea COI alignment & tree:
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Hyperiidea
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Hyperiidea
+
+#add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170726.COI_Hyperiidea.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Hyperiidea
+
+# create job:
+nano Hyperiidea_COI.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=Hyperiidea_COI
+#SBATCH --qos=default
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Hyperiidea
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=4G
+#SBATCH --time=01:00:00
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --thread 4 --localpair --maxiterate 1000 --reorder SL20170726.COI_Hyperiidea.fasta > SL20170726.COI_Hyperiidea.aln.fasta
+RAxML -T 4 -s SL20170726.COI_Hyperiidea.aln.fasta -n SL20170726.COI_Hyperiidea.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+sbatch Hyperiidea_COI.sh
+Submitted batch job 19361
+
+#Hyperiidea_etal COI alignment & tree:
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Hyperiidea_etal
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Hyperiidea_etal
+
+#add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170726.COI_Hyperiidea_etal.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Hyperiidea_etal
+
+# create job:
+nano Hyperiidea_etal_COI.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=Hyperiidea_etal_COI
+#SBATCH --qos=default
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Hyperiidea_etal
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=4G
+#SBATCH --time=01:00:00
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --thread 4 --localpair --maxiterate 1000 --reorder SL20170726.COI_Hyperiidea_etal.fasta > SL20170726.COI_Hyperiidea_etal.aln.fasta
+RAxML -T 4 -s SL20170726.COI_Hyperiidea_etal.aln.fasta -n SL20170726.COI_Hyperiidea_etal.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+sbatch Hyperiidea_etal_COI.sh
+Submitted batch job 23985
+
+#Amphipoda COI alignment & tree:
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Amphipoda
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Amphipoda
+
+#add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170726.COI.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Amphipoda
+
+# create job:
+nano Amphipoda_COI.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=Amphipoda_COI
+#SBATCH --qos=workstation
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Amphipoda
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=4G
+#SBATCH --time=12:00:00
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --thread 4 --localpair --maxiterate 1000 --reorder SL20170726.COI.fasta > SL20170726.COI.aln.fasta
+RAxML -T 4 -s SL20170726.COI.aln.fasta -n SL20170726.COI.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+sbatch Amphipoda_COI.sh
+Submitted batch job 27194
+
+#Amphipoda COI alignment & tree (edited) remove Joryma from Isopods:
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Amphipoda_edited
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Amphipoda_edited
+
+#add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170726.COI_edited.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Amphipoda_edited
+
+# create job:
+nano Amphipoda_COI_edited.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=Amphipoda_COI
+#SBATCH --qos=workstation
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170728/Amphipoda_edited
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=4G
+#SBATCH --time=12:00:00
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --thread 4 --localpair --maxiterate 1000 --reorder SL20170726.COI_edited.fasta > SL20170726.COI_edited.aln.fasta
+RAxML -T 4 -s SL20170726.COI_edited.aln.fasta -n SL20170726.COI_edited.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+sbatch Amphipoda_COI_edited.sh
+Submitted batch job 28168
+squeue --job 28168
+
+************
+3 COI regions in full alrignment:
+A ~ 1-500 at 5' region
+B ~ 500-750 in middle
+C ~ 750+ at 3' region
+
+part C of COI only:
+Isocyamus_globicipitis|FJ751181.1|
+Anchiphimedia_dorsalis|KY907612.1|
+Iphimediella_cyclogena|KY907611.1|
+Epimeria_grandirostris|KU870832.1|
+Dikwa_andresi|KY907615.1|
+Bathypanoploea_schellenbergi|KY907613.1|
+Acanthonotozomoides_oatesi|KY907616.1|
+Acanthonotozomopsis_pushkini|KY907620.1|
+Acanthonotozomellidae_gen_n_sp_n_MLV-2016|KY907651.1|
+Acanthonotozomella_trispinosa|KY907618.1|
+Alexandrella_dentata|KY907621.1|
+Spasskogammarus_spasskii|LC052234.1|
+
+Looking for other COI regions to supplement part C:
+Isocyamus_globicipitis|FJ751181.1|
+Callahan,C.M. and Arbogast,B.S.
+- only COI available
+
+Anchiphimedia_dorsalis|KY907612.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- one other COI available for same region from same authors
+
+Iphimediella_cyclogena|KY907611.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- another COI available for A,B region (no overlap w/KY907611.1): AF451348.1
+Lorz,A.N. and Held,C.
+
+Epimeria_grandirostris|KU870832.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- another COI included for B region (no overlap w/KU870832): KF430254.1
+Corrigan,L.J., Horton,T., Fotherby,H., White,T.A. and Hoelzel,A.R.
+- another COI available for A,B region (no overlap w/KU870832 but does overlab w/KF430254.1):FM955307.1
+Loerz,A.N., Maas,E.W., Linse,K. and Coleman,C.O.
+
+Dikwa_andresi|KY907615.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- one other COI available for same region from same authors
+
+Bathypanoploea_schellenbergi|KY907613.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- only COI available
+
+Acanthonotozomoides_oatesi|KY907616.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- other COI sequences for same region from same author
+
+Acanthonotozomopsis_pushkini|KY907620.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- no other COI available
+
+Acanthonotozomellidae_gen_n_sp_n_MLV-2016|KY907651.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- other COI sequences for same region from same author
+
+Acanthonotozomella_trispinosa|KY907618.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- no other COI available
+
+Alexandrella_dentata|KY907621.1|
+Verheye,M.L., Backeljau,T. and d'Udekem d'Acoz,C.
+- other COI sequences for same region from same author
+
+Spasskogammarus_spasskii|LC052234.1|
+Tomikawa,K.
+- no other COI available
+
+Looking for other part C regions (by author) to supplement parts A & B:
+Callahan:
+Cyamus - none added (region covered)
+Isocyamus - already included
+Verheye:
+Anchiphimedia - incl.
+Epimeria - incl.
+Gnathiphimedia - added G. sexdentata sequences in place of G. mandibularis
+Iphimediella- incl.
+Tomikawa:
+Crangonyx - none added
+Eogammarus - Eogammarus kygi added
+Gammarus - none added
+(not continuing searching by author, regions are not correlating w/ author well).
+
+Taking known region C sequences and blasting to amphipoda in search of sequences:
+
+FJ751181.1
+Caprella:
+Caprella scaura - COI & 16S in complete mt genome, ~900bp 18S (not added)
+Caprella dilatata - COI ABC & 917bp 18S added
+
+LC052229.1
+Eogammarus kygi (already added)
+Eogammarus possjeticus (not included, same genes as E. kygi)
+Niphargus elegans zagrebensis (added)
+Chiltoniidae sp. (not included)
+Austrochiltonia dalhousiensis (region included in Austrochiltonia cooperi)
+Metacrangonyx longipes (mtGenome available)
+
+
+
+
+
+
+**************
