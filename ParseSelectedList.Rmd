@@ -1,0 +1,1593 @@
+---
+title: "Amphipoda"
+author: "Biancani"
+date: "February 13, 2017"
+output: pdf_document
+---
+
+#Download Data from GenBank:
+
+2017.02.13
+SelectedList_20170213.txt (generated from Amphipoda_List.xlsx) submitted to Batch Entrez (https://www.ncbi.nlm.nih.gov/sites/batchentrez)
+2007 sequences downloaded:
+Genbank(full), show GI, sorted by Organism Name -> SelectedList_20170213.gb
+Fasta, show GI, sorted by Organism Name -> SelectedList_20170213.fasta
+
+2017.03.04
+Remove Dexamine spinosa KJ182990 from Selected List fasta and gb (by hand) and save as SL_20170304.fasta and SL_20170304.gb
+
+2017.03.05
+Separate out all Leucothoidae sequences to align separately
+# abandoned
+
+2017.03.11
+Major course filtering of taxa - streamlined to one rep per genus when possible - preference given to sequences with linked reps for multiple genes and longer sequences.
+SelectedList_20170311.txt (generated from Amphipoda_List.xlsx) submitted to Batch Entrez (https://www.ncbi.nlm.nih.gov/sites/batchentrez)
+1398 sequences downloaded:
+Genbank(full), show GI, sorted by Organism Name -> 
+Fasta, show GI, sorted by Organism Name -> 
+
+2017.03.14
+Filtering fine tuning - removed a few more sequences that were redundant, added back in 5th "suborder", added a couple other missing sequences that may have been remove inadvertently
+SelectedList_20170314 (generated from Amphipoda_List_Selection_Notes.xlsx) submitted to Batch Entrez (https://www.ncbi.nlm.nih.gov/sites/batchentrez)
+1384 sequences downloaded:
+Genbank(full), show GI, sorted by Organism Name -> SL20170314.gb
+Fasta, show GI, sorted by Organism Name -> SL20170314.fasta
+
+2017.03.18
+Removed Leu, Anamixis, Paranamixis sequences that are perpetual long branches
+Added a few sequences back in
+Removed unidentified Hyperiidea (they were themisto, we have lots of reps)
+SelectedList_20170318.txt (generated from Amphipoda_List_Selection_Notes.xlsx) submitted to Batch Entrez (https://www.ncbi.nlm.nih.gov/sites/batchentrez)
+1379 sequences downloaded:
+Genbank(full), show GI, sorted by Organism Name -> SL20170318.gb
+Fasta, show GI, sorted by Organism Name -> SL20170318.fasta
+
+2017.03.19
+Removed Anamixis vanga as well
+Updated links.csv to include added sequence from previous update
+SelectedList_20170319.txt (generated from Amphipoda_List_Selection_Notes.xlsx) submitted to Batch Entrez (https://www.ncbi.nlm.nih.gov/sites/batchentrez)
+1378 sequences downloaded:
+Genbank(full), show GI, sorted by Organism Name -> SL20170319.gb
+Fasta, show GI, sorted by Organism Name -> SL20170319.fasta
+
+2017.03.20
+Replace Anamixis vaga and remove any Leucothoe, Anamixis, or Paranamixis without a COI sequence (except the one full length sequence)
+SelectedList_20170320.txt (generated from Amphipoda_List_Selection_Notes.xlsx) submitted to Batch Entrez (https://www.ncbi.nlm.nih.gov/sites/batchentrez)
+1366 sequences downloaded:
+Genbank(full), show GI, sorted by Organism Name -> SL20170320.gb
+Fasta, show GI, sorted by Organism Name -> SL20170320.fasta
+
+2017.03.21
+Replace all Leucothoe, Anamixis & Paranamixis sequences recently removed
+SL20170321.txt (generated from Amphipoda_List_Selection_Notes.xlsx) submitted to Batch Entrez (https://www.ncbi.nlm.nih.gov/sites/batchentrez)
+xxx sequences downloaded:
+Genbank(full), show GI, sorted by Organism Name -> SL20170321.gb
+Fasta, show GI, sorted by Organism Name -> SL20170321.fasta
+
+2017.03.26
+Add 454 sequences back in (not sure why there were considered problematic before - check again)
+Added another rep for Maera danae (short 16S seq was difficult to align, longer one may help)
+SL20170326.txt (generated from Amphipoda_List_Selection_Notes.xlsx) submitted to Batch Entrez (https://www.ncbi.nlm.nih.gov/sites/batchentrez)
+1421 sequences downloaded:
+Genbank(full), show GI, sorted by Organism Name -> SL20170326.gb
+Fasta, show GI, sorted by Organism Name -> SL20170326.fasta
+
+2017.04.15
+add single isopod CO1 and 18S sequences for rooting
+Remove 4 short (trimmed) COI sequences and add other COI sequences for those species
+1421 sequences downloaded
+SL20170415.fasta
+SL20170415.gb
+
+2017.04.17
+add sequences for new data up to 4/17/2017
+pair down dataset (aiming for 1 rep for each genus with most data)
+1237 sequences downloaded
+SL20170417.fasta
+SL20170417.gb
+
+2017.05.05
+add sequences for new data up to 5/5/2017
+change outgroup to include a COI, 18S, 28S rep
+1242 sequences downloaded
+SL20170505.fasta
+SL20170505.gb
+
+2017.05.11
+remove some 28S sequences, update other
+
+2017.07.25
+add isopoda w/ 4+ genes represented
+add sequences for new data up to 7/24/2017
+remove some sequences with multiple representatives
+SL20170725.fasta
+SL20170725.gb
+
+2017.07.26
+remove 28SD9-10 region
+remove genes only saved because linked to 28SD910 region
+add some UNVERIFIED sequences and 1 PREDICTED sequence
+total: 1291 sequences
+SL20170726.fasta
+SL20170726.gb
+
+2017.08.08
+add/change COI regions & coverage
+total: 1305 sequences
+SL20170808.fasta
+SL20170808.gb
+
+```{r eval=FALSE}
+#TAXA = "SelectedList_2017021"
+#TAXA = "SL_20170304"
+#TAXA = "SL20170311"
+#TAXA = "SL20170314"
+#TAXA = "SL20170318"
+#TAXA = "SL20170319"
+#TAXA = "SL20170320"
+#TAXA = "SL20170321"
+#TAXA = "SL20170326"
+#TAXA = "SL20170415"
+#TAXA = "SL20170417"
+#TAXA = "SL20170505"
+#TAXA = "SL20170511"
+#TAXA = "SL20170725"
+#TAXA = "SL20170726"
+TAXA = "SL20170808"
+
+```
+
+##Read Data into R
+
+```{r eval=FALSE}
+fasta_filename=paste(TAXA,"fasta",sep=".")
+genbank_filename=paste(TAXA,"gb",sep=".")
+
+#read data into R
+fasta=readLines(fasta_filename)
+genbank=readLines(genbank_filename)
+```
+
+##Parse Data
+
+```{r, eval=FALSE, tidy=TRUE}
+#load stringr library
+library(stringr)
+
+#create vector of genbank data
+genbank_vector=c()
+gb=""
+for(line in genbank){
+  gb=paste(gb,line,sep=" ")
+  if(line=="//"){
+  #if(str_detect(line,"//")){
+    gb=str_replace_all(gb," +"," ")
+    genbank_vector=append(genbank_vector,gb)
+    gb=""
+  }
+}
+
+genelookup= data.frame(
+  rawlist=c("[Cc]ytochrome [Cc ]{0,2}[Oo]xidase [subunit ]{0,8}[Ii1][^Ii1]","[Cc][Oo][Xx]{0,1}[Ii1][^Ii1]","16S","18S","28S","[Hh]3","[Hh]istone 3"),
+  genelist=c("mt_COI","mt_COI","mt_16S","n_18S","n_28S","n_H3","n_H3")
+)
+
+# genelookup= data.frame(
+#   rawlist=c("[Cc]ytochrome [Cc ]{0,2}[Oo]xidase [subunit ]{0,8}[Ii1][^Ii1]","[Cc][Oo][Xx]{0,1}[Ii1][^Ii1]","16S","18S","28S","n_28Sd910","[Hh]3","[Hh]istone 3"),
+#   genelist=c("mt_COI","mt_COI","mt_16S","n_18S","n_28S","n_28Sd910","n_H3","n_H3")
+# )
+
+#initiate vectors
+fasta_header=c()
+sequence=c()
+
+species_name=c()
+organism=c()
+accession=c()
+accession_gb=c()
+description=c()
+
+voucher=c()
+country=c()
+isolate=c()
+gene=c()
+bp_length=c()
+taxon_id=c()
+
+author_ref1=c()
+title_ref1=c()
+journal_ref1=c()
+
+author_ref2=c()
+title_ref2=c()
+journal_ref2=c()
+
+author_ref3=c()
+title_ref3=c()
+journal_ref3=c()
+
+others=c()
+frame=c()
+
+#parse fasta (& genbank) data
+dna=""
+record=0
+for (i in seq(length(fasta))) {
+  line = fasta[i]
+  # if a header is detected:
+  if (str_detect(line,fixed(">"))){
+    #if sequence was recorded for previous record, add it to the sequence vector
+    if (i>1) {sequence=append(sequence,dna)}
+    dna="" #reset dna
+
+    record=record+1 #track record number
+
+    #store fasta header
+    fasta_header = append(fasta_header,line)
+
+    #parse fasta header
+    header_split=strsplit(line, "|", fixed=TRUE)
+
+    #accession from fasta
+    accession=append(accession,header_split[[1]][4])
+
+    #description from fasta
+    des=str_trim(header_split[[1]][5], side="left")
+    description=append(description,des)
+
+    #species name from fasta
+    #[cfa. ]{0,5} added to accomodate "Genus cf. species" and "Genus aff. species"
+    species_name=append(species_name,str_extract(des,"[A-Z][a-z]*[ .][cfa. ]{0,5}[a-z.]+"))
+
+    #parse data from genbank file:
+    gb=genbank_vector[record]    
+    
+    #gene from genbank
+    gen_pattern="gene=\"[^\"]+\""
+    #extract all listed genes
+    rawgen=paste(str_extract_all(gb,gen_pattern)[[1]],collapse="")
+    pro_pattern="product=\"[^\"]+\""
+    #extract all listed products
+    rawpro=paste(str_extract_all(gb,pro_pattern)[[1]],collapse="")
+    rawgenpro=paste(rawgen,rawpro,collapse = "")
+    
+    #check rawgenpro for vague "subunit" designations
+    if(str_detect(gb,"mitochondrial")){
+      if(str_detect(rawgenpro,"large subunit")){rawgenpro=paste(rawgenpro,"16S",sep=" ")}
+      #if(str_detect(rawgenpro,"small subunit")){} #not needed as all are labeled 16S
+    }else{
+      if(str_detect(rawgenpro,"small subunit")){rawgenpro=paste(rawgenpro,"18S",sep="")}
+      if(str_detect(rawgenpro,"large subunit")){} #not needed as all are labeled 28S
+    }
+
+    #if no info in "gene" or "product", check for "note":
+    if(str_length(rawgenpro)<2){
+      note_pattern="note=\"[^\"]+\""
+      rawnote=paste(str_extract_all(gb,note_pattern)[[1]],collapse="")
+      rawgenpro=rawnote
+    }
+
+    ingenes=FALSE
+    gen=""
+    for(i in seq(length(genelookup$rawlist))){
+      if(str_detect(rawgenpro,as.character(genelookup$rawlist[i]))){
+        lookup=as.character(genelookup$genelist[i])
+        if(!str_detect(gen,lookup)){gen=paste(lookup,gen,sep=" ")}
+        ingenes=TRUE
+      }
+    }
+    if(!ingenes){
+      gen = "other"
+      others=append(others,des)
+    }
+    gene=append(gene,gen)
+
+    #accession from gb
+    accession_pattern="ACCESSION ([A-Z]{1,2}\\d{5,6})"
+    acc_gb=str_replace(str_extract(gb,accession_pattern),accession_pattern,"\\1")
+    accession_gb=append(accession_gb,acc_gb)
+
+    #organism from gb
+    org_pattern="organism=\"([^\"]+)\""
+    org=str_replace(str_extract(gb,org_pattern),org_pattern,"\\1")
+    organism=append(organism,org)
+
+    #voucher number from gb
+    vou_pattern="voucher=\"([^\",]*\\d[^\",]*)\""
+    vou=str_replace(str_extract(gb,vou_pattern),vou_pattern,"\\1")
+    if(!is.na(vou)){
+      if(str_detect(vou,"collection")){vou=NA}
+    }
+    voucher=append(voucher,vou)
+
+    #country from gb
+    country_pat="country=\"([^\"]+)\""
+    coun=str_replace(str_extract(gb,country_pat),country_pat,"\\1")
+    country=append(country,coun)
+
+    #isolate number from gb
+    iso_pattern="/isolate=\"([^\"]+)\""
+    iso=str_replace(str_extract(gb,iso_pattern),iso_pattern,"\\1")
+    isolate=append(isolate,iso)
+
+    #sequence length from gb
+    bps=as.numeric(str_extract(str_extract(gb,"[:digit:]+ bp"),"[:digit:]+"))
+    bp_length=append(bp_length,bps)
+    
+    #reading frame from genbank:
+    frame_pattern="codon_start=([1-3])"
+    rf=as.numeric(str_replace(str_extract(gb,frame_pattern),frame_pattern,"\\1"))
+    frame=append(frame,rf)
+
+    #taxon ID from gb
+    tax=as.numeric(str_extract(str_extract(gb,"taxon:[:digit:]+"),"[:digit:]+"))
+    taxon_id=append(taxon_id,tax)
+
+    #author and/or consortium for References 1-3 from gb
+    reference_ends=c("REFERENCE","COMMENT","FEATURES")
+    for(end in reference_ends){gb=str_replace_all(gb,end,paste("@",end,sep=""))}
+    reference_keys=c("AUTHORS","CONSRTM","TITLE","JOURNAL")
+    for(key in reference_keys){gb=str_replace_all(gb,key,paste("%",key,sep=""))}
+
+    #REFERENCES 1-3
+    for (i in 1:3) {
+      auth_pat=paste("REFERENCE ","[^@]+%AUTHORS ([^%]+) %",sep=as.character(i))
+      cons_pat=paste("REFERENCE ","[^@]+%CONSRTM ([^%]+) %",sep=as.character(i))
+      title_pat=paste("REFERENCE ","[^@]+%TITLE ([^%]+) %",sep=as.character(i))
+      journ_pat=paste("REFERENCE ","[^@]+%JOURNAL ([^%@]+) [%@]",sep=as.character(i))
+      auth= str_replace(str_extract(gb,auth_pat),auth_pat,"\\1")
+      cons= str_replace(str_extract(gb,cons_pat),cons_pat,"\\1")
+      title= str_replace(str_extract(gb,title_pat),title_pat,"\\1")
+      journ= str_replace(str_extract(gb,journ_pat),journ_pat,"\\1")
+      if(is.na(auth)){
+        auth=cons # in case consortium listed but no author
+      }else if(!is.na(cons)){
+        auth=paste(auth,cons,sep=", ") # in case author & consortium listed (never?)
+      }
+      if(i==1){
+        author_ref1=append(author_ref1,auth)
+        title_ref1=append(title_ref1,title)
+        journal_ref1=append(journal_ref1,journ)
+      }else if(i==2){
+        author_ref2=append(author_ref2,auth)
+        title_ref2=append(title_ref2,title)
+        journal_ref2=append(journal_ref2,journ)
+      }else if(i==3){
+        author_ref3=append(author_ref3,auth)
+        title_ref3=append(title_ref3,title)
+        journal_ref3=append(journal_ref3,journ)
+      }
+    }
+
+  } else {
+    # if the line is not a header, add the line to dna
+    dna=paste(dna,line,sep="")
+  }
+}
+sequence=append(sequence,dna)
+
+df=data.frame(species_name,organism,taxon_id,voucher,isolate,country,accession,accession_gb,gene,bp_length,author_ref1,title_ref1,journal_ref1,author_ref2,title_ref2,journal_ref2,author_ref3,title_ref3,journal_ref3,description,fasta_header,sequence,frame,stringsAsFactors=FALSE)
+
+# change gene name for 28S D9-10 genes (listed in 28SD910.txt):
+### these genes have been removed, this change is now unnecessary
+# d910_list=read.table("28SD910.txt", stringsAsFactors=FALSE)
+# for (entry in d910_list[,1]){
+#   print(entry)
+#   print(df[df$accession==entry,which(names(df)=="gene")])
+#   df[df$accession==entry,which(names(df)=="gene")]="n_28Sd910 "
+# }
+
+# change gene name for mislabelled 16S sequence
+## Some genes labelled "large subunit" but blasts and aligns to 16S
+## MF072683.1, MF072685
+fix16Slabel=c("MF072683.1", "MF072685.1")
+for (item in fix16Slabel){
+  df[df$accession==item,which(names(df)=="gene")]="mt_16S"
+}
+#df[df$accession=="MF072685.1",which(names(df)=="gene")]="mt_16S"
+
+#head(others)
+#print(length(others))
+df_others<-df[gene=="other",]
+```
+
+##Build Gene Table
+
+```{r, eval=FALSE, tidy=TRUE}
+
+genelist=append((unique(as.character(genelookup$genelist))),"other")
+
+#initialize gene vectors:
+for(gene in genelist) {assign(gene,c())}
+
+g=""
+for(i in seq(nrow(df))){
+  entry=as.character(df$gene[i])
+  for(gene in genelist){
+    if(str_detect(entry,gene)){g=df$accession[i]}
+    assign(gene,do.call(append,list(as.name(gene),g)))
+    g=""
+  }
+}
+gene_table=df[,c(1:5,10,11)]
+gene_table=data.frame(gene_table,do.call(cbind,lapply(genelist,as.name)),stringsAsFactors = FALSE)
+```
+
+
+#define function create.fasta
+```{r, eval=FALSE}
+#define function create.fasta
+create.fasta <- function(dataname,dataframe) {
+  library(stringr)
+  filename=paste(dataname,"fasta",sep=".")
+  fasta_file=file(filename,"at")
+  locateColNames=function(x){which(colnames(dataframe)==x)}
+  headindex=sapply(c("organism","accession"),locateColNames)
+  #if elements are added or removed from heading, update index of names below for removal of spaces and .
+  seqindex=locateColNames("sequence")
+  for (i in seq(nrow(dataframe))){
+    if(i==1){begin=">"}else{begin="\n>"}
+    gene_fasta=c(begin,sapply(as.character(dataframe[i,headindex]),paste,"|",sep=""),"\n",dataframe[i,seqindex])
+    #remove spaces and . from names
+    gene_fasta[2]=str_replace_all(gene_fasta[2]," ","_")
+    gene_fasta[2]=str_replace_all(gene_fasta[2],fixed("."),"")
+    writeLines(gene_fasta,con=fasta_file,sep="")
+  }
+  close(fasta_file)
+}
+```
+
+
+##Build Fasta File for Each Gene
+```{r, eval=FALSE}
+# for (gene in genelist) {
+#   dataname=paste(TAXA,gene,sep=".")
+#   #extract rows from df where accession number is in gene vector:
+#   gene_df=df[as.logical(do.call(match,list(df$accession,as.name(gene),0))),]
+#   create.fasta(dataname,gene_df)
+# }
+
+``` 
+
+Concatinating 18S pieces
+*** fix this - it should edit df_18S not df! ***
+```{r, eval=FALSE}
+df_raw = df #backup dataframe before making changes
+#df = df_raw #reset df
+#remove unnecessary columns
+df = df[,-which(names(df) %in% c("country","accession_gb","journal_ref1","author_ref2","title_ref2","journal_ref2","author_ref3","title_ref3","journal_ref3","description","fasta_header"))]
+
+links=read.csv("links.csv", stringsAsFactors=FALSE)
+
+for (pA in links$partA){
+  pB=(links[links$partA==pA,2])
+  pAB=paste(pA,pB,sep="-")
+  len_pA=df[df$accession==pA,which(names(df)=="bp_length")]
+  len_pB=df[df$accession==pB,which(names(df)=="bp_length")]
+  len_pAB=len_pA+len_pB
+  seq_pA=df[df$accession==pA,which(names(df)=="sequence")]
+  seq_pB=df[df$accession==pB,which(names(df)=="sequence")]
+  sep=paste(rep("-",100),collapse="")
+  seq_pAB=paste(seq_pA,seq_pB,sep=sep)
+  #update df for pA (adding pB info):
+  df[df$accession==pA,which(names(df)=="bp_length")]=len_pAB
+  df[df$accession==pA,which(names(df)=="sequence")]=seq_pAB
+  #change accession last as it is used a a reference above:
+  df[df$accession==pA,which(names(df)=="accession")]=pAB
+}
+# remove pB lines from df:
+df = df[-which(df$accession %in% links$partB),]
+
+```
+
+Selecting different length 18S Sequences
+```{r, eval=FALSE}
+library(stringr)
+
+df_18S=df[!(is.na(str_match(df$gene,"n_18S"))),]#######
+
+#Plot Lengths of 18S sequences:
+len18S=df_18S$bp_length
+density18S=density(len18S)
+plot(density18S)
+
+# #create Fasta files for concatinated 18S:
+# dataname=paste(TAXA,"18S_all",sep=".")
+# create.fasta(dataname,df_18S)
+# 
+# #Select sequences >=1500bp (full length) and < 1500bp (fragments):
+# df_18S_long1500=subset(df_18S, bp_length >= 1500)
+# df_18S_frag1500=subset(df_18S, bp_length <1500)
+# 
+# #Create Fasta files for FL and fragment 18S:
+# dataname=paste(TAXA,"18S_long1500",sep=".")
+# create.fasta(dataname,df_18S_long1500)
+# dataname=paste(TAXA,"18S_frag1500",sep=".")
+# create.fasta(dataname,df_18S_frag1500)
+# 
+# #############
+# ## Try different cutoffs for "long" sequences:
+# 
+# #Select sequences >=1000bp (full length) and < 1000bp (fragments):
+# df_18S_long1000=subset(df_18S, bp_length >= 1000)
+# df_18S_frag1000=subset(df_18S, bp_length <1000)
+# #Create Fasta files for FL and fragment 18S:
+# dataname=paste(TAXA,"18S_long1000",sep=".")
+# create.fasta(dataname,df_18S_long1000)
+# dataname=paste(TAXA,"18S_frag1000",sep=".")
+# create.fasta(dataname,df_18S_frag1000)
+# 
+# #create fasta file of seq <1000bp and star them:
+# df_18S_frag1000_starred=df_18S_frag1000
+# for (i in seq(length(df_18S_frag1000_starred$organism))){
+#   df_18S_frag1000_starred$organism[i]=(paste("*****",df_18S_frag1000_starred$organism[i],sep=""))
+#   print(df_18S_frag1000_starred$organism[i])
+# }
+# dataname=paste(TAXA,"18S_frag1000_starred",sep=".")
+# create.fasta(dataname,df_18S_frag1000_starred)
+# 
+# #Plot Lengths of frag(<=1000bp) 18S sequences:
+# len18S=df_18S_frag1000_starred$bp_length
+# density18S=density(len18S)
+# plot(density18S)
+# 
+# #Select sequences >=2000bp (full length) and < 2000bp (fragments):
+# df_18S_long2000=subset(df_18S, bp_length >= 2000)
+# df_18S_frag2000=subset(df_18S, bp_length <2000)
+# #Create Fasta files for FL and fragment 18S:
+# dataname=paste(TAXA,"18S_long2000",sep=".")
+# create.fasta(dataname,df_18S_long2000)
+# dataname=paste(TAXA,"18S_frag2000",sep=".")
+# create.fasta(dataname,df_18S_frag2000)
+# 
+# #create fasta file of seq <600bp and star them:
+# df_18S_frag600=(subset(df_18S,bp_length<600))
+# df_18S_frag600_starred=df_18S_frag600
+# for (i in seq(length(df_18S_frag600_starred$organism))){
+#   df_18S_frag600_starred$organism[i]=(paste("*****",df_18S_frag600_starred$organism[i],sep=""))
+#   print(df_18S_frag600_starred$organism[i])
+# }
+# dataname=paste(TAXA,"18S_frag600_starred",sep=".")
+# create.fasta(dataname,df_18S_frag600_starred)
+# 
+# #Plot Lengths of long(>=2000bp) 18S sequences:
+# len18S=df_18S_long2000$bp_length
+# density18S=density(len18S)
+# plot(density18S)
+# 
+# #Select sequences >=2300bp (full length) and < 2300bp (fragments):
+# df_18S_long2300=subset(df_18S, bp_length >= 2300)
+# df_18S_frag2300=subset(df_18S, bp_length <2300)
+# #Create Fasta files for FL and fragment 18S:
+# dataname=paste(TAXA,"18S_long2300",sep=".")
+# create.fasta(dataname,df_18S_long2300)
+# dataname=paste(TAXA,"18S_frag2300",sep=".")
+# create.fasta(dataname,df_18S_frag2300)
+# 
+# #Select sequences >=2350bp (full length) and < 2350bp (fragments):
+# df_18S_long2350=subset(df_18S, bp_length >= 2350)
+# df_18S_frag2350=subset(df_18S, bp_length <2350)
+# #Create Fasta files for FL and fragment 18S:
+# dataname=paste(TAXA,"18S_long2350",sep=".")
+# create.fasta(dataname,df_18S_long2350)
+# dataname=paste(TAXA,"18S_frag2350",sep=".")
+# create.fasta(dataname,df_18S_frag2350)
+# 
+# #Select sequences >=2400bp (full length) and < 2400bp (fragments):
+# df_18S_long2400=subset(df_18S, bp_length >= 2400)
+# df_18S_frag2400=subset(df_18S, bp_length <2400)
+# #Create Fasta files for FL and fragment 18S:
+# dataname=paste(TAXA,"18S_long2400",sep=".")
+# create.fasta(dataname,df_18S_long2400)
+# dataname=paste(TAXA,"18S_frag2400",sep=".")
+# create.fasta(dataname,df_18S_frag2400)
+# 
+# #Select sequences >=2050bp but also <2250 (fragments):
+# df_18S_2050_2250=subset(df_18S, (bp_length >=2050 & bp_length < 2250))
+# dataname=paste(TAXA,"18S_2050_2250",sep=".")
+# create.fasta(dataname,df_18S_2050_2250)
+# #Select sequences <2050:
+# df_18S_frag2050=subset(df_18S, (bp_length <2050))
+# dataname=paste(TAXA,"18S_frag2050",sep=".")
+# create.fasta(dataname,df_18S_frag2050)
+# #Select sequences >=2250:
+# df_18S_long2250=subset(df_18S, (bp_length >=2250))
+# dataname=paste(TAXA,"18S_long2250",sep=".")
+# create.fasta(dataname,df_18S_long2250)
+# 
+# #Select sequences >=2050bp but also <2175 (fragments):
+# df_18S_2050_2175=subset(df_18S, (bp_length >=2050 & bp_length < 2175))
+# dataname=paste(TAXA,"18S_2050_2175",sep=".")
+# create.fasta(dataname,df_18S_2050_2175)
+# #Select sequences <2050: (repeat, done above)
+# #df_18S_frag2050=subset(df_18S, (bp_length <2050))
+# #dataname=paste(TAXA,"18S_frag2050",sep=".")
+# #create.fasta(dataname,df_18S_frag2050)
+# #Select sequences >=2175:
+# df_18S_long2175=subset(df_18S, (bp_length >=2175))
+# dataname=paste(TAXA,"18S_long2175",sep=".")
+# create.fasta(dataname,df_18S_long2175)
+# 
+# #Plot Lengths of long(>=1000bp) 18S sequences:
+# len18S=df_18S_long1000$bp_length
+# density18S=density(len18S)
+# plot(density18S)
+# 
+# #Plot Lengths of long(>=2000bp) 18S sequences:
+# len18S=df_18S_long2000$bp_length
+# density18S=density(len18S)
+# plot(density18S)
+# 
+# #Selected sequences >=600bp and < 2000bp:
+# df_18S_600_2000=subset(df_18S_frag2000, bp_length>=600)
+# dataname=paste(TAXA,"18S_600_2000",sep=".")
+# create.fasta(dataname,df_18S_600_2000)
+# 
+# #Selected sequences >=600bp and < 2300bp:
+# df_18S_600_2300=subset(df_18S_frag2300, bp_length>=600)
+# dataname=paste(TAXA,"18S_600_2300",sep=".")
+# create.fasta(dataname,df_18S_600_2300)
+# 
+# #Selected sequences >=600bp and < 2350bp:
+# df_18S_600_2350=subset(df_18S_frag2350, bp_length>=600)
+# dataname=paste(TAXA,"18S_600_2350",sep=".")
+# create.fasta(dataname,df_18S_600_2350)
+# 
+# #Selected sequences >=600bp and < 2400bp:
+# df_18S_600_2400=subset(df_18S_frag2400, bp_length>=600)
+# dataname=paste(TAXA,"18S_600_2400",sep=".")
+# create.fasta(dataname,df_18S_600_2400)
+# 
+# #Selected sequences >=1000bp and < 2000bp:
+# df_18S_1000_2000=subset(df_18S_long1000, bp_length<2000)
+# dataname=paste(TAXA,"18S_1000_2000",sep=".")
+# create.fasta(dataname,df_18S_1000_2000)
+# 
+# #Selected sequences >=1000bp and < 2300bp:
+# df_18S_1000_2300=subset(df_18S_long1000, bp_length<2300)
+# dataname=paste(TAXA,"18S_1000_2300",sep=".")
+# create.fasta(dataname,df_18S_1000_2300)
+# 
+# #Selected sequences >=1000bp and < 2250bp:
+# df_18S_1000_2250=subset(df_18S_long1000, bp_length<2250)
+# dataname=paste(TAXA,"18S_1000_2250",sep=".")
+# create.fasta(dataname,df_18S_1000_2250)
+# 
+# #Selected sequences >=1000bp and < 2300bp:
+# df_18S_1000_2300=subset(df_18S_long1000, bp_length<2300)
+# dataname=paste(TAXA,"18S_1000_2300",sep=".")
+# create.fasta(dataname,df_18S_1000_2300)
+# 
+# #Selected sequences >=1000bp and < 2350bp:
+# df_18S_1000_2350=subset(df_18S_long1000, bp_length<2350)
+# dataname=paste(TAXA,"18S_1000_2350",sep=".")
+# create.fasta(dataname,df_18S_1000_2350)
+# 
+# #Selected sequences >=1000bp and < 2400bp:
+# df_18S_1000_2400=subset(df_18S_long1000, bp_length<2400)
+# dataname=paste(TAXA,"18S_1000_2400",sep=".")
+# create.fasta(dataname,df_18S_1000_2400)
+# 
+# #Selected sequences >=2000bp and < 2300bp:
+# df_18S_2000_2300=subset(df_18S_long2000, bp_length<2300)
+# dataname=paste(TAXA,"18S_2000_2300",sep=".")
+# create.fasta(dataname,df_18S_2000_2300)
+# 
+# #Selected sequences >=2000bp and < 2350bp:
+# df_18S_2000_2350=subset(df_18S_long2000, bp_length<2350)
+# dataname=paste(TAXA,"18S_2000_2350",sep=".")
+# create.fasta(dataname,df_18S_2000_2350)
+# 
+# #Selected sequences >=2000bp and < 2400bp:
+# df_18S_2000_2400=subset(df_18S_long2000, bp_length<2400)
+# dataname=paste(TAXA,"18S_2000_2400",sep=".")
+# create.fasta(dataname,df_18S_2000_2400)
+
+
+```
+
+```{r, eval=FALSE, tidy=TRUE}
+# library(stringr)
+# #separate Leucothoidae sequences:
+# df_18S_Leu=subset(df_18S, (str_detect(species_name,"[Aa]namixis") | str_detect(species_name,"Leucothoe")))
+# dataname=paste(TAXA,"18S_Leu",sep=".")
+# create.fasta(dataname,df_18S_Leu)
+# 
+# #separate long Leu:
+# df_18S_longLeu=subset(df_18S_Leu, bp_length > 2000)
+# dataname=paste(TAXA,"18S_longLeu",sep=".")
+# create.fasta(dataname,df_18S_longLeu)
+# 
+# #separate frag Leu
+# df_18S_fragLeu=subset(df_18S_Leu, bp_length < 500)
+# dataname=paste(TAXA,"18S_fragLeu",sep=".")
+# create.fasta(dataname,df_18S_fragLeu)
+# 
+# #separate short Leu:
+# df_18S_shortLeu=subset(df_18S_Leu, (bp_length < 2000 & bp_length > 500))
+# 
+# good_Leu=c(
+# "KP896366.1",
+# "KP896367.1",
+# "KP896371.1",
+# "KC527600.1",
+# "JX145113.1",
+# "JX145086.1",
+# "JX145083.1",
+# "JX145091.1",
+# "JX145096.1",
+# "JX145093.1",
+# "JX145080.1",
+# "JX145100.1",
+# "JX145117.1"
+# )
+# prob_Leu=c(
+# "JX145102.1"
+# )
+# 
+# #separate good Leu:
+# df_18S_goodLeu=subset(df_18S_shortLeu, accession %in% good_Leu)
+# dataname=paste(TAXA,"18S_goodLeu",sep=".")
+# create.fasta(dataname,df_18S_goodLeu)
+# 
+# #separate bad Leu:
+# df_18S_badLeu=subset(df_18S_shortLeu, !((accession %in% good_Leu) | (accession %in% prob_Leu)))
+# dataname=paste(TAXA,"18S_badLeu",sep=".")
+# create.fasta(dataname,df_18S_badLeu)
+# 
+# #separate prob Leu:
+# df_18S_probLeu=subset(df_18S_shortLeu, accession %in% prob_Leu)
+# dataname=paste(TAXA,"18S_probLeu",sep=".")
+# create.fasta(dataname,df_18S_probLeu)
+# 
+# #separate Anamixis & Paramixis sequences:
+# df_18S_Anamix=subset(df_18S, (str_detect(species_name,"[Aa]namixis")))
+# dataname=paste(TAXA,"18S_Anamix",sep=".")
+# create.fasta(dataname,df_18S_Anamix)
+# 
+# #Plot Lengths of Leu 18S sequences:
+# #len18S=df_18S_Leu$bp_length
+# #density18S=density(len18S)
+# #plot(density18S)
+# 
+# #Plot short Leu
+# #len18S=subset(df_18S_Leu, bp_length < 2000)$bp_length
+# #density18S=density(len18S)
+# #plot(density18S)
+# 
+# # all but Leucothoidae:
+# df_18S_notLeu=subset(df_18S, !(str_detect(species_name,"[Aa]namixis") | str_detect(species_name,"Leucothoe")))
+# 
+# # long(>=2000) not Leu:
+# df_18S_notLeu_long2000=subset(df_18S_notLeu, bp_length >=2000)
+# dataname=paste(TAXA,"18S_notLeu_long2000",sep=".")
+# create.fasta(dataname,df_18S_notLeu_long2000)
+# 
+# # long(>=2400) not Leu:
+# df_18S_notLeu_long2400=subset(df_18S_notLeu, bp_length >=2400)
+# dataname=paste(TAXA,"18S_notLeu_long2400",sep=".")
+# create.fasta(dataname,df_18S_notLeu_long2400)
+# 
+# # fragments(<2400 and >=2000) not Leu:
+# df_18S_notLeu_2000_2400=subset(df_18S_notLeu_long2000, bp_length < 2400)
+# dataname=paste(TAXA,"18S_notLeu_2000_2400",sep=".")
+# create.fasta(dataname,df_18S_notLeu_2000_2400)
+# 
+# # fragments(<2000) not Leu:
+# df_18S_notLeu_frag2000=subset(df_18S_notLeu, bp_length <2000)
+# dataname=paste(TAXA,"18S_notLeu_frag2000",sep=".")
+# create.fasta(dataname,df_18S_notLeu_frag2000)
+
+```
+
+Separate Leu sequences (old version):
+```{r, eval=FALSE, tidy=TRUE}
+# library(stringr)
+# 
+# #separate Leucothoidae sequences:
+# #df_18S_longLeu=subset(df_18S, (accession == "DQ378025.1"))
+# # all Leucothoidae sequences:
+# df_18S_Leu=subset(df_18S, (str_detect(species_name,"[Aa]namixis") | str_detect(species_name,"Leucothoe")))
+# dataname=paste(TAXA,"18S_Leu",sep=".")
+# create.fasta(dataname,df_18S_Leu)
+# 
+# #Plot Lengths of Leu 18S sequences:
+# len18S=df_18S_Leu$bp_length
+# density18S=density(len18S)
+# plot(density18S)
+# 
+# #Plot short Leu
+# len18S=subset(df_18S_Leu, bp_length < 2000)$bp_length
+# density18S=density(len18S)
+# plot(density18S)
+# 
+# # all but Leucothoidae:
+# df_18S_notLeu=subset(df_18S, !(str_detect(species_name,"[Aa]namixis") | str_detect(species_name,"Leucothoe")))
+# # fragments(<2000) not Leu:
+# df_18S_notLeu_frag2000=subset(df_18S_notLeu, bp_length <2000)
+# dataname=paste(TAXA,"18S_notLeu_frag2000",sep=".")
+# create.fasta(dataname,df_18S_notLeu_frag2000)
+# # long(>2000) not Leu: ###Do not use, use 18S_long2000 which includes 1 long Leu sequence###
+# #df_18S_notLeu_long2000=subset(df_18S_notLeu, bp_length >=2000)
+# #dataname=paste(TAXA,"18S_notLeu_long2000",sep=".")
+# #create.fasta(dataname,df_18S_notLeu_long2000)
+
+```
+
+
+Remove and re-aline long branch sequences:
+```{r, eval=FALSE, tidy=TRUE}
+
+bad=c(
+"JX545417.1-JX545381.1",
+"JX545416.1-JX545380.1",
+"KT808785.1",
+"GU969187.1",
+#"KC428904.1",#Lestrigonous schizogeneious
+"KT808784.1",
+"DQ378031.1",
+"AF419235.1",
+"DQ378015.1",
+"AF419231.1",
+"AF419230.1",
+"AF419236.1",
+"DQ378038.1",
+"KT808783.1",
+"KT808782.1",
+"KT808776.1",
+"KJ182987.1",
+"KJ182986.1",
+"KC428896.1",
+"KC428899.1",
+#bad Leu:
+"KC527601.1",
+"JX145103.1",
+"JX145102.1",
+"KC527598.1",
+"JX145101.1",
+"JX145115.1",
+"JX145107.1",
+"JX145106.1",
+"JX145108.1",
+"JX145081.1",
+"JF506091.1",
+"JF506091.1",
+"JF506069.1",
+"JF506085.1"
+)
+
+df_18S_bad=subset(df_18S, accession %in% bad)
+dataname=paste(TAXA,"18S_bad",sep=".")
+create.fasta(dataname,df_18S_bad)
+#Separate by size:
+df_18S_bad_long500=subset(df_18S_bad, bp_length >= 500)
+dataname=paste(TAXA,"18S_bad_long500",sep=".")
+create.fasta(dataname,df_18S_bad_long500)
+
+df_18S_bad_long2000=subset(df_18S_bad, bp_length >= 2000)
+dataname=paste(TAXA,"18S_bad_long2000",sep=".")
+create.fasta(dataname,df_18S_bad_long2000)
+
+df_18S_bad_1000_2000=subset(df_18S_bad, (bp_length >= 1000 & bp_length < 2000))
+dataname=paste(TAXA,"18S_bad_1000_2000",sep=".")
+create.fasta(dataname,df_18S_bad_1000_2000)
+
+df_18S_bad_500_1000=subset(df_18S_bad, (bp_length >= 500 & bp_length < 1000))
+dataname=paste(TAXA,"18S_bad_500_1000",sep=".")
+create.fasta(dataname,df_18S_bad_500_1000)
+
+df_18S_bad_frag500=subset(df_18S_bad, bp_length < 500)
+dataname=paste(TAXA,"18S_bad_frag500",sep=".")
+create.fasta(dataname,df_18S_bad_frag500)
+
+df_18S_bad_frag1000=subset(df_18S_bad, bp_length < 1000)
+dataname=paste(TAXA,"18S_bad_frag1000",sep=".")
+create.fasta(dataname,df_18S_bad_frag1000)
+
+#create df of good sequences:
+#df_18S_good=subset(rbind(df_18S_notLeu, df_18S_longLeu), !(accession %in% bad))
+df_18S_good=subset(df_18S, !(accession %in% bad))
+dataname=paste(TAXA,"18S_good",sep=".")
+create.fasta(dataname,df_18S_good)
+
+#Separate by size 2000:
+df_18S_good_long2000=subset(df_18S_good, bp_length >=2000)
+dataname=paste(TAXA,"18S_good_long2000",sep=".")
+create.fasta(dataname,df_18S_good_long2000)
+df_18S_good_frag2000=subset(df_18S_good, bp_length <2000)
+dataname=paste(TAXA,"18S_good_frag2000",sep=".")
+create.fasta(dataname,df_18S_good_frag2000)
+df_18S_good_1000_2000=subset(df_18S_good_frag2000, bp_length >= 1000)
+dataname=paste(TAXA,"18S_good_1000_2000",sep=".")
+create.fasta(dataname,df_18S_good_1000_2000)
+df_18S_good_500_1000=subset(df_18S_good_frag2000, (bp_length >= 500 & bp_length <1000))
+dataname=paste(TAXA,"18S_good_500_1000",sep=".")
+create.fasta(dataname,df_18S_good_500_1000)
+df_18S_good_frag500=subset(df_18S_good_frag2000, bp_length < 500)
+dataname=paste(TAXA,"18S_good_frag500",sep=".")
+create.fasta(dataname,df_18S_good_frag500)
+
+
+#Separate by size 2400:
+df_18S_good_long2400=subset(df_18S_good, bp_length >=2400)
+dataname=paste(TAXA,"18S_good_long2400",sep=".")
+create.fasta(dataname,df_18S_good_long2400)
+df_18S_good_2000_2400=subset(df_18S_good,(bp_length >= 2000 & bp_length <2400))
+dataname=paste(TAXA,"18S_good_2000_2400",sep=".")
+create.fasta(dataname,df_18S_good_2000_2400)
+
+
+#Separate by size 2300:
+df_18S_good_long2300=subset(df_18S_good, bp_length >=2300)
+dataname=paste(TAXA,"18S_good_long2300",sep=".")
+create.fasta(dataname,df_18S_good_long2300)
+df_18S_good_2000_2300=subset(df_18S_good,(bp_length >= 2000 & bp_length <2300))
+dataname=paste(TAXA,"18S_good_2000_2300",sep=".")
+create.fasta(dataname,df_18S_good_2000_2300)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+16S
+```{r, eval=FALSE, tidy=TRUE}
+
+#Plot Lengths of 16S sequences:
+df_16S=df[!(is.na(str_match(df$gene,"mt_16S"))),]#######
+len16S=df_16S$bp_length
+density16S=density(len16S)
+plot(density16S)
+
+df_16S_100_325=subset(df_16S, (bp_length >= 100 & bp_length<325))
+len16S=df_16S_100_325$bp_length
+density16S=density(len16S)
+plot(density16S)
+
+#Create fasta of all 16S sequences:
+dataname=paste(TAXA,"16S",sep=".")
+create.fasta(dataname,df_16S)
+
+#Select sequences >=400bp (full length) and < 400bp (fragments):
+df_16S_long400=subset(df_16S, bp_length >= 400)
+df_16S_frag400=subset(df_16S, bp_length < 400)
+#Create Fasta files for FL and fragment 16S:
+dataname=paste(TAXA,"16S_long400",sep=".")
+create.fasta(dataname,df_16S_long400)
+dataname=paste(TAXA,"16S_frag400",sep=".")
+create.fasta(dataname,df_16S_frag400)
+
+#Select sequences >=350bp (full length) and < 350bp (fragments):
+df_16S_long350=subset(df_16S, bp_length >= 350)
+df_16S_frag350=subset(df_16S, bp_length < 350)
+#Create Fasta files for FL and fragment 16S:
+dataname=paste(TAXA,"16S_long350",sep=".")
+create.fasta(dataname,df_16S_long350)
+dataname=paste(TAXA,"16S_frag350",sep=".")
+create.fasta(dataname,df_16S_frag350)
+
+#Select sequences >=325bp (full length) and < 325bp (fragments):
+df_16S_long325=subset(df_16S, bp_length >= 325)
+df_16S_frag325=subset(df_16S, bp_length < 325)
+#Create Fasta files for FL and fragment 16S:
+dataname=paste(TAXA,"16S_long325",sep=".")
+create.fasta(dataname,df_16S_long325)
+dataname=paste(TAXA,"16S_frag325",sep=".")
+create.fasta(dataname,df_16S_frag325)
+
+#Select sequences >=275bp and <325:
+df_16S_275_325=subset(df_16S_frag325, bp_length>=275)
+dataname=paste(TAXA,"16S_275_325",sep=".")
+create.fasta(dataname,df_16S_275_325)
+
+#Select sequences <275:
+df_16S_frag275=subset(df_16S, bp_length<275)
+dataname=paste(TAXA,"16S_frag275",sep=".")
+create.fasta(dataname,df_16S_frag275)
+```
+
+
+16S - separate good & bad
+```{r, eval=FALSE, tidy=TRUE}
+
+bad_16S=c(
+"KF430289.1",
+#"AB432976.1",
+"KP456062.1",
+"KF430277.1",
+"KF430276.1"
+)
+df_16S_good=subset(df_16S, !(accession %in% bad_16S))
+dataname=paste(TAXA,"16S_good",sep=".")
+create.fasta(dataname,df_16S_good)
+
+df_16S_bad=subset(df_16S, accession %in% bad_16S)
+dataname=paste(TAXA,"16S_bad",sep=".")
+create.fasta(dataname,df_16S_bad)
+
+#Select sequences >=400bp (full length) and < 400bp (fragments):
+df_16S_good_long400=subset(df_16S_good, bp_length >= 400)
+df_16S_good_frag400=subset(df_16S_good, bp_length < 400)
+#Create Fasta files for FL and fragment 16S_good:
+dataname=paste(TAXA,"16S_good_long400",sep=".")
+create.fasta(dataname,df_16S_good_long400)
+dataname=paste(TAXA,"16S_good_frag400",sep=".")
+create.fasta(dataname,df_16S_good_frag400)
+
+#Select sequences >=350bp (full length) and < 350bp (fragments):
+df_16S_good_long350=subset(df_16S_good, bp_length >= 350)
+df_16S_good_frag350=subset(df_16S_good, bp_length < 350)
+#Create Fasta files for FL and fragment 16S_good:
+dataname=paste(TAXA,"16S_good_long350",sep=".")
+create.fasta(dataname,df_16S_good_long350)
+dataname=paste(TAXA,"16S_good_frag350",sep=".")
+create.fasta(dataname,df_16S_good_frag350)
+
+#Select sequences >=325bp (full length) and < 325bp (fragments):
+df_16S_good_long325=subset(df_16S_good, bp_length >= 325)
+df_16S_good_frag325=subset(df_16S_good, bp_length < 325)
+#Create Fasta files for FL and fragment 16S_good:
+dataname=paste(TAXA,"16S_good_long325",sep=".")
+create.fasta(dataname,df_16S_good_long325)
+dataname=paste(TAXA,"16S_good_frag325",sep=".")
+create.fasta(dataname,df_16S_good_frag325)
+
+#Select sequences >=275bp and <325:
+df_16S_good_275_325=subset(df_16S_good_frag325, bp_length>=275)
+dataname=paste(TAXA,"16S_good_275_325",sep=".")
+create.fasta(dataname,df_16S_good_275_325)
+
+#Select sequences <275:
+df_16S_good_frag275=subset(df_16S_good, bp_length<275)
+dataname=paste(TAXA,"16S_good_frag275",sep=".")
+create.fasta(dataname,df_16S_good_frag275)
+
+
+
+
+```
+
+# 28S:
+
+```{r, eval=FALSE, tidy=TRUE}
+library(stringr)
+
+# Concatinate parts of 28S:
+links=read.csv("28S_links.csv", stringsAsFactors=FALSE)
+for (pA in links$partA){
+  print("pA:")
+  print(pA)
+  #replace pA with (potentially updated) accession # from df:
+  pA=df[str_detect(df$accession,pA),which((names(df)=="accession"))]
+  print(pA)
+  #pull pB from links: ######problem b/c of 2 matching As!
+  pB=(links[links$partA==pA,2])
+  print(pB)
+  #combine pA & pB accession #s:
+  pAB=paste(pA,pB,sep="-")
+  print(pAB)
+  len_pA=df[df$accession==pA,which(names(df)=="bp_length")]
+  len_pB=df[df$accession==pB,which(names(df)=="bp_length")]
+  len_pAB=len_pA+len_pB
+  print(len_pAB)
+  seq_pA=df[df$accession==pA,which(names(df)=="sequence")]
+  seq_pB=df[df$accession==pB,which(names(df)=="sequence")]
+  seq_pAB=paste(seq_pA,seq_pB,sep="-")
+  print(seq_pAB)
+  #update df for pA (adding pB info):
+  df[df$accession==pA,which(names(df)=="bp_length")]=len_pAB
+  print(df[df$accession==pA,which(names(df)=="bp_length")])
+  df[df$accession==pA,which(names(df)=="sequence")]=seq_pAB
+  print(df[df$accession==pA,which(names(df)=="sequence")])
+  #change accession last as it is used a a reference above:
+  df[df$accession==pA,which(names(df)=="accession")]=pAB
+}
+# remove pB lines from df:
+df = df[-which(df$accession %in% links$partB),]
+
+
+
+df_28S=df[!(is.na(str_match(df$gene,"n_28S"))),]
+len28S=df_28S$bp_length
+density28S=density(len28S)
+plot(density28S)
+
+#Select sequences of different length:
+df_28S_long2000=subset(df_28S, bp_length >= 2000) # 46/228 sequences
+df_28S_1000_2000=subset(df_28S, (bp_length >= 1000 & bp_length < 2000)) # 107/228 sequences
+df_28S_frag1000=subset(df_28S, (bp_length < 1000)) # 75/228 sequences
+df_28S_long1000=subset(df_28S, bp_length >= 1000) # 153/228 sequences
+df_28S_long1250=subset(df_28S, bp_length >= 1250) # 103/228 sequences
+df_28S_1000_1250=subset(df_28S, (bp_length >= 1000 & bp_length < 1250)) # 50/228 sequences
+
+
+df_28S_frag1250=subset(df_28S, (bp_length < 1250)) # 125/237 sequences
+
+
+
+#Create FASTA:
+dataname=paste(TAXA,"28S_long2000",sep=".")
+create.fasta(dataname,df_28S_long2000)
+dataname=paste(TAXA,"28S_1000_2000",sep=".")
+create.fasta(dataname,df_28S_1000_2000)
+dataname=paste(TAXA,"28S_frag1000",sep=".")
+create.fasta(dataname,df_28S_frag1000)
+dataname=paste(TAXA,"28S_long1000",sep=".")
+create.fasta(dataname,df_28S_long1000)
+dataname=paste(TAXA,"28S_long1250",sep=".")
+create.fasta(dataname,df_28S_long1250)
+dataname=paste(TAXA,"28S_1000_1250",sep=".")
+create.fasta(dataname,df_28S_1000_1250)
+```
+
+# H3:
+```{r, eval=FALSE, tidy=TRUE}
+####### Trim AJ238321.1: keep bps 2600-3000
+```
+
+# COI:
+
+```{r, eval=FALSE, tidy=TRUE}
+#source("https://bioconductor.org/biocLite.R")
+#biocLite("Biostrings")
+#browseVignettes("Biostrings") #Documentation
+#Biostrings dependencies:
+#source("https://bioconductor.org/biocLite.R")
+#biocLite("BiocGenerics")
+#biocLite("S4Vectors")
+#biocLite("IRanges")
+#biocLite("XVector")
+
+library(stringr)
+
+#library(BiocGenerics)
+#library(S4Vectors)
+#library(IRanges)
+#library(XVector)
+library(Biostrings)
+
+df_COI=df[!(is.na(str_match(df$gene,"mt_COI"))),]
+
+#update df_COI with sequence reverseComplement and/or bp lengths of trimmed mt_COI sequences:
+COI_trimming=read.delim("COI_trimming.txt", sep="\t", stringsAsFactors = FALSE)
+
+for (i in row.names(COI_trimming)) {
+  row=(COI_trimming[i,])
+  COI=df$sequence[df$accession==row$accession]
+  ##trim sequence:
+  COI=substr(COI,row$start,row$stop)
+  if (row$complement) {
+    COI=as.character(reverseComplement(DNAString(COI)))
+  }
+  df_COI$sequence[df_COI$accession==row$accession]=COI
+  df_COI$bp_length[df_COI$accession==row$accession]=str_length(COI)
+}
+
+## manually add reading frame information where missing:
+
+# update df_COI with sequence reverseComplement and/or bp lengths of trimmed mt_COI sequences:
+COI_frame=read.delim("COI_frame.txt", sep="\t", stringsAsFactors = FALSE)
+
+for (i in row.names(COI_frame)) {
+  row=(COI_frame[i,])
+  df_COI$frame[df_COI$accession==row$accession] = row$frame
+}
+
+
+# add Ns to sequences to sync reading frame:
+for (i in row.names(df_COI)){
+  row=df_COI[i,]
+  nt=row$sequence
+  Ns = ""
+  if (row$frame==2){
+    Ns = "NN" 
+  } else if (row$fram==3){
+    Ns = "N"
+  }
+  nt=paste(Ns,nt,sep="")
+  df_COI[i,]$sequence=nt
+}
+
+# append Ns to sequences so RevTrans doesn't drop nucleotides:
+for (i in row.names(df_COI)){
+  row=df_COI[i,]
+  nt=row$sequence
+  nt=paste(nt,paste(rep("N",(3-(str_length(nt) %% 3))%%3),collapse=""),sep ="")
+  df_COI[i,]$sequence=nt
+}
+```
+
+Concatinating COI pieces
+```{r, eval=FALSE}
+#remove unnecessary columns
+df_COI = df_COI[,which(names(df_COI) %in% c("species_name","organism","taxon_id","accession","gene","bp_length","sequence"))]
+
+COI_links=read.csv("COI_links.csv", stringsAsFactors=FALSE)
+
+for (pA in COI_links$partA){
+  pB=(COI_links[COI_links$partA==pA,2])
+  pAB=paste(pA,pB,sep="-")
+  len_pA=df_COI[df_COI$accession==pA,which(names(df_COI)=="bp_length")]
+  len_pB=df_COI[df_COI$accession==pB,which(names(df_COI)=="bp_length")]
+  len_pAB=len_pA+len_pB
+  seq_pA=df_COI[df_COI$accession==pA,which(names(df_COI)=="sequence")]
+  seq_pB=df_COI[df_COI$accession==pB,which(names(df_COI)=="sequence")]
+  seq_pAB=paste(seq_pA,seq_pB,sep="---")
+  #update df_COI for pA (adding pB info):
+  df_COI[df_COI$accession==pA,which(names(df_COI)=="bp_length")]=len_pAB
+  df_COI[df_COI$accession==pA,which(names(df_COI)=="sequence")]=seq_pAB
+  #change accession last as it is used a a reference above:
+  df_COI[df_COI$accession==pA,which(names(df_COI)=="accession")]=pAB
+}
+# remove pB lines from df_COI:
+df_COI = df_COI[-which(df_COI$accession %in% COI_links$partB),]
+
+# create fasta file
+dataname=paste(TAXA,"COI",sep=".")
+create.fasta(dataname,df_COI)
+```
+
+
+```{r, eval=FALSE, tidy=TRUE}
+
+####### subsets of COI data (lists are out-dated!!)
+# COI_Physocephalata=c("EF989675.1","EF989676.1","EF989666.1","KC754383.1","DQ889153.1","KT209327.1","KC754384.1","KC754382.1","EF989665.1","EF989667.1","EF989668.1","DQ889133.1","HM053514.1","FJ602467.1","EF989663.1","EF989664.1","KF430249.1","EF989669.1","EF989686.1","HM053495.1","EF989685.1","HM053496.1","EF989684.1","HM053499.1","HM053500.1","EF989683.1","EF989680.1","EF989679.1","GU145054.1","EF989678.1","EF989677.1","HM053502.1","EF989670.1","EF989671.1","HM053503.1","EF989672.1","EF989673.1","GU145051.1","GU145039.1","HM053489.1","HM053491.1","EF989658.1","EF989660.1","EF989659.1","GU145047.1","GU145037.1","GU145036.1","HM053492.1","EF989657.1","EF989647.1","HM053505.1","EF989649.1","EF989648.1","EF989654.1","EF989655.1","EF989653.1","EF989652.1","GU145053.1","EF989650.1","EF989651.1","GU145056.1","HM053507.1","HM053513.1","HM053509.1","EF989661.1","HM053494.1","EF989662.1","HM053508.1","EF989656.1","EF989690.1","EF989691.1","KC754389.1","EF989674.1","HM053501.1","EF989689.1","KC754385.1","EF989687.1","EF989688.1","HM053511.1")
+# df_COI_Physocephalata=df_COI[df_COI$accession %in% COI_Physocephalata,]
+# dataname=paste(TAXA,"COI_Physocephalata",sep=".")
+# create.fasta(dataname,df_COI_Physocephalata)
+# 
+# COI_Hyperiidea=c("EF989675.1","EF989676.1","EF989666.1","KC754383.1","DQ889153.1","KT209327.1","KC754384.1","KC754382.1","EF989665.1","EF989667.1","EF989668.1","DQ889133.1","HM053514.1","FJ602467.1","EF989663.1","EF989664.1","KF430249.1","EF989669.1","EF989686.1","HM053495.1","EF989685.1","HM053496.1","EF989684.1","HM053499.1","HM053500.1","EF989683.1","EF989680.1","EF989679.1","GU145054.1","EF989678.1","EF989677.1","HM053502.1","EF989670.1","EF989671.1","HM053503.1","EF989672.1","EF989673.1","GU145051.1","GU145039.1","HM053489.1","HM053491.1","EF989658.1","EF989660.1","EF989659.1","GU145047.1","GU145037.1","GU145036.1","HM053492.1","EF989657.1","EF989647.1","HM053505.1","EF989649.1","EF989648.1","EF989654.1","EF989655.1","EF989653.1","EF989652.1","GU145053.1","EF989650.1","EF989651.1","GU145056.1","HM053507.1","HM053513.1","HM053509.1","EF989661.1","HM053494.1","EF989662.1","HM053508.1","EF989656.1","EF989690.1","EF989691.1","KC754389.1","EF989674.1","HM053501.1","EF989689.1","KC754385.1","EF989687.1","EF989688.1","HM053511.1","EF989693.1","EF989697.1","EF989696.1","KP713953.1","EF989694.1","EF989695.1","EF989692.1","EF989698.1","EF989700.1","EF989699.1")
+# df_COI_Hyperiidea=df_COI[df_COI$accession %in% COI_Hyperiidea,]
+# dataname=paste(TAXA,"COI_Hyperiidea",sep=".")
+# create.fasta(dataname,df_COI_Hyperiidea)
+# 
+# #Leucothoidae, Amphilochus, 
+# COI_Leucothoidae=c("JF900757.1","KP896389.1","KP896390.1","JF900755.1","KX224054.1","EF053456.1","KT307651.1","KP896391.1","KC706705.1","KT208850.1")
+# COI_Hyperiidea_etal=c(COI_Hyperiidea,COI_Leucothoidae)
+# df_COI_Hyperiidea_etal=df_COI[df_COI$accession %in% COI_Hyperiidea_etal,]
+# dataname=paste(TAXA,"COI_Hyperiidea_etal",sep=".")
+# create.fasta(dataname,df_COI_Hyperiidea_etal)
+#######
+
+# lenCOI=subset(df_COI, bp_length > 500 & bp_length< 1000)
+# lenCOI=lenCOI$bp_length
+
+lenCOI=df_COI$bp_length
+densityCOI=density(lenCOI)
+plot(densityCOI)
+
+#Select sequences of different length:
+df_COI_long900=subset(df_COI, bp_length >= 900) # 23/462 sequences
+df_COI_800_900=subset(df_COI, (bp_length >= 800 & bp_length < 900)) # 69/462 sequences
+df_COI_700_800=subset(df_COI, (bp_length >= 700 & bp_length < 800)) # 30/462 sequences
+df_COI_600_700=subset(df_COI, (bp_length >= 600 & bp_length < 700)) # 226/462 sequences
+df_COI_frag600=subset(df_COI, (bp_length < 600)) # 114/462 sequences
+
+df_COI_long750=subset(df_COI, bp_length >= 750) # 87/378 sequences
+df_COI_600_750=subset(df_COI, (bp_length >= 600 & bp_length < 750)) # 204/378 sequences
+#df_COI_frag600=subset(df_COI, (bp_length < 600)) # 87/378 sequences
+
+
+# df_COI_long1200=subset(df_COI, bp_length >= 1200) # 9/462 sequences
+# df_COI_900_1200=subset(df_COI, (bp_length >= 900 & bp_length < 1200)) # 14/462 sequences
+# df_COI_700_900=subset(df_COI, (bp_length >= 700 & bp_length < 900)) # 99/462 sequences
+# df_COI_200_600=subset(df_COI, (bp_length >= 200 & bp_length < 600)) # 110/462 sequences
+# df_COI_frag200=subset(df_COI, (bp_length < 200)) # 4/462 sequences
+
+# create fasta files
+dataname=paste(TAXA,"COI_long900",sep=".")
+create.fasta(dataname,df_COI_long900)
+dataname=paste(TAXA,"COI_800_900",sep=".")
+create.fasta(dataname,df_COI_800_900)
+dataname=paste(TAXA,"COI_700_800",sep=".")
+create.fasta(dataname,df_COI_700_800)
+dataname=paste(TAXA,"COI_600_700",sep=".")
+create.fasta(dataname,df_COI_600_700)
+dataname=paste(TAXA,"COI_frag600",sep=".")
+create.fasta(dataname,df_COI_frag600)
+
+dataname=paste(TAXA,"COI_long750",sep=".")
+create.fasta(dataname,df_COI_long750)
+dataname=paste(TAXA,"COI_600_750",sep=".")
+create.fasta(dataname,df_COI_600_750)
+
+# dataname=paste(TAXA,"COI_long1200",sep=".")
+# create.fasta(dataname,df_COI_long1200)
+# dataname=paste(TAXA,"COI_900_1200",sep=".")
+# create.fasta(dataname,df_COI_900_1200)
+# dataname=paste(TAXA,"COI_700_900",sep=".")
+# create.fasta(dataname,df_COI_700_900)
+# dataname=paste(TAXA,"COI_200_600",sep=".")
+# create.fasta(dataname,df_COI_200_600)
+# dataname=paste(TAXA,"COI_frag200",sep=".")
+# create.fasta(dataname,df_COI_frag200)
+
+# Translate COI
+#install.packages("seqinr")
+library(seqinr)
+
+df_COI_aa=df_COI
+for (i in row.names(df_COI_aa)){
+  row=df_COI_aa[i,]
+  #aa_seq=paste(translate(unlist(str_split(row$sequence,"")), frame = (row$frame - 1), numcode = 5),collapse="")
+  aa_seq=paste(translate(unlist(str_split(row$sequence,"")), frame = 0, numcode = 5),collapse="")
+  df_COI_aa[i,]$sequence=aa_seq
+}
+
+# create fasta file
+dataname=paste(TAXA,"COI_aa",sep=".")
+create.fasta(dataname,df_COI_aa)
+
+# separate aa sequences by length:
+lenCOIaa=df_COI_aa$bp_length
+densityCOIaa=density(lenCOIaa)
+plot(densityCOIaa)
+
+df_COI_aa_long900=subset(df_COI_aa, bp_length >= 900) # 23/462 sequences
+df_COI_aa_800_900=subset(df_COI_aa, (bp_length >= 800 & bp_length < 900)) # 69/462 sequences
+df_COI_aa_700_800=subset(df_COI_aa, (bp_length >= 700 & bp_length < 800)) # 30/462 sequences
+df_COI_aa_600_700=subset(df_COI_aa, (bp_length >= 600 & bp_length < 700)) # 226/462 sequences
+df_COI_aa_frag600=subset(df_COI_aa, (bp_length < 600)) # 114/462 sequences
+
+df_COI_aa_long750=subset(df_COI_aa, bp_length >= 750) # 87/378 sequences
+df_COI_aa_600_750=subset(df_COI_aa, (bp_length >= 600 & bp_length < 750)) # 204/378 sequences
+
+# create fasta files
+dataname=paste(TAXA,"COI_aa_long900",sep=".")
+create.fasta(dataname,df_COI_aa_long900)
+dataname=paste(TAXA,"COI_aa_800_900",sep=".")
+create.fasta(dataname,df_COI_aa_800_900)
+dataname=paste(TAXA,"COI_aa_700_800",sep=".")
+create.fasta(dataname,df_COI_aa_700_800)
+dataname=paste(TAXA,"COI_aa_600_700",sep=".")
+create.fasta(dataname,df_COI_aa_600_700)
+dataname=paste(TAXA,"COI_aa_frag600",sep=".")
+create.fasta(dataname,df_COI_aa_frag600)
+
+dataname=paste(TAXA,"COI_aa_long750",sep=".")
+create.fasta(dataname,df_COI_aa_long750)
+dataname=paste(TAXA,"COI_aa_600_750",sep=".")
+create.fasta(dataname,df_COI_aa_600_750)
+```
+
+
+
+
+```{r, eval=FALSE, tidy=TRUE}
+#Code for adding bp length to the second column of a csv file containing accession numbers
+
+dataname="list.csv"
+datasheet=read.csv(dataname)
+
+file.rename(dataname,paste(dataname,"raw",sep=".")) #backup list.csv to raw file
+#file.rename(paste(dataname,"raw",sep="."),dataname) #restore list.csv from raw file
+
+#filename=paste(dataname,"edited.csv",sep=".")
+filename=dataname
+csv_file=file(filename,"at")
+
+heading_csv=paste(paste(names(datasheet),collapse = ","),"\n",sep="")
+writeLines(heading_csv,con=csv_file,sep="")
+
+for (entry in datasheet[,1]){
+  if(entry %in% df_raw$accession){
+  #if(TRUE %in% str_detect(df_raw$accession,entry)){
+    line.csv=paste(entry,",",df_raw[df_raw$accession==entry,which(names(df_raw)=="bp_length")],"\n",sep="")
+  } else {
+    line.csv=paste(entry,",\n",sep="")
+  }
+  #print(line.csv)
+  writeLines(line.csv,con=csv_file,sep="")
+}
+
+close(csv_file)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##Create Hurt & Hurt list
+```{r, eval=FALSE}
+HurtHouList=readLines("hurt_hou_accessions.txt")
+HurtHouList=str_split(HurtHouList," ")
+HurtHouList=unique(HurtHouList[[1]])
+```
+
+##Build Fasta File for Hou & Hurt Data
+
+```{r, eval=FALSE}
+## for testing, backup df:
+#df_backup=df
+## create smaller df:
+#df=df[seq(1,nrow(df),100),]
+
+for (gene in genelist) {
+  #extract rows from df where genbank accession number is in gene vector:
+  gene_df=df[as.logical(do.call(match,list(df$accession,as.name(gene),0))),]
+  #extract rows from gene_df where genbank accession number is in HurtHouList vector:
+  HH_gene_df=gene_df[gene_df$accession_gb %in% HurtHouList,]
+  filename=paste("HH_",gene,".fasta",sep="")
+  fasta_file=file(filename,"at")
+  
+  locateColNames=function(x){which(colnames(HH_gene_df) == x)}
+  #headindex=sapply(c("species_name","accession_gb"),locateColNames)
+  nameindex=locateColNames("species_name")
+  accessionindex=locateColNames("accession_gb")
+  seqindex=locateColNames("sequence")
+  
+  for (i in seq(nrow(HH_gene_df))){
+    if(i==1){begin=">"}else{begin="\n>"}
+    #gene_fasta=c(begin,sapply(as.character(HH_gene_df[i,headindex]),paste,"|",sep=""),"\n",HH_gene_df[i,seqindex])
+    gene_fasta=c(begin,HH_gene_df[i,nameindex],"|",HH_gene_df[i,accessionindex],"\n",HH_gene_df[i,seqindex])
+    #remove spaces and . from names
+    gene_fasta[2]=str_replace_all(gene_fasta[2]," ","_")
+    gene_fasta[2]=str_replace_all(gene_fasta[2],fixed("."),"")
+  writeLines(gene_fasta,con=fasta_file,sep="")
+  }
+  
+  close(fasta_file)
+}
+
+```
+
+##Create SICB list
+```{r, eval=FALSE}
+sicbList=readLines("SICB_accessions.txt")
+sicbList=str_split(sicbList,",")
+sicbList=unique(sicbList[[1]])
+```
+
+##Build Fasta File for SICB list
+
+```{r, eval=FALSE}
+## for testing, backup df:
+#df_backup=df
+## create smaller df:
+#df=df[seq(1,nrow(df),100),]
+
+for (gene in genelist) {
+  #extract rows from df where genbank accession number is in gene vector:
+  gene_df=df[as.logical(do.call(match,list(df$accession,as.name(gene),0))),]
+  #extract rows from gene_df where genbank accession number is in sicbList vector:
+  sicb_gene_df=gene_df[gene_df$accession_gb %in% sicbList,]
+  filename=paste("sicb_",gene,".fasta",sep="")
+  fasta_file=file(filename,"at")
+  
+  locateColNames=function(x){which(colnames(sicb_gene_df) == x)}
+  #headindex=sapply(c("species_name","accession_gb"),locateColNames)
+  nameindex=locateColNames("species_name")
+  accessionindex=locateColNames("accession_gb")
+  seqindex=locateColNames("sequence")
+  
+  for (i in seq(nrow(sicb_gene_df))){
+    if(i==1){begin=">"}else{begin="\n>"}
+    gene_fasta=c(begin,sicb_gene_df[i,nameindex],"|",sicb_gene_df[i,accessionindex],"\n",sicb_gene_df[i,seqindex])
+    #remove spaces and . from names
+    gene_fasta[2]=str_replace_all(gene_fasta[2]," ","_")
+    gene_fasta[2]=str_replace_all(gene_fasta[2],fixed("."),"")
+  writeLines(gene_fasta,con=fasta_file,sep="")
+  }
+  
+  close(fasta_file)
+}
+
+```
+
+##Build TaxonID table
+
+```{r, eval=FALSE}
+
+ID_table=gene_table[,c(1:3,7:ncol(gene_table))]
+
+ID=aggregate(ID_table, by=list(ID_table$taxon_id), unique)
+
+#remove Group.1 row
+ID=ID[,c(2:ncol(ID))]
+
+#turn lists into character strings & cleanup:
+for(i in seq(nrow(ID))){
+  for(j in seq(ncol(ID))){
+    cell = ID[i,j]
+    if(!is.na(cell)){
+      cell = paste(c(cell[[1]]), collapse=", ")
+      cell = str_replace(cell,", $","")
+      cell = str_replace(cell,"^, ","")
+      ID[i,j]=(cell)
+    }
+  }
+}
+
+ID[] = lapply(ID, as.character)
+ID[] = transform(ID, taxon_id = as.numeric(taxon_id))
+```
+
+##Output Data
+
+```{r, eval=FALSE, tidy=TRUE}
+#parsed data table
+df_filename=paste(TAXA,"alldata.txt",sep=".")
+write.table(df, df_filename, sep="\t",row.names=FALSE)
+#gene table
+gt_filename=paste(TAXA,"genetable.txt",sep=".")
+write.table(gene_table, gt_filename, sep="\t",row.names=FALSE)
+#taxonID table
+id_filename=paste(TAXA,"taxonIDtable.txt",sep=".")
+write.table(ID, id_filename, sep="\t",row.names=FALSE)
+```
+
+##Taxon Search
+
+
+```{r, eval=FALSE, tidy=TRUE}
+#Generate a list of Genera
+organism_list=unique(organism)
+genus_pattern="([^ ]*)"
+genera=c()
+for(i in organism_list){
+  genus=str_extract(i, genus_pattern)
+  genera=append(genera,genus)
+}
+genera=unique(genera)
+```
+
+```{r, eval=FALSE, tidy=TRUE}
+test=c(
+"Acanthoscina","Ctenoscina","Scina","Spinoscina"
+)
+count=0
+for(i in test){
+  if(i %in% genera){
+    print(i)
+    count=count+1
+  }
+}
+print(count)
+```
+
+
+```{r, eval=FALSE, tidy=TRUE}
+
+my_genera=readLines("mygenera.txt")
+
+count=0
+for(i in genera){
+  if(!(i %in% my_genera)){
+    print(i)
+    count=count+1
+  }
+}
+
+print(count)
+```
+

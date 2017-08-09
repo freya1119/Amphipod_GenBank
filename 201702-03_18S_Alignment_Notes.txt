@@ -1,0 +1,4198 @@
+### NOTES ###
+
+ssh biancani@cbcbsub00.umiacs.umd.edu
+or
+ssh biancani@cbcbsub01.umiacs.umd.edu
+
+NOT: ssh biancani@ibissub00.umiacs.umd.edu
+!!!!!!! CBCB Torque Resources are now Deprecated !!!!!!!!
+Please see https://wiki.umiacs.umd.edu/cbcb-private/index.php/Slurm on 
+how to get started using SLURM in CBCB.
+-----------------------------------------------------------------------------------------
+mkdir 20170227
+-----------------------------------------------------------------------------------------
+
+#########################################################################################
+##### Build tree with EINSi all 18S alignment from 20170216:
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/trees/EINSi
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170216/EINSi/SelectedList_20170213.18S.EINSi.aln .
+
+# create job:
+nano raxml_EINSi
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=1,mem=10gb,walltime=99:00:00
+#PBS -q workstation
+#PBS -N raxml_EINSi
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/trees/EINSi
+module add raxml
+raxmlHPC -s SelectedList_20170213.18S.EINSi.aln -n SelectedList_20170213.18S.EINSi.tree -m GTRGAMMA -f a -N 100 -p 123 -x 456
+#####
+# run job
+qsub raxml_EINSi
+1168974.cbcbsrv.umiacs.umd.edu
+#killed job (after I accidentally removed files)
+#bootstraps took ~50 hrs
+
+## try again with my multithreaded RAxML installation: ##
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/trees/EINSi
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170216/EINSi/SelectedList_20170213.18S.EINSi.aln .
+
+# create job:
+nano raxml_EINSi
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=99:00:00
+#PBS -q large
+#PBS -N raxml_EINSi
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/trees/EINSi
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SelectedList_20170213.18S.EINSi.aln -n SelectedList_20170213.18S.EINSi.tree -m GTRGAMMA -f a -N 100 -p 123 -x 456
+#####
+# run job:
+qsub raxml_EINSi 
+1170546.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=168:24:41
+resources_used.mem=729892kb
+resources_used.vmem=1071356kb
+resources_used.walltime=14:37:58
+14 hours, 0.7 GB
+***********************************************
+look at tree **********************************
+
+#########################################################################################
+##### Align 18S sequences via EINSi (>1000bp) & --addfragments (<1000bp):
+
+### Align long(>=1000) sequences:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long1000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long1000
+# create job:
+nano align_18S_long1000_einsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=1,mem=20gb,walltime=08:00:00
+#PBS -N align_18S_long1000_einsi
+#PBS -q workstation
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long1000 
+#use carter's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/carter/mafft-7.304-with-extensions/core
+mafft --maxiterate 16 --genafpair --reorder SelectedList_20170213.18S_long1000.fasta > SelectedList_20170213.18S_long1000.aln.fasta
+#####
+# run job:
+qsub align_18S_long1000_einsi.sh
+1169090.cbcbsrv.umiacs.umd.edu
+resources_used.cput=06:21:11
+resources_used.mem=932056kb
+resources_used.vmem=1099468kb
+resources_used.walltime=06:21:43
+
+#### add fragments(<1000): ####
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long1000
+# create job:
+nano align_18S_frag1000_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=1,mem=20gb,walltime=08:00:00
+#PBS -N align_18S_frag1000_addfrag
+#PBS -q workstation
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long1000 
+#use carter's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/carter/mafft-7.304-with-extensions/core
+mafft --addfragments SelectedList_20170213.18S_frag1000.fasta SelectedList_20170213.18S_long1000.aln.fasta > SelectedList_20170213.18S_combo1000.aln.fasta
+#####
+# run job:
+qsub align_18S_frag1000_addfrag.sh
+1169269.cbcbsrv.umiacs.umd.edu
+resources_used.cput=00:46:34
+resources_used.mem=525520kb
+resources_used.vmem=692136kb
+resources_used.walltime=00:47:29
+
+# copy alignments to mac:
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long1000/SelectedList_20170213.18S_long1000.aln.fasta ~/Desktop/
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long1000/SelectedList_20170213.18S_combo1000.aln.fasta ~/Desktop/
+
+#########################################################################################
+##### Align long(>2000) sequences & add fragments(<2000):
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000
+
+# create job:
+nano align_18S_long2000_einsi_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=1,mem=20gb,walltime=08:00:00
+#PBS -N align_18S_long2000_einsi_addfrag
+#PBS -q workstation
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000 
+#use carter's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/carter/mafft-7.304-with-extensions/core
+mafft --maxiterate 16 --genafpair --reorder SelectedList_20170213.18S_long2000.fasta > SelectedList_20170213.18S_long2000.aln.fasta
+mafft --addfragments SelectedList_20170213.18S_frag2000.fasta SelectedList_20170213.18S_long2000.aln.fasta > SelectedList_20170213.18S_combo2000.aln.fasta
+#####
+# run job:
+qsub align_18S_long2000_einsi_addfrag.sh
+1169097.cbcbsrv.umiacs.umd.edu
+resources_used.cput=04:41:23
+resources_used.mem=676436kb
+resources_used.vmem=844368kb
+resources_used.walltime=04:41:56
+
+# copy alignments to mac:
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/SelectedList_20170213.18S_long2000.aln.fasta ~/Desktop/
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/SelectedList_20170213.18S_combo2000.aln.fasta ~/Desktop/
+
+##### make tree (attempt multi-threaded RaxML):
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/tree
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/SelectedList_20170213.18S_combo2000.aln.fasta .
+
+# create job:
+nano raxml_combo2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=32gb,walltime=48:00:00
+#PBS -q large
+#PBS -N raxml_combo2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/tree
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML ­T 12 -s SelectedList_20170213.18S_combo2000.aln.fasta -n SelectedList_20170213.18S_combo2000.tree -m GTRGAMMA -f a -N 100 -p 123 -x 456
+#####
+# run job:
+qsub raxml_combo2000 
+1170544.cbcbsrv.umiacs.umd.edu
+#killed job
+Execution terminated
+Exit_status=271
+resources_used.cput=32:23:12
+resources_used.mem=561656kb
+resources_used.vmem=679128kb
+resources_used.walltime=16:46:47
+#16+ hrs in and still hasn't completed bootstraps! Looks like alignment wasn't reordered.
+#Redo alignments and tree!
+#files from previous attempt moved to:
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/Attempt_1
+
+##### Align long(>2000) sequences & add fragments(<2000) {TAKE 2}:
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000
+
+# create job:
+nano align_18S_long2000_einsi_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=8,mem=5gb,walltime=08:00:00
+#PBS -N align_18S_long2000_einsi_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000 
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 8 --maxiterate 16 --genafpair --reorder SelectedList_20170213.18S_long2000.fasta > SelectedList_20170213.18S_long2000.aln.fasta
+mafft --thread 8 --addfragments SelectedList_20170213.18S_frag2000.fasta --reorder SelectedList_20170213.18S_long2000.aln.fasta > SelectedList_20170213.18S_combo2000.aln.fasta
+#####
+# run job:
+qsub align_18S_long2000_einsi_addfrag.sh
+1171353.cbcbsrv.umiacs.umd.edu
+Execution terminated
+Exit_status=1
+resources_used.cput=03:23:28
+resources_used.mem=4135128kb
+resources_used.vmem=4921664kb
+resources_used.walltime=00:26:53
+# job failed - new fragments file must immediately follow --addfragments command!
+# re-run job:
+qsub align_18S_long2000_einsi_addfrag.sh
+1171361.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=05:49:36
+resources_used.mem=4140620kb
+resources_used.vmem=4921664kb
+resources_used.walltime=00:45:33
+
+# copy alignments to mac:
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/SelectedList_20170213.18S_long2000.aln.fasta ~/Desktop/
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/SelectedList_20170213.18S_combo2000.aln.fasta ~/Desktop/
+
+##### make tree (attempt multi-threaded RaxML):
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/tree
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/SelectedList_20170213.18S_combo2000.aln.fasta .
+
+# create job:
+nano raxml_combo2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=5gb,walltime=48:00:00
+#PBS -q large
+#PBS -N raxml_combo2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/tree
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML ­T 24 -s SelectedList_20170213.18S_combo2000.aln.fasta -n SelectedList_20170213.18S_combo2000.tree -m GTRGAMMA -f a -N 100 -p 123 -x 456
+#####
+# run job:
+raxml_combo2000 
+1172212.cbcbsrv.umiacs.umd.edu 
+Job exceeded its walltime limit. Job was aborted
+See Administrator for help
+Exit_status=-11
+resources_used.cput=89:49:36
+resources_used.mem=658148kb
+resources_used.vmem=821224kb
+resources_used.walltime=48:00:53
+
+## try again (change random # seeds)
+
+# create job:
+nano raxml_combo2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=48:00:00
+#PBS -q large
+#PBS -N raxml_combo2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170227/long2000/tree
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SelectedList_20170213.18S_combo2000.aln.fasta -n SelectedList_20170213.18S_combo2000.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_combo2000 
+1173115.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=185:03:03
+resources_used.mem=710120kb
+resources_used.vmem=1069388kb
+resources_used.walltime=15:29:08
+*******************************************LOOK aT Tree **********************************************
+
+-----------------------------------------------------------------------------------------
+mkdir 20170228
+-----------------------------------------------------------------------------------------
+
+#########################################################################################
+##### Install MAFFT on UMIACS cluster:
+# based on instructions at: http://www.nybg.org/files/scientists/dlittle/phytoinformatics2014-lab12.pdf and http://mafft.cbrc.jp/alignment/software/installation_without_root.html
+mkdir MAFFT
+cd MAFFT
+wget http://mafft.cbrc.jp/alignment/software/mafft-7.309-with-extensions-src.tgz
+tar xvzf mafft-7.309-with-extensions-src.tgz
+cd mafft-7.309-with-extensions/
+# copy readme file (instructions for building & installing MAFFT on LINUX) to mac:
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/MAFFT/mafft-7.309-with-extensions/readme ~/Desktop/
+cd core/ 
+nano Makefile
+# change line 1 from "PREFIX = /usr/local" to "PREFIX = /cbcb/project2-scratch/biancani/MAFFT"
+make clean
+make
+make install
+cd ../extensions
+nano Makefile
+# change line 1 from "PREFIX = /usr/local" to "PREFIX = /cbcb/project2-scratch/biancani/MAFFT"
+make clean
+make
+make install
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# To use my installation of MAFFT:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#########################################################################################
+##### Align long(>2000) sequences via Q-INS-i:
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170228/qinsi
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170228/qinsi
+
+# create job:
+nano align_18S_long2000_qinsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=4,mem=10gb,walltime=12:00:00
+#PBS -N align_18S_long2000_qinsi
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170228/qinsi
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 4 SelectedList_20170213.18S_long2000.fasta > SelectedList_20170213.18S_long2000_qinsi.aln.fasta
+#####
+# run job:
+qsub align_18S_long2000_qinsi.sh
+1170399.cbcbsrv.umiacs.umd.edu
+Execution terminated
+Exit_status=271
+resources_used.cput=16:50:32
+resources_used.mem=10531268kb
+resources_used.vmem=15297012kb
+resources_used.walltime=05:01:25
+(exceeded requested memory)
+
+# try again #
+# create job:
+nano align_18S_long2000_qinsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=32gb,walltime=12:00:00
+#PBS -N align_18S_long2000_qinsi
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170228/qinsi
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 4 SelectedList_20170213.18S_long2000.fasta > SelectedList_20170213.18S_long2000_qinsi.aln.fasta
+#####
+# submit job:
+qsub align_18S_long2000_qinsi.sh 
+1170521.cbcbsrv.umiacs.umd.edu
+Exit_status=271
+resources_used.cput=41:34:00
+resources_used.mem=16657768kb
+resources_used.vmem=21867004kb
+resources_used.walltime=07:50:05
+killed job -> was taking too long
+# should be: --thread 6 (not --thread 4)
+
+#try again:
+mkdir take2
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170228/qinsi/take2
+cp ../SelectedList_20170213.18S_long2000.fasta .
+# create job:
+nano align_18S_long2000_qinsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=32gb,walltime=24:00:00
+#PBS -N align_18S_long2000_qinsi
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170228/qinsi/take2
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 12 SelectedList_20170213.18S_long2000.fasta > SelectedList_20170213.18S_long2000_qinsi.aln.fasta
+#####
+# submit job:
+qsub align_18S_long2000_qinsi.sh 
+1170598.cbcbsrv.umiacs.umd.edu
+Execution terminated
+Exit_status=271
+resources_used.cput=154:43:19
+resources_used.mem=32266180kb
+resources_used.vmem=42215956kb
+resources_used.walltime=16:55:50
+***# terminated, try with more cpus if smaller dataset ever completes ***
+
+also try running on workstation:
+mkdir ws
+# copy files
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=1,mem=20gb,walltime=48:00:00
+#PBS -N align_18S_long2000_qinsi
+#PBS -q workstation
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170228/qinsi/ws
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder SelectedList_20170213.18S_long2000.fasta > SelectedList_20170213.18S_long2000_qinsi.aln.fasta
+#####
+1170442.cbcbsrv.umiacs.umd.edu
+Execution terminated
+Exit_status=271
+resources_used.cput=29:48:19
+resources_used.mem=6118908kb
+resources_used.vmem=6884672kb
+resources_used.walltime=31:03:22
+# terminated, won't complete in time
+
+#########################################################################################
+##### Installing GARLI:
+tar xvzf garli-2.01.tar.gz
+cd garli-2.01
+pwd
+/cbcb/project2-scratch/biancani/GARLI/garli-2.01
+# copy install instructions to mac:
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/GARLI/garli-2.01/INSTALL ~/Desktop/
+./build_garli.sh
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# To use my installation of GARLI:
+PATH=$PATH:/cbcb/project2-scratch/biancani/GARLI/garli-2.01/bin
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#########################################################################################
+##### Installing RAxML:
+scp ~/Desktop/standard-RAxML-master.zip biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/RAXML
+unzip standard-RAxML-master.zip
+cd standard-RAxML-master
+rm -r WindowsExecutables*
+pwd
+/cbcb/project2-scratch/biancani/RAXML/standard-RAxML-master
+# Pthreads version:
+make -f Makefile.SSE3.PTHREADS.gcc
+rm *.o
+cd ..
+mkdir bin
+cd bin
+ln -s ../standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 RAxML
+pwd
+/cbcb/project2-scratch/biancani/RAXML/bin
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# To use my installation of RAxML:
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+# command is RAxML (linked to raxmlHPC-PTHREADS)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Note: creating symbolic links:
+# To create a symbolic link in Unix, at the Unix prompt, enter:
+ln -s source_file link_name
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-----------------------------------------------------------------------------------------
+mkdir 20170302
+-----------------------------------------------------------------------------------------
+
+# attempt mafft-qinsi on smaller dataset (18S_long2400) and compare to einsi of same data:
+#########################################################################################
+##### mafft-qinsi on long18S(>2400):
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/qinsi_long2400
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/qinsi_long2400
+
+# create job:
+nano align_long2400_qinsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=32gb,walltime=48:00:00
+#PBS -N align_long2400_qinsi
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/qinsi_long2400
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SelectedList_20170213.18S_long2400.fasta > SelectedList_20170213.long2400.qinsi.aln.fasta
+#####
+# run job:
+qsub align_long2400_qinsi.sh 
+1172175.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=53:50:38
+resources_used.mem=11604524kb
+resources_used.vmem=19963592kb
+resources_used.walltime=06:16:55
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/qinsi_long2400/SelectedList_20170213.long2400.qinsi.aln.fasta ~/Desktop
+
+## add fragments(<2400):
+
+# add files:
+SelectedList_20170213.18S_frag2400.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/qinsi_long2400
+
+# create job:
+nano long2400_qinsi_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=8,mem=5gb,walltime=08:00:00
+#PBS -N long2400_qinsi_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/qinsi_long2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 8 --addfragments SelectedList_20170213.18S_frag2400.fasta --reorder SelectedList_20170213.long2400.qinsi.aln.fasta > 18Scombo2400_qinsi_addfrag.aln.fasta
+#####
+# run job:
+qsub long2400_qinsi_addfrag.sh 
+1172918.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:23:55
+resources_used.mem=971340kb
+resources_used.vmem=1492524kb
+resources_used.walltime=00:03:26
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/qinsi_long2400/18Scombo2400_qinsi_addfrag.aln.fasta ~/Desktop
+
+##################
+##### mafft einsi on long18S (>2400):
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_long2400
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_long2400
+
+# create job:
+nano align_long2400_einsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -N align_long2400_einsi
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_long2400
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 16 --genafpair --reorder SelectedList_20170213.18S_long2400.fasta > SelectedList_20170213.long2400.einsi.aln.fasta
+#####
+# run job:
+qsub align_long2400_einsi.sh 
+1172227.cbcbsrv.umiacs.umd.edu 
+Exit_status=0
+resources_used.cput=00:18:57
+resources_used.mem=2441868kb
+resources_used.vmem=3491308kb
+resources_used.walltime=00:02:29
+# 2.5GB & 2 min with 12cpus (but small dataset of 39seq x ~2500bp)
+
+copy alignment to mac:
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_long2400/SelectedList_20170213.long2400.einsi.aln.fasta ~/Desktop
+
+## add fragments(<2400):
+
+# add files:
+SelectedList_20170213.18S_frag2400.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_long2400
+
+# create job:
+nano long2400_einsi_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=8,mem=5gb,walltime=08:00:00
+#PBS -N long2400_einsi_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_long2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 8 --addfragments SelectedList_20170213.18S_frag2400.fasta --reorder SelectedList_20170213.long2400.einsi.aln.fasta > 18Scombo2400_einsi_addfrag.aln.fasta
+#####
+# run job:
+qsub long2400_einsi_addfrag.sh 
+1172919.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:24:00
+resources_used.mem=394192kb
+resources_used.vmem=783148kb
+resources_used.walltime=00:03:26
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_long2400/18Scombo2400_einsi_addfrag.aln.fasta ~/Desktop
+
+#############
+##### mafft einsi w/ op=2.4 on long18S (>2400):
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_op2.4_long2400
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_op2.4_long2400
+
+# create job:
+nano align_long2400_einsi_op2.4.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=01:00:00
+#PBS -N align_long2400_einsi_op2.4
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_op2.4_long2400
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 16 --genafpair --op 2.4 --ep 0.0 --reorder SelectedList_20170213.18S_long2400.fasta > SelectedList_20170213.long2400.einsi.op2.4.aln.fasta
+#####
+# run job:
+qsub align_long2400_einsi_op2.4.sh 
+1172219.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:18:23
+resources_used.mem=2287420kb
+resources_used.vmem=2966820kb
+resources_used.walltime=00:02:36
+
+copy alignment to mac:
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_op2.4_long2400/SelectedList_20170213.long2400.einsi.op2.4.aln.fasta ~/Desktop
+
+## add fragments(<2400):
+
+# add files:
+SelectedList_20170213.18S_frag2400.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_op2.4_long2400
+
+# create job:
+nano long2400_einsi_op2.4_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=8,mem=5gb,walltime=01:00:00
+#PBS -N long2400_einsi_op2.4_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_op2.4_long2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 8 --addfragments SelectedList_20170213.18S_frag2400.fasta --reorder SelectedList_20170213.long2400.einsi.op2.4.aln.fasta > 18Scombo2400_einsi_op2.4_addfrag.aln.fasta
+#####
+# run job:
+qsub long2400_einsi_op2.4_addfrag.sh 
+1172957.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:23:59
+resources_used.mem=395780kb
+resources_used.vmem=782180kb
+resources_used.walltime=00:03:26
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170302/einsi_op2.4_long2400/18Scombo2400_einsi_op2.4_addfrag.aln.fasta ~/Desktop
+
+-----------------------------------------------------------------------------------------
+mkdir 20170303
+-----------------------------------------------------------------------------------------
+
+# redo long/frag splits with more iterations for einsi
+#########################################################################################
+##### Align long18(>2000) w/ einsi, 1000 iterations, and addfragments
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long2000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long2000
+
+# create job:
+nano 18Scombo2000_einsi_1000x_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=08:00:00
+#PBS -N 18Scombo2000_einsi_1000x_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long2000 
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SelectedList_20170213.18S_long2000.fasta > 18Slong2000_einsi_1000x.aln.fasta
+mafft --thread 12 --addfragments SelectedList_20170213.18S_frag2000.fasta --reorder 18Slong2000_einsi_1000x.aln.fasta > 18Scombo2000_einsi_1000x_addfrag.aln.fasta
+#####
+# run job:
+qsub 18Scombo2000_einsi_1000x_addfrag.sh 
+1172965.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=05:54:38
+resources_used.mem=4569524kb
+resources_used.vmem=5986632kb
+resources_used.walltime=00:35:29
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long2000/*.aln.fasta ~/Desktop
+
+##### Align long18(>1000) w/ einsi, 1000 iterations, and addfragments
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1000
+
+# create job:
+nano 18Scombo1000_einsi_1000x_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=08:00:00
+#PBS -N 18Scombo1000_einsi_1000x_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1000 
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SelectedList_20170213.18S_long1000.fasta > 18Slong1000_einsi_1000x.aln.fasta
+mafft --thread 12 --addfragments SelectedList_20170213.18S_frag1000.fasta --reorder 18Slong1000_einsi_1000x.aln.fasta > 18Scombo1000_einsi_1000x_addfrag.aln.fasta
+#####
+# run job:
+qsub 18Scombo1000_einsi_1000x_addfrag.sh 
+1172969.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=15:17:47
+resources_used.mem=5523596kb
+resources_used.vmem=7455100kb
+resources_used.walltime=01:36:11
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1000/*.aln.fasta ~/Desktop
+
+##### Align long18(>1500) w/ einsi, 1000 iterations, and addfragments
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1500
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long1500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1500
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag1500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1500
+
+# create job:
+nano 18Scombo1500_einsi_1000x_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=08:00:00
+#PBS -N 18Scombo1500_einsi_1000x_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1500 
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SelectedList_20170213.18S_long1500.fasta > 18Slong1500_einsi_1000x.aln.fasta
+mafft --thread 12 --addfragments SelectedList_20170213.18S_frag1500.fasta --reorder 18Slong1500_einsi_1000x.aln.fasta > 18Scombo1500_einsi_1000x_addfrag.aln.fasta
+#####
+# run job:
+qsub 18Scombo1500_einsi_1000x_addfrag.sh 
+1172972.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=10:32:58
+resources_used.mem=6128836kb
+resources_used.vmem=7117792kb
+resources_used.walltime=01:03:54
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_long1500/*.aln.fasta ~/Desktop
+
+##### Align 18S w/ einsi, 1000 iterations
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_18S
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.n_18S.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_18S
+
+# create job:
+nano 18S_einsi_1000x.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=08:00:00
+#PBS -N 18S_einsi_1000x
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_18S
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SelectedList_20170213.n_18S.fasta > 18S_einsi_1000x.aln.fasta
+#####
+# run job:
+qsub 18S_einsi_1000x.sh 
+1172980.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=20:23:47
+resources_used.mem=8321236kb
+resources_used.vmem=11333532kb
+resources_used.walltime=02:03:27
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170303/einsi_1000x_18S/*.aln.fasta ~/Desktop
+
+-----------------------------------------------------------------------------------------
+mkdir 20170304
+-----------------------------------------------------------------------------------------
+
+##### Align long18(>2000) w/ einsi, 1000 iterations, --op 2.4 and addfragments
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long2000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long2000
+
+# create job:
+nano 18Scombo2000_einsi_1000x_op2.4_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=08:00:00
+#PBS -N 18Scombo2000_einsi_1000x_op2.4_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long2000 
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --op 2.4 --reorder SelectedList_20170213.18S_long2000.fasta > 18Slong2000_einsi_1000x_op2.4.aln.fasta
+mafft --thread 12 --addfragments SelectedList_20170213.18S_frag2000.fasta --reorder 18Slong2000_einsi_1000x_op2.4.aln.fasta > 18Scombo2000_einsi_1000x_op2.4_addfrag.aln.fasta
+#####
+# run job:
+qsub 18Scombo2000_einsi_1000x_op2.4_addfrag.sh 
+1173116.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=05:30:11
+resources_used.mem=4141460kb
+resources_used.vmem=5721080kb
+resources_used.walltime=00:36:32
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long2000/*.aln.fasta ~/Desktop
+ 
+##### Align long18(>1500) w/ einsi, 1000 iterations, --op 2.4 and addfragments
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long1500
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_long1500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long1500
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SelectedList_20170213.18S_frag1500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long1500
+
+# create job:
+nano 18Scombo1500_einsi_1000x_op2.4_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=08:00:00
+#PBS -N 18Scombo1500_einsi_1000x_op2.4_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long1500 
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --op 2.4 --reorder SelectedList_20170213.18S_long1500.fasta > 18Slong1500_einsi_1000x_op2.4.aln.fasta
+mafft --thread 12 --addfragments SelectedList_20170213.18S_frag1500.fasta --reorder 18Slong1500_einsi_1000x_op2.4.aln.fasta > 18Scombo1500_einsi_1000x_op2.4_addfrag.aln.fasta
+#####
+# run job:
+qsub 18Scombo1500_einsi_1000x_op2.4_addfrag.sh 
+1173117.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=05:25:17
+resources_used.mem=5270424kb
+resources_used.vmem=6390180kb
+resources_used.walltime=00:32:19
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_op2.4_long1500/*.aln.fasta ~/Desktop
+
+#########################################################################################
+Removed Dexamine spinosa KJ182990 from taxa list
+Redo long2000 x1000 alignment (with default op):
+##### Align long18(>2000) w/ einsi, 1000 iterations, and addfragments
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_long2000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_long2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_long2000
+
+# create job:
+nano 18Scombo2000_einsi_1000x_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=04:00:00
+#PBS -N 18Scombo2000_einsi_1000x_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_long2000 
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SL_20170304.18S_long2000.fasta > SL_20170304_18Slong2000_einsi_1000x.aln.fasta
+mafft --thread 12 --addfragments SL_20170304.18S_frag2000.fasta --reorder SL_20170304_18Slong2000_einsi_1000x.aln.fasta > SL_20170304_18Scombo2000_einsi_1000x_addfrag.aln.fasta
+#####
+# run job:
+qsub 18Scombo2000_einsi_1000x_addfrag.sh 
+1173120.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=07:24:41
+resources_used.mem=5148708kb
+resources_used.vmem=6117704kb
+resources_used.walltime=00:44:32
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_long2000/*.aln.fasta ~/Desktop
+
+##### Build Tree:
+
+# create job:
+nano raxml_combo2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=48:00:00
+#PBS -q large
+#PBS -N raxml_combo2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/einsi_1000x_long2000 
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL_20170304_18Scombo2000_einsi_1000x_addfrag.aln.fasta -n SL_20170304_18Scombo2000.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_combo2000 
+1173186.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=186:09:41
+resources_used.mem=712016kb
+resources_used.vmem=1069568kb
+resources_used.walltime=15:31:19
+
+#########################################################################################
+##### mafft-qinsi on long18S(>2400):
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/qinsi_long2400
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/qinsi_long2400
+
+# create job:
+nano align_long2400_qinsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=32gb,walltime=48:00:00
+#PBS -N align_long2400_qinsi
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/qinsi_long2400
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL_20170304.18S_long2400.fasta > SL_20170304.long2400.qinsi.aln.fasta
+mafft --thread 32 --addfragments SL_20170304.18S_frag2000.fasta --reorder SL_20170304.long2400.qinsi.aln.fasta > SL_20170304.long2400.qinsi.addfrag.aln.fasta
+#####
+# run job:
+qsub align_long2400_qinsi.sh 
+1173187.cbcbsrv.umiacs.umd.edu
+Exit_status=1
+resources_used.cput=44:34:17
+resources_used.mem=10559604kb
+resources_used.vmem=15245000kb
+resources_used.walltime=05:05:45
+(forgot to att fragment file to directory)
+
+## redue addfrag:
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_frag2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/qinsi_long2400
+# create job:
+nano addfrag_long2400.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=4:00:00
+#PBS -N addfrag_long2400
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/qinsi_long2400
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL_20170304.18S_frag2400.fasta --reorder SL_20170304.long2400.qinsi.aln.fasta > SL_20170304.long2400.qinsi.addfrag.aln.fasta
+#####
+qsub addfrag_long2400.sh
+qsub addfrag_long2400.sh 
+1173264.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:23:28
+resources_used.mem=567964kb
+resources_used.vmem=1081196kb
+resources_used.walltime=00:02:25
+
+##### Build Tree:
+# create job:
+nano raxml_combo2400_qinsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=48:00:00
+#PBS -q large
+#PBS -N raxml_combo2400_qinsi
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/qinsi_long2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL_20170304.long2400.qinsi.addfrag.aln.fasta -n SL_20170304.long2400.qinsi.addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_combo2400_qinsi.sh 
+1173267.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=169:38:50
+resources_used.mem=753024kb
+resources_used.vmem=1073672kb
+resources_used.walltime=14:08:38
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170304/qinsi_long2400/* ~/Desktop/sandbox
+
+
+-----------------------------------------------------------------------------------------
+mkdir 20170305
+-----------------------------------------------------------------------------------------
+
+##### Separate out Leucothoidae and align separately first
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu
+
+add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_notLeu_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_notLeu_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_Leu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu
+# create file including a carriage return only:
+nano newline
+
+# create job:
+
+nano 18S_Leu_combo2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=10gb,walltime=04:00:00
+#PBS -N 18S_Leu_combo2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 24 --maxiterate 1000 --genafpair --reorder SL_20170304.18S_Leu.fasta > SL_20170304.18S_Leu.aln.fasta
+cat SL_20170304.18S_notLeu_long2000.fasta newline SL_20170304.18S_Leu.aln.fasta > SL_20170304.18S_long2000Leu.fasta
+mafft --thread 24 --maxiterate 1000 --genafpair --reorder SL_20170304.18S_long2000Leu.fasta > SL_20170304.18S_long2000Leu.aln.fasta
+mafft --thread 24 --addfragments SL_20170304.18S_notLeu_frag2000.fasta --reorder SL_20170304.18S_long2000Leu.aln.fasta > SL_20170304.18S_combo2000Leu.aln.fasta
+#####
+# run job:
+qsub 18S_Leu_combo2000.sh 
+1173281.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=06:56:58
+resources_used.mem=7011508kb
+resources_used.vmem=8497604kb
+resources_used.walltime=00:36:21
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu/*.aln.fasta ~/Desktop
+# Short Leu sequences are stretched badly in long 18S alignment!!!!
+# try again...
+
+##### Separate out Leucothoidae and align separately first
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu/take2
+
+add files:
+#short fragments, not Leu: SL_20170304.18S_notLeu_frag2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_notLeu_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu/take2
+#long sequences, including one Leu: SL_20170304.18S_long2000.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu/take2
+#all Leu sequences (28 short, 1 long):
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_Leu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu/take2
+# create file including a carriage return only:
+nano newline
+
+# create job:
+
+nano 18S_Leu_combo2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=10gb,walltime=04:00:00
+#PBS -N 18S_Leu_combo2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu/take2
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+#Align Leu:
+mafft --thread 24 --maxiterate 1000 --genafpair --reorder SL_20170304.18S_Leu.fasta > SL_20170304.18S_Leu.aln.fasta
+#Aline long 18S:
+mafft --thread 24 --maxiterate 1000 --genafpair --reorder SL_20170304.18S_long2000.fasta > SL_20170304.18S_long2000.aln.fasta
+#concatenate 18Sfrag(notLeu) with alined Leu:
+cat SL_20170304.18S_notLeu_frag2000.fasta newline SL_20170304.18S_Leu.aln.fasta > SL_20170304.18S_frag2000Leu.fasta
+#add concatenated fragments to long align:
+mafft --thread 24 --addfragments SL_20170304.18S_frag2000Leu.fasta --reorder SL_20170304.18S_long2000.aln.fasta > SL_20170304.18S_combo2000Leu.aln.fasta
+#####
+
+# run job:
+qsub 18S_Leu_combo2000.sh 
+1173294.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=05:04:39
+resources_used.mem=5136604kb
+resources_used.vmem=6052168kb
+resources_used.walltime=00:24:35
+# Separating and aligning Leu separately doesn't seem to improve much, alignment is almost exactly the same as long 2000 einsi x2000 w/ addfrag
+
+
+#########################################################################################
+##### mafft-qinsi on Leu:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu/qinsi
+# add files:
+cp ../SL_20170304.18S_Leu.fasta .
+
+# create job:
+nano align_Leu_qinsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=32gb,walltime=12:00:00
+#PBS -N align_Leu_qinsi.sh
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu/qinsi
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL_20170304.18S_Leu.fasta > SL_20170304.18S_Leu.qinsi.aln.fasta
+#####
+# run job:
+qsub align_Leu_qinsi.sh 
+1173283.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=01:01:52
+resources_used.mem=3075160kb
+resources_used.vmem=4602140kb
+resources_used.walltime=00:10:30
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170305/Leu/qinsi/SL_20170304.18S_Leu.qinsi.aln.fasta ~/Desktop
+#qinsi handles sequences of different length VERY POORLY!!!
+
+
+-----------------------------------------------------------------------------------------
+mkdir 20170306
+-----------------------------------------------------------------------------------------
+
+#########################################################################################
+##### mafft-qinsi on 2050-2250bp sequences
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi
+# add files
+
+# >= 2050 and <2250: SL_20170304.18S_2050_2250.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_2050_2250.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi
+# < 2050: SL_20170304.18S_frag2050.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_frag2050.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi
+# >= 2250: SL_20170304.18S_long2250.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_long2250.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi
+
+# create job:
+nano align_2050_2250_qinsi_32.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=32gb,walltime=48:00:00
+#PBS -N align_2050_2250_qinsi_32
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL_20170304.18S_2050_2250.fasta > SL_20170304.18S_2050_2250_qinsi.aln.fasta
+mafft --thread 32 --add SL_20170304.18S_long2250.fasta --reorder SL_20170304.18S_2050_2250_qinsi.aln.fasta > SL_20170304.18S_2050long2250_qinsi_add.aln.fasta
+mafft --thread 32 --addfragments SL_20170304.18S_frag2050.fasta --reorder SL_20170304.18S_2050long2250_qinsi_add.aln.fasta > SL_20170304.18Scombo_2050_2250_qinsi_add_addfrag.aln.fasta
+#####
+# run job:
+qsub align_2050_2250_qinsi_32.sh 
+1173327.cbcbsrv.umiacs.umd.edu
+Aborted by PBS Server
+Job exceeded its walltime limit. Job was aborted
+resources_used.cput=451:04:44
+resources_used.mem=11267848kb
+resources_used.vmem=19351060kb
+resources_used.walltime=48:00:40
+*****************************************************************************************
+
+##### mafft-qinsi on 2050-2250bp sequences
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/throughput
+# add files
+cp ../*.fasta .
+
+# create job:
+nano align_2050_2250_qinsi_64.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=64,mem=32gb,walltime=48:00:00
+#PBS -N align_2050_2250_qinsi_64
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/throughput
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 64 SL_20170304.18S_2050_2250.fasta > SL_20170304.18S_2050_2250_qinsi.aln.fasta
+mafft --thread 64 --add SL_20170304.18S_long2250.fasta --reorder SL_20170304.18S_2050_2250_qinsi.aln.fasta > SL_20170304.18S_2050long2250_qinsi_add.aln.fasta
+mafft --thread 64 --addfragments SL_20170304.18S_frag2050.fasta --reorder SL_20170304.18S_2050long2250_qinsi_add.aln.fasta > SL_20170304.18Scombo_2050_2250_qinsi_add_addfrag.aln.fasta
+#####
+# run job:
+qsub align_2050_2250_qinsi_64.sh 
+1173638.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=296:16:39
+resources_used.mem=11574220kb
+resources_used.vmem=19416596kb
+resources_used.walltime=31:11:40
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/throughput/* ~/Desktop/sandbox/
+
+
+*****************************************************************************************
+
+##### mafft-qinsi on 2050-2175bp sequences
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/2050_2175
+# add files
+
+# >= 2050 and <2175: SL_20170304.18S_2050_2175.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_2050_2175.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/2050_2175
+# < 2050: SL_20170304.18S_frag2050.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_frag2050.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/2050_2175
+# >= 2175: SL_20170304.18S_long2175.fasta
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL_20170304.18S_long2175.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/2050_2175
+
+# create job:
+nano align_2050_2175_qinsi_32.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=32gb,walltime=48:00:00
+#PBS -N align_2050_2175_qinsi_32
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/2050_2175
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL_20170304.18S_2050_2175.fasta > SL_20170304.18S_2050_2175_qinsi.aln.fasta
+mafft --thread 32 --add SL_20170304.18S_long2175.fasta --reorder SL_20170304.18S_2050_2175_qinsi.aln.fasta > SL_20170304.18S_2050long2175_qinsi_add.aln.fasta
+mafft --thread 32 --addfragments SL_20170304.18S_frag2050.fasta --reorder SL_20170304.18S_2050long2175_qinsi_add.aln.fasta > SL_20170304.18Scombo_2050_2175_qinsi_add_addfrag.aln.fasta
+#####
+# run job:
+qsub align_2050_2175_qinsi_32.sh 
+1173558.cbcbsrv.umiacs.umd.edu
+Exit_status=1
+resources_used.cput=59:05:45
+resources_used.mem=6923116kb
+resources_used.vmem=10461116kb
+resources_used.walltime=07:02:34
+# Last mafft call didn't complete due to issue with input frag2050 file (had been written to twice in R). 
+
+## Re-run last command in New job:
+# create job:
+nano align_2050_2175_qinsi_addfrag.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=2:00:00
+#PBS -N align_2050_2175_qinsi_addfrag
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/2050_2175
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 22 --addfragments SL_20170304.18S_frag2050.fasta --reorder SL_20170304.18S_2050long2175_qinsi_add.aln.fasta > SL_20170304.18Scombo_2050_2175_qinsi_add_addfrag.aln.fasta
+#####
+#run job:
+qsub align_2050_2175_qinsi_addfrag.sh 
+1173600.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=01:07:44
+resources_used.mem=980796kb
+resources_used.vmem=1840728kb
+resources_used.walltime=00:03:39
+
+*****************************************************************************************
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/2050_2175/* ~/Desktop/sandbox/
+
+## Make Tree:
+
+# create job:
+nano raxml_2050_2175_qinsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=48:00:00
+#PBS -q large
+#PBS -N raxml_2050_2175_qinsi
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170306/qinsi/2050_2175
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL_20170304.18Scombo_2050_2175_qinsi_add_addfrag.aln.fasta -n 20170307_2050_2175_qinsi.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_2050_2175_qinsi.sh 
+1173707.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=178:21:27
+resources_used.mem=928384kb
+resources_used.vmem=1091052kb
+resources_used.walltime=14:52:07
+
+-----------------------------------------------------------------------------------------
+mkdir 20170307
+-----------------------------------------------------------------------------------------
+# Ran gblocks with the following parameters:
+1. 310 2. 310. 3. 100 4. 10 5. all t. DNA
+# on the following alignments:
+SL_20170304.qinsi.addfrag.aln.fasta
+# 3198 sites in 13 blocks > 20170307_qinsi_gblocks01
+SL_20170304.18Scombo2000.einsi_1000x_addfrag.aln.fasta
+# 3191 sites in 14 blocks > 2017-307_einsi_gblocks01
+
+##### Build qinsi_gblocks tree
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170307/qinsi_gblocks
+#add file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Alignments/20170307_qinsi_gblocks01 biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170307/qinsi_gblocks
+
+
+# create job:
+nano raxml_qinsi_gblocks.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=48:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_gblocks
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170307/qinsi_gblocks
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s 20170307_qinsi_gblocks01 -n 20170307_qinsi_gblocks01.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_gblocks.sh 
+1173593.cbcbsrv.umiacs.umd.edu
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170307/qinsi_gblocks/RAxML_bipartitions.20170307_qinsi_gblocks01.tree ~/Desktop/trees
+
+
+##### Build einsi_gblocks tree
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170307/einsi_gblocks
+#add file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Alignments/20170307_einsi_gblocks01 biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170307/einsi_gblocks
+
+# create job:
+nano raxml_einsi_gblocks.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=48:00:00
+#PBS -q large
+#PBS -N raxml_einsi_gblocks
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170307/einsi_gblocks
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s 20170307_einsi_gblocks01 -n 20170307_einsi_gblocks01.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_einsi_gblocks.sh 
+1173594.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=71:10:21
+resources_used.mem=415344kb
+resources_used.vmem=1041124kb
+resources_used.walltime=05:56:21
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170307/einsi_gblocks/RAxML_bipartitions.20170307_einsi_gblocks01.tree ~/Desktop/trees
+
+-----------------------------------------------------------------------------------------
+mkdir 20170309
+-----------------------------------------------------------------------------------------
+
+##### Build qinsi_gblocks02 tree
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170309/qinsi_gblocks02
+#add file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Alignments/20170307_qinsi_gblocks02 biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170309/qinsi_gblocks02
+
+
+# create job:
+nano raxml_qinsi_gblocks02.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_gblocks02
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170309/qinsi_gblocks02
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s 20170307_qinsi_gblocks02 -n 20170307_qinsi_gblocks02.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_gblocks02.sh 
+1173891.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=32:04:57
+resources_used.mem=320944kb
+resources_used.vmem=1032408kb
+resources_used.walltime=02:40:45
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170309/qinsi_gblocks02/RAxML_bipartitions.20170307_qinsi_gblocks02.tree ~/Desktop/trees
+
+
+##### Build einsi_gblocks02 tree
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170309/einsi_gblocks02
+#add file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Alignments/20170307_einsi_gblocks02 biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170309/einsi_gblocks02
+
+
+# create job:
+nano raxml_einsi_gblocks02.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_einsi_gblocks02
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170309/einsi_gblocks02
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s 20170307_einsi_gblocks02 -n 20170307_einsi_gblocks02.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_einsi_gblocks02.sh 
+1173892.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=54:26:36
+resources_used.mem=312084kb
+resources_used.vmem=1031660kb
+resources_used.walltime=04:49:42
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170309/einsi_gblocks02/RAxML_bipartitions.20170307_einsi_gblocks02.tree ~/Desktop/trees
+
+-----------------------------------------------------------------------------------------
+mkdir 20170312
+-----------------------------------------------------------------------------------------
+
+#### align pared down dataset (SL20170311)
+
+#### mafft-einsi_2000:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/einsi_2000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170311.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/einsi_2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170311.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/einsi_2000
+
+# create job:
+nano einsi_2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=04:00:00
+#PBS -N einsi_2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SL20170311.18S_long2000.fasta > SL20170311.18S_long2000_einsi.aln.fasta
+mafft --thread 12 --addfragments SL20170311.18S_frag2000.fasta --reorder SL20170311.18S_long2000_einsi.aln.fasta > SL20170311.18S_2000_einsi.aln.fasta
+#####
+# run job:
+qsub einsi_2000.sh 
+1173991.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=03:16:36
+resources_used.mem=4300456kb
+resources_used.vmem=5018284kb
+resources_used.walltime=00:20:07
+
+##### make tree:
+
+# create job:
+nano raxml_einsi_2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_einsi_2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170311.18S_2000_einsi.aln.fasta -n SL20170311.18S_2000_einsi.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+qsub raxml_einsi_2000.sh 
+1173994.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=68:55:06
+resources_used.mem=475568kb
+resources_used.vmem=1004808kb
+resources_used.walltime=05:44:55
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/einsi_2000/* ~/Desktop/sandbox
+
+*****************************************************************************************
+
+#### align paired down and concatenated 18S dataset (SL20170311)
+
+#### mafft-cat_einsi_2000:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi_2000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170311.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi_2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170311.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi_2000
+
+# create job:
+nano cat_einsi_2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=04:00:00
+#PBS -N cat_einsi_2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SL20170311.18S_long2000.fasta > SL20170311.18S_long2000_einsi.aln.fasta
+mafft --thread 12 --addfragments SL20170311.18S_frag2000.fasta --reorder SL20170311.18S_long2000_einsi.aln.fasta > SL20170311.18S_2000_einsi.aln.fasta
+#####
+# run job:
+qsub cat_einsi_2000.sh 
+1174005.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=05:16:47
+resources_used.mem=4351756kb
+resources_used.vmem=5018284kb
+resources_used.walltime=00:32:05
+
+
+##### make tree:
+
+# create job:
+nano raxml_cat_einsi_2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_cat_einsi_2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170311.18S_2000_einsi.aln.fasta -n SL20170311.18S_2000_einsi.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+qsub raxml_cat_einsi_2000.sh 
+1174026.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=75:10:55
+resources_used.mem=417252kb
+resources_used.vmem=987740kb
+resources_used.walltime=06:16:14
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi_2000/* ~/Desktop/sandbox
+
+*****************************************************************************************
+
+##### mafft-cat_einsi
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170311.18S_all.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi
+
+# create job:
+nano cat_einsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=04:00:00
+#PBS -N cat_einsi
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SL20170311.18S_all.fasta > SL20170311.18S_all_einsi.aln.fasta
+#####
+# run job:
+qsub cat_einsi.sh 
+1174006.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=13:45:21
+resources_used.mem=7181832kb
+resources_used.vmem=8436380kb
+resources_used.walltime=01:23:06
+# Many short sequences are very stretched including most Leu
+
+##### make tree:
+
+# create job:
+nano raxml_cat_einsi.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_cat_einsi
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170311.18S_all_einsi.aln.fasta -n SL20170311.18S_all_einsi.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+qsub raxml_cat_einsi_2000.sh
+qsub raxml_cat_einsi.sh 
+1174018.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=79:26:45
+resources_used.mem=411940kb
+resources_used.vmem=987344kb
+resources_used.walltime=06:37:36 
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/cat_einsi/* ~/Desktop/sandbox
+
+****************************************************************************************
+
+##### mafft-hyperiids_plus
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/hyperiids_plus
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/Hyperiidea_Plus.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/hyperiids_plus
+
+# create job:
+nano einsi_hyperiids_plus.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=04:00:00
+#PBS -N einsi_hyperiids_plus
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/hyperiids_plus
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder Hyperiidea_Plus.fasta > hyperiidea_plus_einsi.aln.fasta
+#####
+# run job:
+qsub einsi_hyperiids_plus.sh 
+1174019.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:26:30
+resources_used.mem=1970692kb
+resources_used.vmem=2985608kb
+resources_used.walltime=00:03:05
+(Sequences very stretched out, including Anamixis bananarama)
+
+
+##### mafft-qinsi_2300 (75 sequences)
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/qinsi_2300
+# add files
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170311.18S_long2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/qinsi_2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170311.18S_frag2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/qinsi_2300
+
+# create job:
+nano qinsi_2300_64.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=64,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2300
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170312/qinsi_2300
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 64 SL20170311.18S_long2300.fasta > SL20170311.18S_long2300_qinsi.aln.fasta
+mafft --thread 64 --addfragments SL20170311.18S_frag2300.fasta --reorder SL20170311.18S_long2300.aln.fasta > SL20170311.18S_2300_qinsi.aln.fasta
+#####
+# run job:
+qsub qinsi_2300_64.sh 
+1174033.cbcbsrv.umiacs.umd.edu 
+
+-----------------------------------------------------------------------------------------
+mkdir 20170313
+-----------------------------------------------------------------------------------------
+
+##### mafft-qinsi_2400 (32 sequences)
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170313/qinsi_2400
+# add files
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170311.18S_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170313/qinsi_2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170311.18S_frag2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170313/qinsi_2400
+
+# create job:
+nano qinsi_2400_32.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=24gb,walltime=24:00:00
+#PBS -N qinsi_2400_32
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170313/qinsi_2400
+#use biancani's mafft installation:
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+#mafft-qinsi --reorder --thread 32 SL20170311.18S_long2400.fasta > SL20170311.18S_long2400_qinsi.aln.fasta
+mafft --thread 32 --addfragments SL20170311.18S_frag2400.fasta --reorder SL20170311.18S_long2400_qinsi.aln.fasta > SL20170311.18S_2400_qinsi.aln.fasta
+#####
+# run job:
+qsub qinsi_2400_32.sh 
+1174032.cbcbsrv.umiacs.umd.edu
+Exit_status=1
+resources_used.cput=30:47:41
+resources_used.mem=8524952kb
+resources_used.vmem=15434160kb
+resources_used.walltime=03:44:19
+error: Cannot open SL20170311.18S_long2400.aln.fasta
+(first command completed but name of file in second command was incorrect)
+fixed and resubmitted with only second mafft command:
+qsub qinsi_2400_32.sh 
+1174085.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:16:38
+resources_used.mem=1302984kb
+resources_used.vmem=2545984kb
+resources_used.walltime=00:01:08
+
+##### make tree:
+
+# create job:
+nano raxml_qinsi_2400.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_2400
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170313/qinsi_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170311.18S_2400_qinsi.aln.fasta -n SL20170311.18S_2400_qinsi.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+qsub raxml_qinsi_2400.sh 
+1174086.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=86:04:36
+resources_used.mem=431096kb
+resources_used.vmem=988976kb
+resources_used.walltime=07:10:43
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170313/qinsi_2400/* ~/Desktop/sandbox
+
+-----------------------------------------------------------------------------------------
+mkdir 20170314
+-----------------------------------------------------------------------------------------
+##### mafft- einsi: long2000, addfrag: 1000-2000 (<1000 excluded)
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_1000_2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+
+# create job:
+nano einsi_1000_2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=04:00:00
+#PBS -N einsi_1000_2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SL20170314.18S_long2000.fasta > SL20170314.18S_long2000_einsi.aln.fasta
+mafft --thread 12 --addfragments SL20170314.18S_1000_2000.fasta --reorder SL20170314.18S_long2000_einsi.aln.fasta > SL20170314.18S_long2000_einsi_1000.aln.fasta
+#####
+# run job:
+qsub einsi_1000_2000 
+1174149.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=03:18:52
+resources_used.mem=3855384kb
+resources_used.vmem=5018048kb
+resources_used.walltime=00:20:11
+
+##### make tree:
+# create job:
+nano raxml_einsi_1000_2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_einsi_1000_2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2000_einsi_1000.aln.fasta -n SL20170314.18S_long2000_einsi_1000.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_einsi_1000_2000.sh 
+1174152.cbcbsrv.umiacs.umd.edu
+error -> spaces and periods were not removed from names
+# fixed fasta files:
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+sed -i 's/ /_/g' SL20170314*
+sed -i 's/\.//g' SL20170314*
+# re-run job:
+qsub raxml_einsi_1000_2000.sh 
+1174154.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=47:46:18
+resources_used.mem=311948kb
+resources_used.vmem=956212kb
+resources_used.walltime=03:59:13
+
+##### add frag_1000 starred sequences to alignment:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_frag1000_starred.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+
+# create job:
+nano addfrag_1000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=01:00:00
+#PBS -N addfrag_1000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170314.18S_frag1000_starred.fasta --reorder SL20170314.18S_long2000_einsi_1000.aln.fasta > SL20170314.18S_long2000_einsi_1000_addfrag.aln.fasta
+#####
+# run job:
+qsub addfrag_1000.sh 
+1174155.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:10:32
+resources_used.mem=263812kb
+resources_used.vmem=1073512kb
+resources_used.walltime=00:01:45
+
+##### make tree:
+# create job:
+nano raxml_addfrag_1000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_1000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2000_einsi_1000_addfrag.aln.fasta -n SL20170314.18S_long2000_einsi_1000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_1000.sh 
+1174156.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=68:13:18
+resources_used.mem=426196kb
+resources_used.vmem=988176kb
+resources_used.walltime=05:41:30
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000/* ~/Desktop/sandbox
+
+
+
+####################################################################
+##### mafft- qinsi: long2300, addfrag: 1000-2300 (<1000 excluded)
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_long2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_1000_2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+
+# create job:
+nano qinsi_1000_2300.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_1000_2300
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL20170314.18S_long2300.fasta > SL20170314.18S_long2300_qinsi.aln.fasta
+mafft --thread 32 --addfragments SL20170314.18S_1000_2300.fasta --reorder SL20170314.18S_long2300_qinsi.aln.fasta > SL20170314.18S_long2300_qinsi_1000.aln.fasta
+#####
+# run job:
+qsub qinsi_1000_2300.sh 
+1174151.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=213:38:18
+resources_used.mem=16243080kb
+resources_used.vmem=27799208kb
+resources_used.walltime=23:39:59
+
+
+
+###############if it finishes, do this before building tree:******************
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+sed -i 's/ /_/g' SL20170314*
+##### make tree:
+# create job:
+nano raxml_qinsi_1000_2300.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_1000_2300
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2300_qinsi_1000.aln.fasta -n SL20170314.18S_long2300_qinsi_1000.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_1000_2300.sh 
+1174290.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=70:14:38
+resources_used.mem=361620kb
+resources_used.vmem=961288kb
+resources_used.walltime=05:51:35
+
+
+##### add frag_1000 starred sequences to alignment:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_frag1000_starred.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+
+# create job:
+nano addfrag_1000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=01:00:00
+#PBS -N addfrag_1000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170314.18S_frag1000_starred.fasta --reorder SL20170314.18S_long2300_qinsi_1000.aln.fasta > SL20170314.18S_long2300_qinsi_1000_addfrag.aln.fasta
+#####
+# run job:
+qsub addfrag_1000.sh 
+1174291.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:10:27
+resources_used.mem=267424kb
+resources_used.vmem=1082304kb
+resources_used.walltime=00:01:43
+
+
+##### make tree:
+# create job:
+nano raxml_addfrag_1000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_1000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2300_qinsi_1000_addfrag.aln.fasta -n SL20170314.18S_long2300_qinsi_1000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_1000.sh 
+1174292.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=100:40:55
+resources_used.mem=501540kb
+resources_used.vmem=996212kb
+resources_used.walltime=08:23:45
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300/* ~/Desktop/sandbox/qinsi_1000_2300/
+
+
+####################################################################
+##### mafft- qinsi: long2350, addfrag: 1000-2350 (<1000 excluded)
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_long2350.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_1000_2350.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350
+
+# create job:
+nano qinsi_1000_2350.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_1000_2350
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL20170314.18S_long2350.fasta > SL20170314.18S_long2350_qinsi.aln.fasta
+mafft --thread 32 --addfragments SL20170314.18S_1000_2350.fasta --reorder SL20170314.18S_long2350_qinsi.aln.fasta > SL20170314.18S_long2350_qinsi_1000.aln.fasta
+#####
+# run job:
+qsub qinsi_1000_2350.sh 
+1174157.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=99:54:45
+resources_used.mem=13072700kb
+resources_used.vmem=22003212kb
+resources_used.walltime=11:13:00
+
+
+
+##### make tree:
+# create job:
+nano raxml_qinsi_1000_2350.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_1000_2350
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2350_qinsi_1000.aln.fasta -n SL20170314.18S_long2350_qinsi_1000.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_1000_2350.sh 
+1174198.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=62:00:04
+resources_used.mem=345808kb
+resources_used.vmem=959636kb
+resources_used.walltime=05:10:21
+
+
+##### add frag_1000 starred sequences to alignment:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_frag1000_starred.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350
+
+# create job:
+nano addfrag_1000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=01:00:00
+#PBS -N addfrag_1000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170314.18S_frag1000_starred.fasta --reorder SL20170314.18S_long2350_qinsi_1000.aln.fasta > SL20170314.18S_long2350_qinsi_1000_addfrag.aln.fasta
+#####
+# run job:
+qsub addfrag_1000.sh 
+1174199.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:10:31
+resources_used.mem=268236kb
+resources_used.vmem=1082228kb
+resources_used.walltime=00:01:44
+
+
+##### make tree:
+# create job:
+nano raxml_addfrag_1000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_1000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2350_qinsi_1000_addfrag.aln.fasta -n SL20170314.18S_long2350_qinsi_1000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_1000.sh 
+1174202.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=92:28:37
+resources_used.mem=486320kb
+resources_used.vmem=994592kb
+resources_used.walltime=07:42:45
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350/* ~/Desktop/sandbox/qinsi_1000_2350/
+
+
+####################################################################
+##### mafft- qinsi: long2400, addfrag: 1000-2400 (<1000 excluded)
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_1000_2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400
+
+# create job:
+nano qinsi_1000_2400.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=24gb,walltime=12:00:00
+#PBS -N qinsi_1000_2400
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL20170314.18S_long2400.fasta > SL20170314.18S_long2400_qinsi.aln.fasta
+mafft --thread 32 --addfragments SL20170314.18S_1000_2400.fasta --reorder SL20170314.18S_long2400_qinsi.aln.fasta > SL20170314.18S_long2400_qinsi_1000.aln.fasta
+#####
+# run job:
+qsub qinsi_1000_2400.sh 
+1174158.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=33:13:22
+resources_used.mem=9547684kb
+resources_used.vmem=15761840kb
+resources_used.walltime=04:20:06
+
+##### make tree:
+# create job:
+nano raxml_qinsi_1000_2400.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_1000_2400
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2400_qinsi_1000.aln.fasta -n SL20170314.18S_long2400_qinsi_1000.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_1000_2400.sh 
+1174166.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=63:25:41
+resources_used.mem=319376kb
+resources_used.vmem=957336kb
+resources_used.walltime=05:17:34
+
+
+##### add frag_1000 starred sequences to alignment:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_frag1000_starred.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400
+
+# create job:
+nano addfrag_1000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=6,mem=5gb,walltime=01:00:00
+#PBS -N addfrag_1000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170314.18S_frag1000_starred.fasta --reorder SL20170314.18S_long2400_qinsi_1000.aln.fasta > SL20170314.18S_long2400_qinsi_1000_addfrag.aln.fasta
+#####
+# run job:
+qsub addfrag_1000.sh 
+1174167.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:10:26
+resources_used.mem=264072kb
+resources_used.vmem=1079464kb
+resources_used.walltime=00:01:44
+
+##### make tree:
+# create job:
+nano raxml_addfrag_1000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_1000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2400_qinsi_1000_addfrag.aln.fasta -n SL20170314.18S_long2400_qinsi_1000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+raxml_addfrag_1000.sh 
+1174168.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=96:37:47
+resources_used.mem=451956kb
+resources_used.vmem=990052kb
+resources_used.walltime=08:03:33
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400/* ~/Desktop/sandbox
+
+-----------------------------------------------------------------------------------------
+mkdir 20170316
+-----------------------------------------------------------------------------------------
+
+##### mafft- qinsi: long2250, addfrag: 1000-2250 (<1000 excluded)
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170316/qinsi_1000_2250
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_long2250.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170316/qinsi_1000_2250
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_1000_2250.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170316/qinsi_1000_2250
+
+# create job:
+nano qinsi_1000_2250.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=64,mem=24gb,walltime=96:00:00
+#PBS -N qinsi_1000_2250
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170316/qinsi_1000_2250
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 64 SL20170314.18S_long2250.fasta > SL20170314.18S_long2250_qinsi.aln.fasta
+mafft --thread 64 --addfragments SL20170314.18S_1000_2250.fasta --reorder SL20170314.18S_long2250_qinsi.aln.fasta > SL20170314.18S_long2250_qinsi_1000.aln.fasta
+#####
+# run job:
+qsub qinsi_1000_2250.sh 
+1174382.cbcbsrv.umiacs.umd.edu
+
+
+##### mafft- qinsi: long2250, addfrag: 1000-2250 (<1000 excluded)
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170316/qinsi_1000_2250_32
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_long2250.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170316/qinsi_1000_2250_32
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_1000_2250.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170316/qinsi_1000_2250_32
+
+# create job:
+nano qinsi_1000_2250.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=24gb,walltime=264:00:00
+#PBS -N qinsi_1000_2250
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170316/qinsi_1000_2250_32
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL20170314.18S_long2250.fasta > SL20170314.18S_long2250_qinsi.aln.fasta
+mafft --thread 32 --addfragments SL20170314.18S_1000_2250.fasta --reorder SL20170314.18S_long2250_qinsi.aln.fasta > SL20170314.18S_long2250_qinsi_1000.aln.fasta
+#####
+# run job:
+qsub qinsi_1000_2250.sh 
+1174389.cbcbsrv.umiacs.umd.edu
+
+-----------------------------------------------------------------------------------------
+mkdir 20170316
+-----------------------------------------------------------------------------------------
+##### To long alignments from 3/15, addfrag >= 600, then addfrag <600 (starred)#####
+
+##### to mafft-einsi_long2000, addfrag: 600-2000, then addfrag <600 (starred):
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/einsi_600_2000
+
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/einsi_1000_2000/SL20170314.18S_long2000_einsi.aln.fasta .
+
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_600_2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/einsi_600_2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_frag600_starred.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/einsi_600_2000
+
+
+# create job:
+nano einsi_600_2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=02:00:00
+#PBS -N einsi_600_2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/einsi_600_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170314.18S_600_2000.fasta --reorder SL20170314.18S_long2000_einsi.aln.fasta > SL20170314.18S_long2000_einsi_600.aln.fasta
+mafft --thread 12 --addfragments SL20170314.18S_frag600_starred.fasta --reorder SL20170314.18S_long2000_einsi_600.aln.fasta > SL20170314.18S_long2000_einsi_600_addfrag.aln.fasta
+#####
+# run job:
+qsub einsi_600_2000 
+1174420.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:30:07
+resources_used.mem=462264kb
+resources_used.vmem=1071128kb
+resources_used.walltime=00:02:59
+
+##### make trees:
+
+# create job:
+nano raxml_addfrag_600-2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_600-2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/einsi_600_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2000_einsi_600.aln.fasta -n SL20170314.18S_long2000_einsi_600.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_600-2000.sh 
+1174421.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=47:10:17
+resources_used.mem=375984kb
+resources_used.vmem=974712kb
+resources_used.walltime=03:56:14
+
+# create job:
+nano raxml_addfrag_600.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_600
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/einsi_600_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2000_einsi_600_addfrag.aln.fasta -n SL20170314.18S_long2000_einsi_600_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_600.sh 
+1174426.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=57:01:34
+resources_used.mem=421580kb
+resources_used.vmem=987752kb
+resources_used.walltime=04:45:29
+
+scp biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/einsi_600_2000/* ~/Desktop/sandbox/einsi_600_2000/
+
+########################
+##### to mafft-qinsi_long2300, addfrag: 600-2300, then addfrag <600 (starred):
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2300
+
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2300/SL20170314.18S_long2300_qinsi.aln.fasta .
+
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_600_2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_frag600_starred.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2300
+
+
+# create job:
+nano qinsi_600_2300
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=02:00:00
+#PBS -N qinsi_600_2300
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170314.18S_600_2300.fasta --reorder SL20170314.18S_long2300_qinsi.aln.fasta > SL20170314.18S_long2300_qinsi_600.aln.fasta
+mafft --thread 12 --addfragments SL20170314.18S_frag600_starred.fasta --reorder SL20170314.18S_long2300_qinsi_600.aln.fasta > SL20170314.18S_long2300_qinsi_600_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_600_2300 
+1174428.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:32:18
+resources_used.mem=529260kb
+resources_used.vmem=1084548kb
+resources_used.walltime=00:03:17
+
+
+##### make trees:
+
+# create job:
+nano raxml_addfrag_600-2300.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_600-2300
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2300_qinsi_600.aln.fasta -n SL20170314.18S_long2300_qinsi_600.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_600-2300.sh 
+1174430.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=79:19:15
+resources_used.mem=444168kb
+resources_used.vmem=981696kb
+resources_used.walltime=06:37:00
+
+
+# create job:
+nano raxml_addfrag_600.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_600
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2300_qinsi_600_addfrag.aln.fasta -n SL20170314.18S_long2300_qinsi_600_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_600.sh 
+1174431.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=77:24:32
+resources_used.mem=503360kb
+resources_used.vmem=995908kb
+resources_used.walltime=06:27:50
+
+##################################
+##### to mafft-qinsi_long2350, addfrag: 600-2350, then addfrag <600 (starred):
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2350
+
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2350/SL20170314.18S_long2350_qinsi.aln.fasta .
+
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_600_2350.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2350
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_frag600_starred.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2350
+
+
+# create job:
+nano qinsi_600_2350
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=02:00:00
+#PBS -N qinsi_600_2350
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170314.18S_600_2350.fasta --reorder SL20170314.18S_long2350_qinsi.aln.fasta > SL20170314.18S_long2350_qinsi_600.aln.fasta
+mafft --thread 12 --addfragments SL20170314.18S_frag600_starred.fasta --reorder SL20170314.18S_long2350_qinsi_600.aln.fasta > SL20170314.18S_long2350_qinsi_600_addfrag.aln.fasta
+#####
+# run job:
+sub qinsi_600_2350 
+1174432.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:20:46
+resources_used.mem=526112kb
+resources_used.vmem=1083536kb
+resources_used.walltime=00:02:14
+
+##### make trees:
+
+# create job:
+nano raxml_addfrag_600-2350.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_600-2350
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2350_qinsi_600.aln.fasta -n SL20170314.18S_long2350_qinsi_600.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_600-2350.sh 
+1174435.cbcbsrv.umiacs.umd.edu
+
+
+# create job:
+nano raxml_addfrag_600.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_600
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2350_qinsi_600_addfrag.aln.fasta -n SL20170314.18S_long2350_qinsi_600_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_600.sh 
+1174434.cbcbsrv.umiacs.umd.edu
+
+##### to mafft-qinsi_long2400, addfrag: 600-2400, then addfrag <600 (starred):
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2400
+
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314/qinsi_1000_2400/SL20170314.18S_long2400_qinsi.aln.fasta .
+
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_600_2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170314.18S_frag600_starred.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2400
+
+
+# create job:
+nano qinsi_600_2400
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=02:00:00
+#PBS -N qinsi_600_2400
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170314.18S_600_2400.fasta --reorder SL20170314.18S_long2400_qinsi.aln.fasta > SL20170314.18S_long2400_qinsi_600.aln.fasta
+mafft --thread 12 --addfragments SL20170314.18S_frag600_starred.fasta --reorder SL20170314.18S_long2400_qinsi_600.aln.fasta > SL20170314.18S_long2400_qinsi_600_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_600_2400 
+1174433.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:16:55
+resources_used.mem=661292kb
+resources_used.vmem=1292272kb
+resources_used.walltime=00:01:55
+
+
+##### make trees:
+
+# create job:
+nano raxml_addfrag_600-2400.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_600-2400
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2400_qinsi_600.aln.fasta -n SL20170314.18S_long2400_qinsi_600.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_600-2400.sh 
+1174436.cbcbsrv.umiacs.umd.edu
+
+
+# create job:
+nano raxml_addfrag_600.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_addfrag_600
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317/qinsi_600_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170314.18S_long2400_qinsi_600_addfrag.aln.fasta -n SL20170314.18S_long2400_qinsi_600_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addfrag_600.sh
+1174448.cbcbsrv.umiacs.umd.edu
+
+
+
+3/18/17
+#copy files to macbook:
+
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170314 ~/Desktop/sandbox/
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170317 ~/Desktop/sandbox/
+
+-----------------------------------------------------------------------------------------
+mkdir 20170319
+-----------------------------------------------------------------------------------------
+#########################################################################################
+##### mafft- einsi: long2000, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/einsi_2000
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/einsi_2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/einsi_2000
+
+# create job:
+nano einsi_2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=04:00:00
+#PBS -N einsi_2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SL20170318.18S_long2000.fasta > SL20170318.18S_einsi2000_long.aln.fasta
+mafft --thread 12 --addfragments SL20170318.18S_frag2000.fasta --reorder SL20170318.18S_einsi2000_long.aln.fasta > SL20170318.18S_einsi2000_addfrag.aln.fasta
+#####
+# run job:
+qsub einsi_2000 
+1174459.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=05:04:55
+resources_used.mem=3845428kb
+resources_used.vmem=5018048kb
+resources_used.walltime=00:34:20
+
+##### make tree:
+# create job:
+nano raxml_einsi_2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_einsi_2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170318.18S_einsi2000_addfrag.aln.fasta -n SL20170318.18S_einsi2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_einsi_2000.sh 
+1174462.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=50:47:28
+resources_used.mem=398980kb
+resources_used.vmem=983132kb
+resources_used.walltime=04:14:19
+
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319 ~/Desktop/sandbox/
+
+
+#########################################################################################
+##### mafft- qinsi: long2300, addfrag 2000-2300, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2300
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_long2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_2000_2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2300
+
+# create job:
+nano qinsi_2300
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2300
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL20170318.18S_long2300.fasta > SL20170318.18S_qinsi2300_long.aln.fasta
+mafft --thread 32 --addfragments SL20170318.18S_2000_2300.fasta --reorder SL20170318.18S_qinsi2300_long.aln.fasta > SL20170318.18S_qinsi2300_2000.aln.fasta
+mafft --thread 32 --addfragments SL20170318.18S_frag2000.fasta --reorder SL20170318.18S_qinsi2300_2000.aln.fasta > SL20170318.18S_qinsi2300_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2300 
+1174460.cbcbsrv.umiacs.umd.edu
+
+#########################################################################################
+##### mafft- qinsi: long2350, addfrag 2000-2350, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2350
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_long2350.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2350
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_2000_2350.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2350
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2350
+
+# create job:
+nano qinsi_2350
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2350
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 24 SL20170318.18S_long2350.fasta > SL20170318.18S_qinsi2350_long.aln.fasta
+mafft --thread 24 --addfragments SL20170318.18S_2000_2350.fasta --reorder SL20170318.18S_qinsi2350_long.aln.fasta > SL20170318.18S_qinsi2350_2000.aln.fasta
+mafft --thread 24 --addfragments SL20170318.18S_frag2000.fasta --reorder SL20170318.18S_qinsi2350_2000.aln.fasta > SL20170318.18S_qinsi2350_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2350 
+1174461.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=82:02:38
+resources_used.mem=13234300kb
+resources_used.vmem=22068748kb
+resources_used.walltime=09:20:27
+
+##### make tree:
+# create job:
+nano raxml_qinsi_2350.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_2350
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170318.18S_qinsi2350_2000_addfrag.aln.fasta -n SL20170318.18S_qinsi2350_2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_2350.sh 
+1174471.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=129:48:09
+resources_used.mem=471740kb
+resources_used.vmem=989472kb
+resources_used.walltime=11:23:51
+
+#########################################################################################
+##### mafft- qinsi: long2400, addfrag 2000-2400, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2400
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_2000_2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170318.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2400
+
+# create job:
+nano qinsi_2400
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2400
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 24 SL20170318.18S_long2400.fasta > SL20170318.18S_qinsi2400_long.aln.fasta
+mafft --thread 24 --addfragments SL20170318.18S_2000_2400.fasta --reorder SL20170318.18S_qinsi2400_long.aln.fasta > SL20170318.18S_qinsi2400_2000.aln.fasta
+mafft --thread 24 --addfragments SL20170318.18S_frag2000.fasta --reorder SL20170318.18S_qinsi2400_2000.aln.fasta > SL20170318.18S_qinsi2400_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2400 
+1174463.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=24:42:05
+resources_used.mem=9661968kb
+resources_used.vmem=15434160kb
+resources_used.walltime=02:57:28
+
+##### make tree:
+# create job:
+nano raxml_qinsi_2400.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_2400
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319/qinsi_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170318.18S_qinsi2400_2000_addfrag.aln.fasta -n SL20170318.18S_qinsi2400_2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_2400.sh 
+1174472.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=129:13:16
+resources_used.mem=429492kb
+resources_used.vmem=985876kb
+resources_used.walltime=11:26:10
+
+-----------------------------------------------------------------------------------------
+mkdir 20170319.5
+-----------------------------------------------------------------------------------------
+#########################################################################################
+##### mafft- einsi: long2000, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/einsi_2000
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/einsi_2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/einsi_2000
+
+# create job:
+nano einsi_2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=04:00:00
+#PBS -N einsi_2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --reorder SL20170319.18S_long2000.fasta > SL20170319.18S_einsi2000_long.aln.fasta
+mafft --thread 12 --addfragments SL20170319.18S_frag2000.fasta --reorder SL20170319.18S_einsi2000_long.aln.fasta > SL20170319.18S_einsi2000_addfrag.aln.fasta
+#####
+# run job:
+qsub einsi_2000 
+1174464.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=04:45:07
+resources_used.mem=3863320kb
+resources_used.vmem=5018048kb
+resources_used.walltime=00:32:28
+
+##### make tree:
+# create job:
+nano raxml_einsi_2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_einsi_2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170319.18S_einsi2000_addfrag.aln.fasta -n SL20170319.18S_einsi2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_einsi_2000.sh 
+1174470.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=103:12:33
+resources_used.mem=393316kb
+resources_used.vmem=981936kb
+resources_used.walltime=09:11:21
+
+
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5 ~/Desktop/sandbox/
+
+
+#########################################################################################
+##### mafft- qinsi: long2300, addfrag 2000-2300, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2300
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_long2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_2000_2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2300
+
+# create job:
+nano qinsi_2300
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=32,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2300
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 32 SL20170319.18S_long2300.fasta > SL20170319.18S_qinsi2300_long.aln.fasta
+mafft --thread 32 --addfragments SL20170319.18S_2000_2300.fasta --reorder SL20170319.18S_qinsi2300_long.aln.fasta > SL20170319.18S_qinsi2300_2000.aln.fasta
+mafft --thread 32 --addfragments SL20170319.18S_frag2000.fasta --reorder SL20170319.18S_qinsi2300_2000.aln.fasta > SL20170319.18S_qinsi2300_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2300 
+1174469.cbcbsrv.umiacs.umd.edu
+
+#########################################################################################
+##### mafft- qinsi: long2350, addfrag 2000-2350, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2350
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_long2350.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2350
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_2000_2350.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2350
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2350
+
+# create job:
+nano qinsi_2350
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2350
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 24 SL20170319.18S_long2350.fasta > SL20170319.18S_qinsi2350_long.aln.fasta
+mafft --thread 24 --addfragments SL20170319.18S_2000_2350.fasta --reorder SL20170319.18S_qinsi2350_long.aln.fasta > SL20170319.18S_qinsi2350_2000.aln.fasta
+mafft --thread 24 --addfragments SL20170319.18S_frag2000.fasta --reorder SL20170319.18S_qinsi2350_2000.aln.fasta > SL20170319.18S_qinsi2350_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2350 
+1174468.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=93:31:38
+resources_used.mem=12857636kb
+resources_used.vmem=21347852kb
+resources_used.walltime=10:37:43
+
+##### make tree:
+# create job:
+nano raxml_qinsi_2350.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_2350
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170319.18S_qinsi2350_2000_addfrag.aln.fasta -n SL20170319.18S_qinsi2350_2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 234 -x 345
+#####
+# run job:
+qsub raxml_qinsi_2350.sh 
+1174484.cbcbsrv.umiacs.umd.edu
+timed out (>12 hours): change random # seeds and extend walltime.
+qsub raxml_qinsi_2350.sh 
+1174731.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=80:07:45
+resources_used.mem=456680kb
+resources_used.vmem=988572kb
+resources_used.walltime=06:41:01
+
+#########################################################################################
+##### mafft- qinsi: long2400, addfrag 2000-2400, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2400
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_2000_2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170319.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2400
+
+# create job:
+nano qinsi_2400
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2400
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --reorder --thread 24 SL20170319.18S_long2400.fasta > SL20170319.18S_qinsi2400_long.aln.fasta
+mafft --thread 24 --addfragments SL20170319.18S_2000_2400.fasta --reorder SL20170319.18S_qinsi2400_long.aln.fasta > SL20170319.18S_qinsi2400_2000.aln.fasta
+mafft --thread 24 --addfragments SL20170319.18S_frag2000.fasta --reorder SL20170319.18S_qinsi2400_2000.aln.fasta > SL20170319.18S_qinsi2400_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2400 
+1174467.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=29:00:17
+resources_used.mem=9412744kb
+resources_used.vmem=15434160kb
+resources_used.walltime=03:27:42
+
+##### make tree:
+# create job:
+nano raxml_qinsi_2400.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=12:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_2400
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170319.5/qinsi_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170319.18S_qinsi2400_2000_addfrag.aln.fasta -n SL20170319.18S_qinsi2400_2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_2400.sh 
+1174473.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=111:19:39
+resources_used.mem=417780kb
+resources_used.vmem=984324kb
+resources_used.walltime=09:46:37
+
+
+-----------------------------------------------------------------------------------------
+mkdir 20170320
+-----------------------------------------------------------------------------------------
+Updated Dataset: SL20170320
+
+#########################################################################################
+##### mafft- einsi: long2000, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/einsi_2000
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/einsi_2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/einsi_2000
+
+# create job:
+nano einsi_2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=10gb,walltime=04:00:00
+#PBS -N einsi_2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --adjustdirectionaccurately --reorder SL20170320.18S_long2000.fasta > SL20170320.18S_einsi2000_long.aln.fasta
+mafft --thread 12 --addfragments SL20170320.18S_frag2000.fasta --adjustdirectionaccurately --reorder SL20170320.18S_einsi2000_long.aln.fasta > SL20170320.18S_einsi2000_addfrag.aln.fasta
+#####
+# run job:
+qsub einsi_2000 
+1174716.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=02:55:07
+resources_used.mem=3843068kb
+resources_used.vmem=5018048kb
+resources_used.walltime=00:17:31
+
+##### make tree:
+# create job:
+nano raxml_einsi_2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_einsi_2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/einsi_2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170320.18S_einsi2000_addfrag.aln.fasta -n SL20170320.18S_einsi2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_einsi_2000.sh 
+1174723.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=55:04:15
+resources_used.mem=386496kb
+resources_used.vmem=978720kb
+resources_used.walltime=04:35:41
+
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320 ~/Desktop/sandbox/
+
+
+#########################################################################################
+##### mafft- qinsi: long2300, addfrag 2000-2300, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2300
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_long2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_2000_2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2300
+
+# create job:
+nano qinsi_2300
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=24gb,walltime=72:00:00
+#PBS -N qinsi_2300
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 32 SL20170320.18S_long2300.fasta > SL20170320.18S_qinsi2300_long.aln.fasta
+mafft --thread 24 --addfragments SL20170320.18S_2000_2300.fasta --adjustdirectionaccurately --reorder SL20170320.18S_qinsi2300_long.aln.fasta > SL20170320.18S_qinsi2300_2000.aln.fasta
+mafft --thread 24 --addfragments SL20170320.18S_frag2000.fasta --adjustdirectionaccurately --reorder SL20170320.18S_qinsi2300_2000.aln.fasta > SL20170320.18S_qinsi2300_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2300 
+1174718.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=266:57:41
+resources_used.mem=15431840kb
+resources_used.vmem=23408296kb
+resources_used.walltime=30:28:31
+
+##### make tree:
+# create job:
+nano raxml_qinsi_2300.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_2300
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170320.18S_qinsi2300_2000_addfrag.aln.fasta -n SL20170320.18S_qinsi2300_2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_2300.sh 
+1174949.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=124:09:25
+resources_used.mem=467992kb
+resources_used.vmem=986580kb
+resources_used.walltime=10:56:24
+
+#########################################################################################
+##### mafft- qinsi: long2350, addfrag 2000-2350, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2350
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_long2350.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2350
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_2000_2350.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2350
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2350
+
+# create job:
+nano qinsi_2350
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=24gb,walltime=24:00:00
+#PBS -N qinsi_2350
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 24 SL20170320.18S_long2350.fasta > SL20170320.18S_qinsi2350_long.aln.fasta
+mafft --thread 24 --addfragments SL20170320.18S_2000_2350.fasta --adjustdirectionaccurately --reorder SL20170320.18S_qinsi2350_long.aln.fasta > SL20170320.18S_qinsi2350_2000.aln.fasta
+mafft --thread 24 --addfragments SL20170320.18S_frag2000.fasta --adjustdirectionaccurately --reorder SL20170320.18S_qinsi2350_2000.aln.fasta > SL20170320.18S_qinsi2350_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2350 
+1174719.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=97:18:02
+resources_used.mem=13462220kb
+resources_used.vmem=22724108kb
+resources_used.walltime=11:20:24
+
+
+
+##### make tree:
+# create job:
+nano raxml_qinsi_2350.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_2350
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2350
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170320.18S_qinsi2350_2000_addfrag.aln.fasta -n SL20170320.18S_qinsi2350_2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_2350.sh 
+1174792.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=69:13:07
+resources_used.mem=444340kb
+resources_used.vmem=985008kb
+resources_used.walltime=05:46:25
+
+
+#########################################################################################
+##### mafft- qinsi: long2400, addfrag 2000-2400, addfrag <2000
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2400
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_2000_2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170320.18S_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2400
+
+# create job:
+nano qinsi_2400
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=24gb,walltime=12:00:00
+#PBS -N qinsi_2400
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 24 SL20170320.18S_long2400.fasta > SL20170320.18S_qinsi2400_long.aln.fasta
+mafft --thread 24 --addfragments SL20170320.18S_2000_2400.fasta --adjustdirectionaccurately --reorder SL20170320.18S_qinsi2400_long.aln.fasta > SL20170320.18S_qinsi2400_2000.aln.fasta
+mafft --thread 24 --addfragments SL20170320.18S_frag2000.fasta --adjustdirectionaccurately --reorder SL20170320.18S_qinsi2400_2000.aln.fasta > SL20170320.18S_qinsi2400_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2400 
+1174722.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=24:24:38
+resources_used.mem=8454292kb
+resources_used.vmem=12222896kb
+resources_used.walltime=02:57:16
+
+##### make tree:
+# create job:
+nano raxml_qinsi_2400.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi_2400
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170320/qinsi_2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170320.18S_qinsi2400_2000_addfrag.aln.fasta -n SL20170320.18S_qinsi2400_2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi_2400.sh 
+1174735.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=67:43:18
+resources_used.mem=413296kb
+resources_used.vmem=981576kb
+resources_used.walltime=05:38:57
+
+-----------------------------------------------------------------------------------------
+mkdir 20170321
+-----------------------------------------------------------------------------------------
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321 ~/Desktop/sandbox/
+
+
+plan:
+not Leu, >=2400 - align w/ qinsi
+add frag, not Leu >=2000 and <2400
+add frag, not Leu <2000
+
+align Leucothoe w/ qinsi
+
+align everything else (long first, then add frag)
+separate out all Leucothoe sequences, align separately.
+separate out anamixis & paramixis, align separately.
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+
+# Leu alignments:
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_Leu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_Anamix.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+
+nano align_Leu.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=24gb,walltime=12:00:00
+#PBS -N align_Leu
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 12 SL20170321.18S_Leu.fasta > SL20170321.18S_Leu_qinsi.aln.fasta
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 12 SL20170321.18S_Anamix.fasta > SL20170321.18S_Anamix_qinsi.aln.fasta
+mafft --thread 12 --maxiterate 1000 --genafpair --adjustdirectionaccurately --reorder SL20170321.18S_Leu.fasta > SL20170321.18S_Leu_einsi.aln.fasta
+mafft --thread 12 --maxiterate 1000 --genafpair --adjustdirectionaccurately --reorder SL20170321.18S_Anamix.fasta > SL20170321.18S_Anamix_einsi.aln.fasta
+#####
+# run job:
+qsub align_Leu.sh 
+1174924.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=01:28:03
+resources_used.mem=3052328kb
+resources_used.vmem=5451880kb
+resources_used.walltime=00:27:18
+
+#####
+#align not Leu with einsi:
+#plan:
+#not Leu, >=2000 - align w/ einsi
+#add frag, not Leu <2000
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_notLeu_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_notLeu_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+
+nano einsi_notLeu.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=24gb,walltime=12:00:00
+#PBS -N einsi_notLeu
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_long2000.fasta > SL20170321.18S_notLeu_long2000_einsi.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_notLeu_frag2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_long2000_einsi.aln.fasta > SL20170321.18S_notLeu_2000einsi_addfrag.aln.fasta
+#####
+# run job:
+qsub einsi_notLeu.sh 
+1174926.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=05:22:22
+resources_used.mem=3815684kb
+resources_used.vmem=5016944kb
+resources_used.walltime=00:33:40
+
+#### add Leucothoe and (Par)Anamixis alignments to notLeu alignment:
+
+nano add_Leu.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=24gb,walltime=12:00:00
+#PBS -N add_Leu
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addprofile SL20170321.18S_Leu_einsi.aln.fasta --reorder SL20170321.18S_notLeu_2000einsi_addfrag.aln.fasta > SL20170321.18S_notLeu_2000einsi_addfrag_addLeu.aln.fasta
+mafft --thread 12 --addprofile SL20170321.18S_Anamix_einsi.aln.fasta --reorder SL20170321.18S_notLeu_2000einsi_addfrag_addLeu.aln.fasta > SL20170321.18S_notLeu_2000einsi_addfrag_addLeu_Ana.aln.fasta
+#####
+# run job:
+qsub add_Leu.sh 
+qsub add_Leu.sh 
+1174928.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:00:01
+resources_used.mem=0kb
+resources_used.vmem=0kb
+resources_used.walltime=00:00:22
+Neither group forms a monophyletic clade and cannot be added to notLeu alignment.
+
+
+
+one more try...
+
+align not Leu (qinsi)
+-add full length Leu
+-add fragments behaved Leu
+-add fragments other Leu
+
+#####
+#align not Leu with qinsi:
+#plan:
+#not Leu, >=2400 - align w/ qinsi
+#add frag, not Leu >=2000 and <2400
+#add frag, not Leu <2000
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_notLeu_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_notLeu_2000_2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_notLeu_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+
+nano qinsi_notLeu.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=24gb,walltime=24:00:00
+#PBS -N qinsi_notLeu
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 12 SL20170321.18S_notLeu_long2400.fasta > SL20170321.18S_notLeu_long2400_qinsi.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_notLeu_2000_2400.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_long2400_qinsi.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_notLeu_frag2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_2400qinsi_2000.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_notLeu.sh 
+1174930.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=44:07:48
+resources_used.mem=9118284kb
+resources_used.vmem=15433052kb
+resources_used.walltime=06:18:03
+
+## add full length Leu, ## add fragments good Leu, ## add fragments bad Leu
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_longLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_goodLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_badLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+
+
+
+nano add_Leu2.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=12gb,walltime=12:00:00
+#PBS -N add_Leu2
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_longLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_2400qinsi_2000_addfrag.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longLeu.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_goodLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longLeu.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longLeu_goodLeu.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_badLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longLeu_goodLeu.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000_addfrag_allLeu.aln.fasta
+#####
+# run job:
+qsub add_Leu2.sh 
+1174952.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:06:52
+resources_used.mem=224336kb
+resources_used.vmem=1078960kb
+resources_used.walltime=00:01:28
+
+##### make tree:
+# create job:
+nano raxml_addLeu2.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_raxml_addLeu2
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_notLeu_2400qinsi_2000_addfrag_allLeu.aln.fasta -n SL20170321.18S_notLeu_2400qinsi_2000_addfrag_allLeu.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addLeu2.sh 
+1174953.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=134:52:58
+resources_used.mem=444936kb
+resources_used.vmem=989772kb
+resources_used.walltime=11:51:41
+
+
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321/20170322
+-----------------------------------------------------------------------------------------
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321/20170322
+
+another try...
+
+align not Leu (qinsi)
+-add full length Leu
+-add good Leu >500 bp
+-add bad Leu >500 bp
+-add frag Leu <500 bp
+-add problematic leu (L. toribe)
+
+
+#####
+#align not Leu with qinsi:
+#plan:
+#not Leu, >=2400 - align w/ qinsi
+#add frag, not Leu >=2000 and <2400
+#add frag, not Leu <2000
+
+# add files:
+cp ../SL20170321.18S_notLeu_2400qinsi_2000_addfrag.aln.fasta .
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_longLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321/20170322
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_goodLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321/20170322
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_badLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321/20170322
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_fragLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321/20170322
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_probLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321/20170322
+
+
+
+nano add_Leu.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=1:00:00
+#PBS -N add_Leu
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321/20170322
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_longLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_2400qinsi_2000_addfrag.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longLeu.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_goodLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longLeu.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodLeu.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_badLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodLeu.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodbadLeu.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_fragLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodbadLeu.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodbadfragLeu.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_probLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodbadfragLeu.aln.fasta > SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodbadfragprobLeu.aln.fasta
+#####
+# run job:
+qsub add_Leu.sh 
+1175067.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:05:06
+resources_used.mem=12740kb
+resources_used.vmem=178884kb
+resources_used.walltime=00:01:00
+
+
+##### make tree:
+# create job:
+nano raxml_addLeu.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_raxml_addLeu
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170321/20170322
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodbadfragprobLeu.aln.fasta -n SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodbadfragprobLeu.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addLeu.sh 
+1175068.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=67:34:13
+resources_used.mem=444112kb
+resources_used.vmem=989560kb
+resources_used.walltime=05:38:13
+
+
+-----------------------------------------------------------------------------------------
+mkdir 20170322
+-----------------------------------------------------------------------------------------
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322 ~/Desktop/sandbox/
+
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/testaln
+
+SL20170321.18S_test.aln.fasta = 
+SL20170321.18S_notLeu_2400qinsi_2000_addfrag_longgoodbadfragprobLeu.aln.fasta
+with the following problematic sequences removed:
+"JX545417.1-JX545381.1",
+"JX545416.1-JX545380.1",
+"KT808785.1",
+"GU969187.1",
+"KT808784.1"
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_test.aln.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/testaln
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/testaln
+
+nano add_bad.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=1:00:00
+#PBS -N add_bad
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/testaln
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_bad.fasta --adjustdirectionaccurately --reorder SL20170321.18S_test.aln.fasta > SL20170321.18S_test_addbad.aln.fasta
+#####
+# run job:
+qsub add_bad.sh 
+1175069.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:01:57
+resources_used.mem=0kb
+resources_used.vmem=0kb
+resources_used.walltime=00:00:33
+
+##### make tree:
+# create job:
+nano raxml_addbad.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_raxml_addbad
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/testaln
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_test_addbad.aln.fasta -n SL20170321.18S_test_addbad.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_addbad.sh 
+1175070.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=74:49:10
+resources_used.mem=443788kb
+resources_used.vmem=989896kb
+resources_used.walltime=06:14:54
+
+######################
+Add bad
+- remove all questionable sequences
+- sequences back in
+######################
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+
+# addfiles:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_long2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_2000_2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+
+# create job:
+nano qinsi_2400
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2400
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 12 SL20170321.18S_good_long2400.fasta > SL20170321.18S_good_long2400.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_2000_2400.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_long2400.aln.fasta > SL20170321.18S_good_2000_2400.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_frag2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_2000_2400.aln.fasta > SL20170321.18S_good_2000_2400_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2400 
+1175089.cbcbsrv.umiacs.umd.edu
+Exit_status=1
+resources_used.cput=31:18:14
+resources_used.mem=7116852kb
+resources_used.vmem=11494180kb
+resources_used.walltime=04:40:49
+Cannot open SL20170321.18S_good_frag2000. (fixed):
+qsub qinsi_2400
+1175098.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:39:57
+resources_used.mem=501156kb
+resources_used.vmem=1073528kb
+resources_used.walltime=00:04:27
+
+##### make tree:
+# create job:
+nano raxml_qinsi2400.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2400
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_good_2000_2400_addfrag.aln.fasta -n SL20170321.18S_good_2000_2400_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi2400.sh 
+1175100.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=83:17:27
+resources_used.mem=358576kb
+resources_used.vmem=971232kb
+resources_used.walltime=07:15:48
+
+##### add bad seqs:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+# addfiles:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_goodLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_badLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_fragLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_probLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+
+nano add_bad.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=6:00:00
+#PBS -N add_bad
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_goodLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_2000_2400_addfrag.aln.fasta > SL20170321.18S_good_qinsi2400_A.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_badLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_qinsi2400_A.aln.fasta > SL20170321.18S_good_qinsi2400_B.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_fragLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_qinsi2400_B.aln.fasta > SL20170321.18S_good_qinsi2400_C.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_probLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_qinsi2400_C.aln.fasta > SL20170321.18S_good_qinsi2400_D.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_qinsi2400_D.aln.fasta > SL20170321.18S_good_qinsi2400_addBad.aln.fasta
+#####
+# run job:
+qsub add_bad.sh 
+1175099.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:15:18
+resources_used.mem=610852kb
+resources_used.vmem=1078056kb
+resources_used.walltime=00:02:05
+
+##### make tree:
+# create job:
+nano raxml_qinsi2400_addbad.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2400_addbad
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_good_qinsi2400_addBad.aln.fasta -n SL20170321.18S_good_qinsi2400_addBad.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi2400_addbad.sh 
+1175101.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=142:49:03
+resources_used.mem=466236kb
+resources_used.vmem=991724kb
+resources_used.walltime=12:37:25
+
+
+######################
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+
+# addfiles:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_long2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_2000_2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+
+# create job:
+nano qinsi_2300
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=24gb,walltime=72:00:00
+#PBS -N qinsi_2300
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 12 SL20170321.18S_good_long2300.fasta > SL20170321.18S_good_long2300.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_2000_2300.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_long2300.aln.fasta > SL20170321.18S_good_2000_2300.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_frag2000 --adjustdirectionaccurately --reorder SL20170321.18S_good_2000_2300.aln.fasta > SL20170321.18S_good_2000_2300_addfrag.aln.fasta
+#####
+# run job:
+qsub qinsi_2300 
+1175086.cbcbsrv.umiacs.umd.edu
+
+##### make tree:
+# create job:
+nano raxml_qinsi2300.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2300
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_good_2000_2300_addfrag.aln.fasta -n SL20170321.18S_good_2000_2300_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+
+
+##### add bad seqs:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+# addfiles:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_goodLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_badLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_fragLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_probLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+
+nano add_bad.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=6:00:00
+#PBS -N add_bad
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_goodLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_2000_2300_addfrag.aln.fasta > SL20170321.18S_good_qinsi2300_A.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_badLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_qinsi2300_A.aln.fasta > SL20170321.18S_good_qinsi2300_B.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_fragLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_qinsi2300_B.aln.fasta > SL20170321.18S_good_qinsi2300_C.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_probLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_qinsi2300_C.aln.fasta > SL20170321.18S_good_qinsi2300_D.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_qinsi2300_D.aln.fasta > SL20170321.18S_good_qinsi2300_addBad.aln.fasta
+#####
+# run job:
+qsub add_bad.sh 
+
+##### make tree:
+# create job:
+nano raxml_qinsi2300_addbad.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2300_addbad
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_good_qinsi2300_addBad.aln.fasta -n SL20170321.18S_good_qinsi2300_addBad.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+
+##########################
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+
+# addfiles:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_frag2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+
+# create job:
+nano einsi_2000
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=12gb,walltime=12:00:00
+#PBS -N einsi_2000
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --maxiterate 1000 --genafpair --adjustdirectionaccurately --reorder SL20170321.18S_good_long2000.fasta > SL20170321.18S_good_long2000.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_frag2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_long2000.aln.fasta > SL20170321.18S_good_2000_addfrag.aln.fasta
+#####
+# run job:
+qsub einsi_2000 
+1175085.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=02:26:57
+resources_used.mem=3013776kb
+resources_used.vmem=4345844kb
+resources_used.walltime=00:14:35
+
+##### make tree:
+# create job:
+nano raxml_einsi2000.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_einsi2000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_good_2000_addfrag.aln.fasta -n SL20170321.18S_good_2000_addfrag.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_einsi2000.sh 
+1175094.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=36:12:52
+resources_used.mem=324824kb
+resources_used.vmem=967892kb
+resources_used.walltime=03:01:25
+
+##### add bad seqs:
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+# addfiles:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_goodLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_badLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_fragLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_probLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+
+nano add_bad.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=6:00:00
+#PBS -N add_bad
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_goodLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_2000_addfrag.aln.fasta > SL20170321.18S_good_einsi2000_A.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_badLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_einsi2000_A.aln.fasta > SL20170321.18S_good_einsi2000_B.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_fragLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_einsi2000_B.aln.fasta > SL20170321.18S_good_einsi2000_C.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_probLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_einsi2000_C.aln.fasta > SL20170321.18S_good_einsi2000_D.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_einsi2000_D.aln.fasta > SL20170321.18S_good_einsi2000_addBad.aln.fasta
+#####
+# run job:
+qsub add_bad.sh 
+1175087.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:11:17
+resources_used.mem=532344kb
+resources_used.vmem=1072572kb
+resources_used.walltime=00:01:30
+
+##### make tree:
+# create job:
+nano raxml_einsi2000_addbad.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_einsi2000_addbad
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/einsi2000
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_good_einsi2000_addBad.aln.fasta -n SL20170321.18S_good_einsi2000_addBad.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job: 
+qsub raxml_einsi2000_addbad.sh 
+1175095.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=99:37:15
+resources_used.mem=416420kb
+resources_used.vmem=987300kb
+resources_used.walltime=08:39:16
+
+-----------------------------------------------------------------------------------------
+mkdir 20170323
+-----------------------------------------------------------------------------------------
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323 ~/Desktop/sandbox/
+
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+
+plan:
+qinsi good >2400 *
+add 2000-2400 *
+
+add good 1000-2000 x
+add good 500-1000 x
+add good Leu x
+
+add bad Leu x
+add problem Leu x
+add bad >500 x
+
+add good frag<500 x
+add bad frag<500 x
+add Leu frag<500 x
+
+
+* add alignment from yesterday:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400/SL20170321.18S_good_2000_2400.aln.fasta .
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_1000_2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_500_1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_goodLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_badLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_probLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_long500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_frag500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_frag500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_fragLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+
+nano add_seqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=6:00:00
+#PBS -N add_seqs
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_good_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_2000_2400.aln.fasta > SL20170321.18S_A.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_500_1000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_A.aln.fasta > SL20170321.18S_B.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_goodLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_B.aln.fasta > SL20170321.18S_C.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_badLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_C.aln.fasta > SL20170321.18S_D.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_probLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_D.aln.fasta > SL20170321.18S_E.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_long500.fasta --adjustdirectionaccurately --reorder SL20170321.18S_E.aln.fasta > SL20170321.18S_F.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_frag500.fasta --adjustdirectionaccurately --reorder SL20170321.18S_F.aln.fasta > SL20170321.18S_G.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_frag500.fasta --adjustdirectionaccurately --reorder SL20170321.18S_G.aln.fasta > SL20170321.18S_H.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_fragLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_H.aln.fasta > SL20170321.18S_qinsi2400_addseqs.aln.fasta
+#####
+# run job:
+qsub add_seqs.sh 
+1175103.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:45:28
+resources_used.mem=949932kb
+resources_used.vmem=3834300kb
+resources_used.walltime=00:04:38
+
+
+##### make tree:
+# create job:
+nano raxml_qinsi2400_addseqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2400_addseqs
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_qinsi2400_addseqs.aln.fasta -n SL20170321.18S_qinsi2400_addseqs.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi2400_addseqs.sh 
+1175107.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=75:09:07
+resources_used.mem=464936kb
+resources_used.vmem=992256kb
+resources_used.walltime=06:32:31
+
+
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323 ~/Desktop/sandbox/
+##########################################
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+
+(add Lestrigonus schizogeneios to bad list - moves its addition from add good 1000-2000 to add bad >500
+- same as Lestrigonus bengalensis)
+Also added to bad:
+Hyperoche martinezi
+Iulopis loveni
+
+plan:
+qinsi good >2400 *
+add 2000-2400 *
+
+add good 1000-2000 x #Lestrigonus schizogeneios (moved)
+add good 500-1000 x
+add good Leu x
+
+add bad Leu x
+add problem Leu x
+add bad >500 x #Lestrigonus schizogeneios, Lestrigonus bengalensis
+
+add good frag<500 x
+add bad frag<500 x
+add Leu frag<500 x
+
+
+* add alignment from yesterday:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400/SL20170321.18S_good_2000_2400.aln.fasta .
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_1000_2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_500_1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_goodLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_badLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_probLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_long500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_frag500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_frag500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_fragLeu.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+
+nano add_seqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=6:00:00
+#PBS -N add_seqs
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_good_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_2000_2400.aln.fasta > SL20170321.18S_A.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_500_1000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_A.aln.fasta > SL20170321.18S_B.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_goodLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_B.aln.fasta > SL20170321.18S_C.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_badLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_C.aln.fasta > SL20170321.18S_D.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_probLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_D.aln.fasta > SL20170321.18S_E.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_long500.fasta --adjustdirectionaccurately --reorder SL20170321.18S_E.aln.fasta > SL20170321.18S_F.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_frag500.fasta --adjustdirectionaccurately --reorder SL20170321.18S_F.aln.fasta > SL20170321.18S_G.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_frag500.fasta --adjustdirectionaccurately --reorder SL20170321.18S_G.aln.fasta > SL20170321.18S_H.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_fragLeu.fasta --adjustdirectionaccurately --reorder SL20170321.18S_H.aln.fasta > SL20170321.18S_qinsi2400_addseqs_take2.aln.fasta
+#####
+# run job:
+qsub add_seqs.sh 
+1175108.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:46:03
+resources_used.mem=612368kb
+resources_used.vmem=1076784kb
+resources_used.walltime=00:04:41
+
+
+##### make tree:
+# create job:
+nano raxml_qinsi2400_addseqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2400_addseqs
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170323/qinsi2400_take2
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_qinsi2400_addseqs_take2.aln.fasta -n SL20170321.18S_qinsi2400_addseqs_take2.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi2400_addseqs.sh 
+1175109.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=65:10:26
+resources_used.mem=471652kb
+resources_used.vmem=992148kb
+resources_used.walltime=05:27:25
+
+-----------------------------------------------------------------------------------------
+mkdir 20170325
+-----------------------------------------------------------------------------------------
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325 ~/Desktop/sandbox/
+
+##########################################
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+
+bad Leu added to bad list (no longer dealt with separately)
+Lestrigonus schizogeneios removed from bad list
+
+plan:
+qinsi 18S_good_long2400.fasta (from 3/22)
+
+add 18S_good_2000_2400.fasta
+add 18S_good_1000_2000.fasta
+add 18S_good_500_1000.fasta
+add 18S_good_frag500.fasta
+
+add 18S_bad_long2000.fasta
+add 18S_bad_1000_2000.fasta
+##add 18S_bad_500_1000.fasta = currently no sequences
+##add 18S_bad_frag500.fasta
+add 18S_bad_frag1000.fasta
+
+
+* add alignment from 3/22:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2400/SL20170321.18S_good_long2400.aln.fasta .
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_2000_2400.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_1000_2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_500_1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_frag500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_1000_2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_frag1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+
+nano add_seqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=1:00:00
+#PBS -N add_seqs
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_good_2000_2400.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_long2400.aln.fasta > SL20170321.18S_A.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_A.aln.fasta > SL20170321.18S_B.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_500_1000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_B.aln.fasta > SL20170321.18S_C.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_frag500.fasta --adjustdirectionaccurately --reorder SL20170321.18S_C.aln.fasta > SL20170321.18S_D.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_long2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_D.aln.fasta > SL20170321.18S_E.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_E.aln.fasta > SL20170321.18S_F.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_frag1000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_F.aln.fasta > SL20170321.18S_qinsi2400_addseqs.aln.fasta
+#####
+# run job:
+qsub add_seqs.sh 
+1175307.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=00:55:52
+resources_used.mem=605572kb
+resources_used.vmem=1079352kb
+resources_used.walltime=00:05:34
+
+##### make tree:
+# create job:
+nano raxml_qinsi2400_addseqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2400_addseqs
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2400
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_qinsi2400_addseqs.aln.fasta -n SL20170321.18S_qinsi2400_addseqs.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi2400_addseqs.sh 
+1175309.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=65:32:37
+resources_used.mem=472472kb
+resources_used.vmem=992164kb
+resources_used.walltime=05:28:04
+
+
+
+##########################################
+pwd
+/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+
+bad Leu added to bad list (no longer dealt with separately)
+Lestrigonus schizogeneios removed from bad list
+
+plan:
+qinsi 18S_good_long2300.fasta (from 3/22)
+
+add 18S_good_2000_2300.fasta
+add 18S_good_1000_2000.fasta
+add 18S_good_500_1000.fasta
+add 18S_good_frag500.fasta
+
+add 18S_bad_long2000.fasta
+add 18S_bad_1000_2000.fasta
+##add 18S_bad_500_1000.fasta = currently no sequences
+##add 18S_bad_frag500.fasta
+add 18S_bad_frag1000.fasta
+
+
+* add alignment from 3/22:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170322/addbad/qinsi2300/SL20170321.18S_good_long2300.aln.fasta .
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_2000_2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_1000_2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_500_1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_good_frag500.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_long2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_1000_2000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170321.18S_bad_frag1000.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+
+nano add_seqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=1:00:00
+#PBS -N add_seqs
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170321.18S_good_2000_2300.fasta --adjustdirectionaccurately --reorder SL20170321.18S_good_long2300.aln.fasta > SL20170321.18S_A.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_A.aln.fasta > SL20170321.18S_B.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_500_1000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_B.aln.fasta > SL20170321.18S_C.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_good_frag500.fasta --adjustdirectionaccurately --reorder SL20170321.18S_C.aln.fasta > SL20170321.18S_D.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_long2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_D.aln.fasta > SL20170321.18S_E.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_E.aln.fasta > SL20170321.18S_F.aln.fasta
+mafft --thread 12 --addfragments SL20170321.18S_bad_frag1000.fasta --adjustdirectionaccurately --reorder SL20170321.18S_F.aln.fasta > SL20170321.18S_qinsi2300_addseqs.aln.fasta
+#####
+# run job:
+qsub add_seqs.sh 
+1175308.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=01:21:52
+resources_used.mem=543468kb
+resources_used.vmem=1084160kb
+resources_used.walltime=00:08:16
+
+##### make tree:
+# create job:
+nano raxml_qinsi2300_addseqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2300_addseqs
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/20170325/qinsi2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170321.18S_qinsi2300_addseqs.aln.fasta -n SL20170321.18S_qinsi2300_addseqs.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi2300_addseqs.sh 
+1175310.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=141:22:14
+resources_used.mem=493628kb
+resources_used.vmem=995200kb
+resources_used.walltime=12:37:53
+
+-----------------------------------------------------------------------------------------
+20170719
+-----------------------------------------------------------------------------------------
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719 ~/Desktop/sandbox/18S/
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719
+
+### New alignments with updated dataset (SL20170417)
+
+#####
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300
+
+# add file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170417.18S_good_long2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300
+
+nano qinsi_2300.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2300
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 24 SL20170417.18S_good_long2300.fasta > SL20170417.18S_good_long2300.aln.fasta
+#####
+# run job:
+qsub qinsi_2300.sh 
+1191755.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=157:30:06
+resources_used.mem=12755184kb
+resources_used.vmem=20045188kb
+resources_used.walltime=17:22:07
+
+#### with 36 cpus:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36
+
+# add file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170417.18S_good_long2300.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36
+
+nano qinsi_2300_36.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=36,mem=24gb,walltime=48:00:00
+#PBS -N qinsi_2300_36
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 36 SL20170417.18S_good_long2300.fasta > SL20170417.18S_good_long2300.aln.fasta
+#####
+# run job:
+qsub qinsi_2300_36.sh 
+1191756.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=116:47:29
+resources_used.mem=11789580kb
+resources_used.vmem=20045188kb
+resources_used.walltime=12:43:23
+
+# add fragments to quinsi_2300_36:
+add good files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170417.18S_good_* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36
+add bad files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170417.18S_bad_* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36
+
+nano add_seqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=1:00:00
+#PBS -N add_seqs
+#PBS -q large
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+mafft --thread 12 --addfragments SL20170417.18S_good_2000_2300.fasta --adjustdirectionaccurately --reorder SL20170417.18S_good_long2300.aln.fasta > SL20170417.18S_A.aln.fasta
+mafft --thread 12 --addfragments SL20170417.18S_good_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170417.18S_A.aln.fasta > SL20170417.18S_B.aln.fasta
+mafft --thread 12 --addfragments SL20170417.18S_good_500_1000.fasta --adjustdirectionaccurately --reorder SL20170417.18S_B.aln.fasta > SL20170417.18S_C.aln.fasta
+mafft --thread 12 --addfragments SL20170417.18S_good_frag500.fasta --adjustdirectionaccurately --reorder SL20170417.18S_C.aln.fasta > SL20170417.18S_D.aln.fasta
+mafft --thread 12 --addfragments SL20170417.18S_bad_long2000.fasta --adjustdirectionaccurately --reorder SL20170417.18S_D.aln.fasta > SL20170417.18S_E.aln.fasta
+mafft --thread 12 --addfragments SL20170417.18S_bad_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170417.18S_E.aln.fasta > SL20170417.18S_F.aln.fasta
+mafft --thread 12 --addfragments SL20170417.18S_bad_frag1000.fasta --adjustdirectionaccurately --reorder SL20170417.18S_F.aln.fasta > SL20170417.18S_qinsi2300_addseqs.aln.fasta
+#####
+# run job:
+qsub add_seqs.sh
+1192647.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=01:05:18
+resources_used.mem=450452kb
+resources_used.vmem=1075156kb
+resources_used.walltime=00:06:28
+
+##### make tree:
+# create job:
+nano raxml_qinsi2300_addseqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=12,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2300_addseqs
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 12 -s SL20170417.18S_qinsi2300_addseqs.aln.fasta -n SL20170417.18S_qinsi2300_addseqs.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi2300_addseqs.sh 
+1192660.cbcbsrv.umiacs.umd.edu
+delete job - moving too slow.
+
+### tree with more cpus:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36/raxml_24
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36/raxml_24
+cp ../SL20170417.18S_qinsi2300_addseqs.aln.fasta .
+
+# create job:
+nano raxml_qinsi2300_addseqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=24,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2300_addseqs
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36/raxml_24
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 24 -s SL20170417.18S_qinsi2300_addseqs.aln.fasta -n SL20170417.18S_qinsi2300_addseqs.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi2300_addseqs.sh 
+1192668.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=87:12:59
+resources_used.mem=460524kb
+resources_used.vmem=1854300kb
+resources_used.walltime=03:38:45
+
+### 1000bs tree with even more cpus:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36/raxml_36
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36/raxml_36
+cp ../SL20170417.18S_qinsi2300_addseqs.aln.fasta .
+
+# create job:
+nano raxml_qinsi2300_addseqs.sh
+#####
+#!/usr/bin/bash
+#PBS -l ncpus=36,mem=5gb,walltime=24:00:00
+#PBS -q large
+#PBS -N raxml_qinsi2300_addseqs
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170719/qinsi2300_36/raxml_36
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+RAxML -T 36 -s SL20170417.18S_qinsi2300_addseqs.aln.fasta -n SL20170417.18S_qinsi2300_addseqs.tree -m GTRGAMMA -f a -N 1000 -p 321 -x 654
+#####
+# run job:
+qsub raxml_qinsi2300_addseqs.sh 
+1192931.cbcbsrv.umiacs.umd.edu
+Exit_status=0
+resources_used.cput=797:13:46
+resources_used.mem=1122776kb
+resources_used.vmem=3390848kb
+resources_used.walltime=22:11:21
