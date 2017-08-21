@@ -118,6 +118,16 @@ total: 1305 sequences
 SL20170808.fasta
 SL20170808.gb
 
+2017.08.13
+create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
+- Create full list of all available Hyperiid sequences and outgroup COI & 18S sequences
+    - done 8/13/17 saved as HL20170813.txt
+    - downloaded as HL20170813.fasta & .gb
+    - 372 hyperiid sequences and 2 outgroups
+    - outgroups:    18S AB295398.1 Caprella danilevskii
+                    COI KC146187.1 Caprella dilatata
+                    * add other outgroups for other genes later
+
 ```{r eval=FALSE}
 #TAXA = "SelectedList_2017021"
 #TAXA = "SL_20170304"
@@ -134,7 +144,9 @@ SL20170808.gb
 #TAXA = "SL20170511"
 #TAXA = "SL20170725"
 #TAXA = "SL20170726"
-TAXA = "SL20170808"
+#TAXA = "SL20170808"
+#TAXA = "HL20170813"
+TAXA = "HL20170820"
 
 ```
 
@@ -477,7 +489,7 @@ for (pA in links$partA){
   df[df$accession==pA,which(names(df)=="accession")]=pAB
 }
 # remove pB lines from df:
-df = df[-which(df$accession %in% links$partB),]
+df = df[which(!(df$accession %in% links$partB)),]
 
 ```
 
@@ -1161,14 +1173,16 @@ COI_trimming=read.delim("COI_trimming.txt", sep="\t", stringsAsFactors = FALSE)
 
 for (i in row.names(COI_trimming)) {
   row=(COI_trimming[i,])
-  COI=df$sequence[df$accession==row$accession]
-  ##trim sequence:
-  COI=substr(COI,row$start,row$stop)
-  if (row$complement) {
-    COI=as.character(reverseComplement(DNAString(COI)))
+  if (row$accession %in% df$accession){
+    COI=df$sequence[df$accession==row$accession]
+    ##trim sequence:
+    COI=substr(COI,row$start,row$stop)
+    if (row$complement) {
+      COI=as.character(reverseComplement(DNAString(COI)))
+    }
+    df_COI$sequence[df_COI$accession==row$accession]=COI
+    df_COI$bp_length[df_COI$accession==row$accession]=str_length(COI)
   }
-  df_COI$sequence[df_COI$accession==row$accession]=COI
-  df_COI$bp_length[df_COI$accession==row$accession]=str_length(COI)
 }
 
 ## manually add reading frame information where missing:
@@ -1208,8 +1222,12 @@ for (i in row.names(df_COI)){
 
 Concatinating COI pieces
 ```{r, eval=FALSE}
+#df_COI_backup = df_COI #backup COI dataframe for troubleshooting
+#df_COI=df_COI_backup #restore COI dataframe from backup
+
 #remove unnecessary columns
-df_COI = df_COI[,which(names(df_COI) %in% c("species_name","organism","taxon_id","accession","gene","bp_length","sequence"))]
+
+df_COI = df_COI[,which(names(df_COI) %in% c("species_name","organism","taxon_id","accession","gene","bp_length","sequence","frame"))]
 
 COI_links=read.csv("COI_links.csv", stringsAsFactors=FALSE)
 
@@ -1229,11 +1247,25 @@ for (pA in COI_links$partA){
   df_COI[df_COI$accession==pA,which(names(df_COI)=="accession")]=pAB
 }
 # remove pB lines from df_COI:
-df_COI = df_COI[-which(df_COI$accession %in% COI_links$partB),]
+df_COI = df_COI[which(!(df_COI$accession %in% COI_links$partB)),]
 
 # create fasta file
 dataname=paste(TAXA,"COI",sep=".")
 create.fasta(dataname,df_COI)
+```
+
+```{r, eval=FALSE}
+###DRAFT###
+
+# translate COI
+COI_seq=DNAString(df_COI$sequence) # not working
+
+for (seq in df_COI$sequence){
+}
+
+SGC4 <- getGeneticCode("SGC4") # Invertebrate Mitochondrial code
+COI_aa=translate(df_COI$sequence, genetic.code = SGC4, if.fuzzy.codon="solve")
+
 ```
 
 ```{r, eval=FALSE, tidy=TRUE}
