@@ -1238,3 +1238,4 @@ RAxML -T 4 -s HL20170813.COI.revtrans.aln.fasta -n HL20170813.COI.revtrans.parti
 sbatch raxml_hyperiidCOI_aa_partitioned.sh
 Submitted batch job 54056
 squeue --job 54056
+
