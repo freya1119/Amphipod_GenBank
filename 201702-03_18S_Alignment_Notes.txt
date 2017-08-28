@@ -4198,28 +4198,28 @@ resources_used.vmem=3390848kb
 resources_used.walltime=22:11:21
 
 -----------------------------------------------------------------------------------------
-20170721
+20170821
 -----------------------------------------------------------------------------------------
-mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170721
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170821
 #copy files to mac:
-scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170721 ~/Desktop/sandbox/18S/
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170821 ~/Desktop/sandbox/18S/
 
 ### Aligning all Hyperiid 18S sequences and 1 outgroup (Dikwa sp.) for data selection
 ### Data: HL20170820
 
 ####
-mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170721/qinsi2300
-cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170721/qinsi2300
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170821/qinsi2300
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170821/qinsi2300
 
 # add files:
-scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/HL20170820.18S* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170721/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/HL20170820.18S* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170821/qinsi2300
 
 nano qinsi_2300.sh
 #####
 #!/usr/bin/bash
 #SBATCH --job-name=qinsi_2300
 #SBATCH --qos=throughput
-#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170721/qinsi2300
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170821/qinsi2300
 #SBATCH --partition=dpart
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=8
@@ -4249,28 +4249,28 @@ squeue --job 54644
 
 
 -----------------------------------------------------------------------------------------
-20170722
+20170822
 -----------------------------------------------------------------------------------------
-mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170722
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170822
 #copy files to mac:
-scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170722 ~/Desktop/sandbox/18S/
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170822 ~/Desktop/sandbox/18S/
 
 ### Aligning all Hyperiid 18S sequences and 1 outgroup (Dikwa sp.) with long branch Leucothoe removed
 ### Data: HL20170821
 
 ####
-mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170722/qinsi2300
-cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170722/qinsi2300
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170822/qinsi2300
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170822/qinsi2300
 
 # add files:
-scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/HL20170821.18S* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170722/qinsi2300
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/HL20170821.18S* biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170822/qinsi2300
 
 nano qinsi_2300.sh
 #####
 #!/usr/bin/bash
 #SBATCH --job-name=qinsi_2300
 #SBATCH --qos=throughput
-#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170722/qinsi2300
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170822/qinsi2300
 #SBATCH --partition=dpart
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=8
@@ -4297,3 +4297,47 @@ RAxML -T 8 -s HL20170821.18S_all.aln.fasta -n HL20170821.18S_qinsi2300.tree -m G
 sbatch qinsi_2300.sh
 Submitted batch job 57867
 squeue --job 57867
+
+-----------------------------------------------------------------------------------------
+20170828
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828
+#copy files to mac:
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828 ~/Desktop/sandbox/18S/
+
+### Aligning all Leucothoidae 18S sequences and (Amphilochus & Colomastix)
+
+#Create full list of all available Leucothoidae 18S sequences (Leu_18S_all.fasta)
+
+####
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828/Leu_18S_all.qinsi
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828/Leu_18S_all.qinsi
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/ParseGenBank/Leu_COI_all.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828/Leu_18S_all.qinsi
+
+nano Leu_18S_all.qinsi.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=Leu_18S_all.qinsi
+#SBATCH --qos=throughput
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828/Leu_18S_all.qinsi
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=36G
+#SBATCH --time=18:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 8 Leu_COI_all.fasta > Leu_COI_all.aln.fasta
+
+RAxML -T 8 -s Leu_COI_all.aln.fasta -n Leu_COI_all.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+sbatch Leu_18S_all.qinsi.sh
+Submitted batch job 
+squeue --job 
+

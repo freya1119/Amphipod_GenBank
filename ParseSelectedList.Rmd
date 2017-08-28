@@ -1281,6 +1281,7 @@ for (seq in df_COI$sequence){
 SGC4 <- getGeneticCode("SGC4") # Invertebrate Mitochondrial code
 COI_aa=translate(df_COI$sequence, genetic.code = SGC4, if.fuzzy.codon="solve")
 
+
 ```
 
 ```{r, eval=FALSE, tidy=TRUE}

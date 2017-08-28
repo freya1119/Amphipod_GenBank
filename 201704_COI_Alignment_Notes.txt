@@ -1239,3 +1239,42 @@ sbatch raxml_hyperiidCOI_aa_partitioned.sh
 Submitted batch job 54056
 squeue --job 54056
 
+-----------------------------------------------------------------------------------------
+20170823
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170823
+#copy files to mac:
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170823 ~/Desktop/sandbox/COI/
+
+#Create full list of all available Leucothoidae COI sequences (Leu_COI_all.fasta)
+
+##### linsi alignment of Leu_COI_all sequences:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170823/Leu_COI_all.linsi
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170823/Leu_COI_all.linsi
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/ParseGenBank/Leu_COI_all.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170823/Leu_COI_all.linsi
+
+# create job:
+nano linsi_Leu_COI_all.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=linsi_Leu_COI_all
+#SBATCH --qos=workstation
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20170823/Leu_COI_all.linsi
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=4G
+#SBATCH --time=12:00:00
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+mafft --thread 4 --localpair --maxiterate 1000 --reorder Leu_COI_all.fasta > Leu_COI_all.aln.fasta
+# Build tree
+RAxML -T 4 -s Leu_COI_all.aln.fasta -n Leu_COI_all.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+sbatch linsi_Leu_COI_all.sh
+Submitted batch job 58580
+squeue --job 58580
+
