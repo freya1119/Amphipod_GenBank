@@ -4314,7 +4314,7 @@ mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828/L
 cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828/Leu_18S_all.qinsi
 
 # add files:
-scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/ParseGenBank/Leu_COI_all.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828/Leu_18S_all.qinsi
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/ParseGenBank/Leu_18S_all.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170828/Leu_18S_all.qinsi
 
 nano Leu_18S_all.qinsi.sh
 #####
@@ -4333,11 +4333,11 @@ nano Leu_18S_all.qinsi.sh
 PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
 PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
 
-mafft-qinsi --adjustdirectionaccurately --reorder --thread 8 Leu_COI_all.fasta > Leu_COI_all.aln.fasta
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 8 Leu_18S_all.fasta > Leu_18S_all.aln.fasta
 
-RAxML -T 8 -s Leu_COI_all.aln.fasta -n Leu_COI_all.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+RAxML -T 8 -s Leu_18S_all.aln.fasta -n Leu_18S_all.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
 #####
 sbatch Leu_18S_all.qinsi.sh
-Submitted batch job 
-squeue --job 
+Submitted batch job 63704
+squeue --job 63704
 
