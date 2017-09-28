@@ -148,6 +148,7 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 #TAXA = "HL20170813"
 #TAXA = "HL20170820"
 TAXA = "HL20170821"
+#TAXA = "RNAList" #18S sequences representing taxon sampling for Chapter 2
 
 ```
 
@@ -506,7 +507,7 @@ density18S=density(len18S)
 plot(density18S)
 
 # #create Fasta files for concatinated 18S:
-# dataname=paste(TAXA,"18S_all",sep=".")
+# dataname=paste(TAXA,"18S",sep=".")
 # create.fasta(dataname,df_18S)
 # 
 # #Select sequences >=1500bp (full length) and < 1500bp (fragments):
