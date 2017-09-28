@@ -127,6 +127,12 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
     - outgroups:    18S AB295398.1 Caprella danilevskii
                     COI KC146187.1 Caprella dilatata
                     * add other outgroups for other genes later
+                    
+2017.09.27
+- trim Hyperiidea taxon selection based on COI & 18S trees of all Hyperiid sequences
+- trim Leu taxon selection based on COI & 18S trees of all Leu sequences
+- add new sequences from GenBank
+
 
 ```{r eval=FALSE}
 #TAXA = "SelectedList_2017021"
@@ -147,8 +153,9 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 #TAXA = "SL20170808"
 #TAXA = "HL20170813"
 #TAXA = "HL20170820"
-TAXA = "HL20170821"
+#TAXA = "HL20170821"
 #TAXA = "RNAList" #18S sequences representing taxon sampling for Chapter 2
+TAXA = "SL20170927"
 
 ```
 
