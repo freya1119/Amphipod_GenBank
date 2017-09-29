@@ -408,6 +408,38 @@ for (item in fix16Slabel){
 }
 #df[df$accession=="MF072685.1",which(names(df)=="gene")]="mt_16S"
 
+# update IDs on Bill's hyperiids:
+
+G_rebecae=c("KC428923","KC428872","KC428974","EF989655")
+H_sibaginis=c("EF989686","KC428842","KC428893","KC428944")
+Hyperia=c("EF989667","KC428897","KC428846","KC428948")
+
+acc_col=which(names(df)=="accession_gb")
+acc_list=df[,acc_col]
+
+for(i in G_rebecae){
+  row=which(acc_list==i)
+  df$species_name[row]="Glossocephalus rebecae"
+  df$organism[row]="Glossocephalus rebecae"
+  df$taxon_id[row]="472275"
+}
+
+for(i in H_sibaginis){
+  row=which(acc_list==i)
+  df$species_name[row]="Hyperioides sibaginis"
+  df$organism[row]="Hyperioides sibaginis"
+  df$taxon_id[row]="749006"
+}
+
+for(i in Hyperia){
+  row=which(acc_list==i)
+  df$species_name[row]="Hyperia sp."
+  df$organism[row]="Hyperia sp."
+  df$taxon_id[row]="371513" # taxon ID is for genus
+}
+
+df[df$accession_gb==pA,which(names(df)=="sequence")]=seq_pAB
+
 #head(others)
 #print(length(others))
 df_others<-df[gene=="other",]
