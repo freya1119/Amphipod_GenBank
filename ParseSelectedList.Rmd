@@ -402,11 +402,13 @@ df=data.frame(species_name,organism,taxon_id,voucher,isolate,country,accession,a
 # change gene name for mislabelled 16S sequence
 ## Some genes labelled "large subunit" but blasts and aligns to 16S
 ## MF072683.1, MF072685
+###############################################################
 fix16Slabel=c("MF072683.1", "MF072685.1")
 for (item in fix16Slabel){
   df[df$accession==item,which(names(df)=="gene")]="mt_16S"
 }
 #df[df$accession=="MF072685.1",which(names(df)=="gene")]="mt_16S"
+###############################################################
 
 # update IDs on Bill's hyperiids:
 G_rebecae=c("KC428923","KC428872","KC428974","EF989655")
@@ -551,6 +553,10 @@ df_18S=df[!(is.na(str_match(df$gene,"n_18S"))),]#######
 len18S=df_18S$bp_length
 density18S=density(len18S)
 plot(density18S)
+```
+
+Separating different length 18S Sequences
+```{r, eval=FALSE}
 
 # #create Fasta files for concatinated 18S:
 # dataname=paste(TAXA,"18S",sep=".")
@@ -928,28 +934,28 @@ plot(density18S_bad)
 #create.fasta(dataname,df_18S_bad)
 #Separate by size:
 df_18S_bad_long1500=subset(df_18S_bad, bp_length >= 1500)
-dataname=paste(TAXA,"18S_bad_long1500",sep=".")
-create.fasta(dataname,df_18S_bad_long1500)
+#dataname=paste(TAXA,"18S_bad_long1500",sep=".")
+#create.fasta(dataname,df_18S_bad_long1500)
 
-#df_18S_bad_long2000=subset(df_18S_bad, bp_length >= 2000)
-#dataname=paste(TAXA,"18S_bad_long2000",sep=".")
-#create.fasta(dataname,df_18S_bad_long2000)
+df_18S_bad_long2000=subset(df_18S_bad, bp_length >= 2000)
+dataname=paste(TAXA,"18S_bad_long2000",sep=".")
+create.fasta(dataname,df_18S_bad_long2000)
 
-#df_18S_bad_1000_2000=subset(df_18S_bad, (bp_length >= 1000 & bp_length < 2000))
-#dataname=paste(TAXA,"18S_bad_1000_2000",sep=".")
-#create.fasta(dataname,df_18S_bad_1000_2000)
+df_18S_bad_1000_2000=subset(df_18S_bad, (bp_length >= 1000 & bp_length < 2000))
+dataname=paste(TAXA,"18S_bad_1000_2000",sep=".")
+create.fasta(dataname,df_18S_bad_1000_2000)
 
 df_18S_bad_500_1500=subset(df_18S_bad, (bp_length >= 500 & bp_length < 1500))
-dataname=paste(TAXA,"18S_bad_500_1500",sep=".")
-create.fasta(dataname,df_18S_bad_500_1500)
+#dataname=paste(TAXA,"18S_bad_500_1500",sep=".")
+#create.fasta(dataname,df_18S_bad_500_1500)
 
 df_18S_bad_frag500=subset(df_18S_bad, bp_length < 500)
-dataname=paste(TAXA,"18S_bad_frag500",sep=".")
-create.fasta(dataname,df_18S_bad_frag500)
+#dataname=paste(TAXA,"18S_bad_frag500",sep=".")
+#create.fasta(dataname,df_18S_bad_frag500)
 
-#df_18S_bad_frag1000=subset(df_18S_bad, bp_length < 1000)
-#dataname=paste(TAXA,"18S_bad_frag1000",sep=".")
-#create.fasta(dataname,df_18S_bad_frag1000)
+df_18S_bad_frag1000=subset(df_18S_bad, bp_length < 1000)
+dataname=paste(TAXA,"18S_bad_frag1000",sep=".")
+create.fasta(dataname,df_18S_bad_frag1000)
 
 #create df of good sequences:
 #df_18S_good=subset(rbind(df_18S_notLeu, df_18S_longLeu), !(accession %in% bad))
@@ -973,14 +979,14 @@ df_18S_good_1000_2000=subset(df_18S_good_frag2000, bp_length >= 1000)
 dataname=paste(TAXA,"18S_good_1000_2000",sep=".")
 create.fasta(dataname,df_18S_good_1000_2000)
 df_18S_good_frag1000=subset(df_18S_good, bp_length <1000)
-dataname=paste(TAXA,"18S_good_frag1000",sep=".")
-create.fasta(dataname,df_18S_good_frag1000)
-#df_18S_good_500_1000=subset(df_18S_good_frag2000, (bp_length >= 500 & bp_length <1000))
-#dataname=paste(TAXA,"18S_good_500_1000",sep=".")
-#create.fasta(dataname,df_18S_good_500_1000)
-#df_18S_good_frag500=subset(df_18S_good_frag2000, bp_length < 500)
-#dataname=paste(TAXA,"18S_good_frag500",sep=".")
-#create.fasta(dataname,df_18S_good_frag500)
+#dataname=paste(TAXA,"18S_good_frag1000",sep=".")
+#create.fasta(dataname,df_18S_good_frag1000)
+df_18S_good_500_1000=subset(df_18S_good_frag2000, (bp_length >= 500 & bp_length <1000))
+dataname=paste(TAXA,"18S_good_500_1000",sep=".")
+create.fasta(dataname,df_18S_good_500_1000)
+df_18S_good_frag500=subset(df_18S_good_frag2000, bp_length < 500)
+dataname=paste(TAXA,"18S_good_frag500",sep=".")
+create.fasta(dataname,df_18S_good_frag500)
 
 
 #Separate by size 2400:
