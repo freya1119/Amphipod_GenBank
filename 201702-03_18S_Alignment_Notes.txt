@@ -4688,7 +4688,7 @@ RAxML -T 48 -s SL20170927.18S_all.aln.fasta -n SL20170927.18S_qinsi2300_48.tree 
 sbatch qinsi2300_48.sh
 Submitted batch job 90080
 squeue --job 90080
-Running at 1:23pm
+run time: 09:41:37
 
 *******************
 #### qinsi2200-2375 ####
@@ -4808,3 +4808,47 @@ sbatch no_L.bengal.sh
 Submitted batch job 90174
 squeue --job 90174
 Running at 1:23pm
+
+#### RErun qinsi2300 without Isopods (check for changes in alignment and/or tree topology)
+#### with 48 cpus this time
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.18S* biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+
+nano no_isopod.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=no_isopod
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=20GB
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 48 SL20170927.18S_good_long2300.fasta > SL20170927.18S_good_long2300.aln.fasta
+
+mafft --thread 48 --addfragments SL20170927.18S_good_2000_2300.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_long2300.aln.fasta > SL20170927.18S_good_2000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_2000.aln.fasta > SL20170927.18S_good_1000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_500_1000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_1000.aln.fasta > SL20170927.18S_good_500.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_frag500.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_500.aln.fasta > SL20170927.18S_good_all.aln.fasta
+
+
+mafft --thread 48 --addfragments SL20170927.18S_bad_long2000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all.aln.fasta > SL20170927.18S_good_all_bad_2000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_bad_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all_bad_2000.aln.fasta > SL20170927.18S_good_all_bad_1000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_bad_frag1000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all_bad_1000.aln.fasta > SL20170927.18S_all.aln.fasta
+
+RAxML -T 48 -s SL20170927.18S_all.aln.fasta -n SL20170927.18S_no_isopod.tree -m GTRGAMMA -f a -N 100 -p 987 -x 789
+#####
+sbatch no_isopod.sh
+Submitted batch job 90178
+squeue --job 90178
