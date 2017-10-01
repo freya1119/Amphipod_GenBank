@@ -513,7 +513,6 @@ create.fasta <- function(dataname,dataframe) {
 ``` 
 
 Concatinating 18S pieces
-*** fix this - it should edit df_18S not df! ***
 ```{r, eval=FALSE}
 df_raw = df #backup dataframe before making changes
 #df = df_raw #reset df
@@ -548,6 +547,10 @@ Selecting different length 18S Sequences
 library(stringr)
 
 df_18S=df[!(is.na(str_match(df$gene,"n_18S"))),]#######
+
+#remove isopods from df_18S
+#Isopods=c("EF682247.1","AB889803.1","AB861893.1","EF682260","KC428898.1","KR424631.1","LC126633.1","AJ287062.1","AY048181.1","KR424622.1","AF496662.1","JN800584.1","AB861917.1","AF496663.1","AY048186.1","KR424633.1","KF007785.1")
+#df_18S=df_18S[!(df_18S$accession %in% Isopods),]
 
 #Plot Lengths of 18S sequences:
 len18S=df_18S$bp_length
@@ -908,13 +911,13 @@ bad=c(
 "KC428899.1",
 #bad Leu:
 "KC527601.1",
-"JX145103.1",
-"JX145102.1",
+"JX145103.1",#
+"JX145102.1",#
 "KC527598.1",
 "JX145101.1",
 "JX145115.1",
-"JX145107.1",
-"JX145106.1",
+"JX145107.1",#
+"JX145106.1",#
 "JX145108.1",
 "JX145081.1",
 "JF506091.1",
@@ -942,9 +945,9 @@ dataname=paste(TAXA,"18S_bad_long2000",sep=".")
 create.fasta(dataname,df_18S_bad_long2000)
 
 #remove Lestrigonous bengalensis:
-df_18S_trimmed_bad_long2000=subset(df_18S_bad_long2000, accession != "GU969187.1")
-dataname=paste(TAXA,"18S_trimmed_bad_long2000",sep=".")
-create.fasta(dataname,df_18S_trimmed_bad_long2000)
+#df_18S_trimmed_bad_long2000=subset(df_18S_bad_long2000, accession != "GU969187.1")
+#dataname=paste(TAXA,"18S_trimmed_bad_long2000",sep=".")
+#create.fasta(dataname,df_18S_trimmed_bad_long2000)
 
 df_18S_bad_1000_2000=subset(df_18S_bad, (bp_length >= 1000 & bp_length < 2000))
 dataname=paste(TAXA,"18S_bad_1000_2000",sep=".")
@@ -1034,6 +1037,13 @@ density18S_good_2200_2375=density(len18S_good_2200_2375)
 plot(density18S_good_2200_2375)
 dataname=paste(TAXA,"18S_good_2200_2375",sep=".")
 create.fasta(dataname,df_18S_good_2200_2375)
+
+df_18S_good_long2375=subset(df_18S_good, bp_length>=2375)
+dataname=paste(TAXA,"18S_good_long2375",sep=".")
+create.fasta(dataname,df_18S_good_long2375)
+df_18S_good_2000_2200=subset(df_18S_good_long2000, bp_length<2200)
+dataname=paste(TAXA,"18S_good_2000_2200",sep=".")
+create.fasta(dataname,df_18S_good_2000_2200)
 
 df_18S_good_long2250=subset(df_18S_good, bp_length >=2250)
 df_18S_good_2250_2350=subset(df_18S_good_long2250, bp_length <2350)

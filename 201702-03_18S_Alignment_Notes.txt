@@ -4342,6 +4342,49 @@ Submitted batch job 63704
 squeue --job 63704
 
 -----------------------------------------------------------------------------------------
+20170906
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170906
+#copy files to mac:
+scp -r biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170906 ~/Desktop/sandbox/18S/
+
+### Aligning 18S Sequences Representing taxon sampling from Chapter 2
+
+# File : RNAList.18S.fasta)
+
+####
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170906/RNAList.18S.qinsi
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170906/RNAList.18S.qinsi
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/RNAList.18S.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170906/RNAList.18S.qinsi
+
+nano RNAList.18S.qinsi.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=RNAList.18S.qinsi
+#SBATCH --qos=throughput
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170906/RNAList.18S.qinsi
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=36G
+#SBATCH --time=18:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 8 RNAList.18S.fasta > RNAList.18S.aln.fasta
+
+RAxML -T 8 -s RNAList.18S.aln.fasta -n RNAList.18S.tree -m GTRGAMMA -f a -N 100 -p 321 -x 654
+#####
+sbatch RNAList.18S.qinsi.sh
+Submitted batch job 70378
+squeue --job 70378
+
+-----------------------------------------------------------------------------------------
 20170928
 -----------------------------------------------------------------------------------------
 mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170928
@@ -4642,7 +4685,7 @@ RAxML -T 32 -s SL20170927.18S_all.aln.fasta -n SL20170927.18S_qinsi2300.tree -m 
 sbatch qinsi_2300.sh
 Submitted batch job 90071
 squeue --job 90071
-running at 1:04pm
+runtime: 13:10:25
 
 *******************
 #### RErun qinsi2300 from yesterday (check for changes in alignment and/or tree topology)
@@ -4688,7 +4731,7 @@ RAxML -T 48 -s SL20170927.18S_all.aln.fasta -n SL20170927.18S_qinsi2300_48.tree 
 sbatch qinsi2300_48.sh
 Submitted batch job 90080
 squeue --job 90080
-Running at 1:23pm
+run time: 09:41:37
 
 *******************
 #### qinsi2200-2375 ####
@@ -4722,8 +4765,7 @@ mafft-qinsi --adjustdirectionaccurately --reorder --thread 48 SL20170927.18S_goo
 sbatch qinsi2200_2375.sh
 Submitted batch job 90151
 squeue --job 90151
-Running at 3:31pm
-
+run time 1-02:42:36
 *******************
 #### Test qinsi on longest peak (instead of all longest sequences) on Leu sequences.
 Does it work to use addfragments for a very long sequence?
@@ -4807,4 +4849,176 @@ RAxML -T 48 -s SL20170927.18S_all.aln.fasta -n SL20170927.18S_no_L.bengal.tree -
 sbatch no_L.bengal.sh
 Submitted batch job 90174
 squeue --job 90174
-Running at 1:23pm
+runtime: 02:27:10
+
+#### RErun qinsi2300 without Isopods (check for changes in alignment and/or tree topology)
+#### with 48 cpus this time
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.18S* biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+
+nano no_isopod.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=no_isopod
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=20GB
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 48 SL20170927.18S_good_long2300.fasta > SL20170927.18S_good_long2300.aln.fasta
+
+mafft --thread 48 --addfragments SL20170927.18S_good_2000_2300.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_long2300.aln.fasta > SL20170927.18S_good_2000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_2000.aln.fasta > SL20170927.18S_good_1000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_500_1000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_1000.aln.fasta > SL20170927.18S_good_500.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_frag500.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_500.aln.fasta > SL20170927.18S_good_all.aln.fasta
+
+
+mafft --thread 48 --addfragments SL20170927.18S_bad_long2000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all.aln.fasta > SL20170927.18S_good_all_bad_2000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_bad_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all_bad_2000.aln.fasta > SL20170927.18S_good_all_bad_1000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_bad_frag1000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all_bad_1000.aln.fasta > SL20170927.18S_all.aln.fasta
+
+RAxML -T 48 -s SL20170927.18S_all.aln.fasta -n SL20170927.18S_no_isopod.tree -m GTRGAMMA -f a -N 100 -p 987 -x 789
+#####
+sbatch no_isopod.sh
+Submitted batch job 90178
+squeue --job 90178
+runtime: 9:46:19
+
+#### RErun no_isopod without Long branch Leu (check for changes in alignment and/or tree topology)
+
+in same directory:
+
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+
+# add updated frag1000 file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.18S_bad_frag1000_trimmed.fasta biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+
+nano trimmed_no_isopod.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=trimmed_no_isopod
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/no_isopod
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=20GB
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --thread 48 --addfragments SL20170927.18S_bad_frag1000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all_bad_1000.aln.fasta > trimmed_SL20170927.18S_all.aln.fasta
+
+RAxML -T 48 -s trimmed_SL20170927.18S_all.aln.fasta -n trimmed_SL20170927.18S_no_isopod.tree -m GTRGAMMA -f a -N 100 -p 294 -x 926
+#####
+sbatch trimmed_no_isopod.sh
+Submitted batch job 90839
+squeue --job 90839
+(90306 timed out after 8 hours - rerun)
+Run time 01:58:06 ???
+
+-----------------------------------------------------------------------------------------
+20171001
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171001
+#copy files to mac:
+scp -r biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171001 ~/Desktop/sandbox/18S/
+
+
+#### --addfragments to qinsi 2200-2375 from 9/30/17
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171001/addfrag_q2200_2375
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171001/addfrag_q2200_2375
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.18S* biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171001/addfrag_q2200_2375
+
+# add qinsi alignment from 9/30/17
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/qinsi2200_2375/SL20170927.18S_good_2200_2375.aln.fasta .
+
+nano addfrag_q2200_2375.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=addfrag_q2200_2375
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171001/addfrag_q2200_2375
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=20G
+#SBATCH --time=12:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --thread 48 --addfragments SL20170927.18S_good_long2375.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_2200_2375.aln.fasta > SL20170927.18S_good_2200.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_2000_2200.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_2200.aln.fasta > SL20170927.18S_good_2000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_2000.aln.fasta > SL20170927.18S_good_1000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_500_1000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_1000.aln.fasta > SL20170927.18S_good_500.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_good_frag500.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_500.aln.fasta > SL20170927.18S_good_all.aln.fasta
+
+
+mafft --thread 48 --addfragments SL20170927.18S_bad_long2000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all.aln.fasta > SL20170927.18S_good_all_bad_2000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_bad_1000_2000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all_bad_2000.aln.fasta > SL20170927.18S_good_all_bad_1000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.18S_bad_frag1000.fasta --adjustdirectionaccurately --reorder SL20170927.18S_good_all_bad_1000.aln.fasta > SL20170927.18S_all.aln.fasta
+
+RAxML -T 48 -s SL20170927.18S_all.aln.fasta -n SL20170927.18S_addfrag_q2200_2375.tree -m GTRGAMMA -f a -N 100 -p 205 -x 837
+#####
+sbatch addfrag_q2200_2375.sh
+Submitted batch job 90735
+squeue --job 90735
+Run time 05:42:54
+
+-----------------------------------------------------------------------------------------
+20171002
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171002
+#copy files to mac:
+scp -r biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171002 ~/Desktop/sandbox/18S/
+
+#### RErun qinsi2300_1000 tree with 1000 bootstraps
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171002/qinsi2300_1000
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171002/qinsi2300_1000
+
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20170930/qinsi2300/SL20170927.18S_all.aln.fasta .
+
+nano qinsi2300_1000.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=qinsi2300_1000
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/18S/20171002/qinsi2300_1000
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=50G
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+RAxML -T 48 -s SL20170927.18S_all.aln.fasta -n SL20170927.18S_qinsi2300_1000.tree -m GTRGAMMA -f a -N 1000 -p 528 -x 285
+#####
+sbatch qinsi2300_1000.sh
+Submitted batch job 91598
+squeue --job 91598
