@@ -549,6 +549,7 @@ library(stringr)
 df_18S=df[!(is.na(str_match(df$gene,"n_18S"))),]#######
 
 #remove isopods from df_18S
+
 #Isopods=c("EF682247.1","AB889803.1","AB861893.1","EF682260","KC428898.1","KR424631.1","LC126633.1","AJ287062.1","AY048181.1","KR424622.1","AF496662.1","JN800584.1","AB861917.1","AF496663.1","AY048186.1","KR424633.1","KF007785.1")
 #df_18S=df_18S[!(df_18S$accession %in% Isopods),]
 
