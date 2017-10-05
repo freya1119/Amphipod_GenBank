@@ -1278,3 +1278,139 @@ sbatch linsi_Leu_COI_all.sh
 Submitted batch job 58580
 squeue --job 58580
 
+-----------------------------------------------------------------------------------------
+20171004
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004
+#copy files to mac:
+scp -r biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004 ~/Desktop/sandbox/COI/
+
+
+# Dataset: SL20170927
+# Filename: L20170927.COI.fasta
+translated in Aliview:
+# Filename: L20170927.COI.aa.fasta
+
+
+##### linsi alignment of L20170927.COI.aa.fasta:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.COI.aa.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi
+# add nucleotide sequence file:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.COI.fasta biancani@ibissub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi
+
+# create job:
+nano linsi_hyperiidCOI_aa.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=linsi_hyperiidCOI_aa
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=36
+#SBATCH --mem=36G
+#SBATCH --time=36:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --thread 36 --localpair --maxiterate 1000 --reorder SL20170927.COI.aa.fasta > SL20170927.COI.aa.aln.fasta
+# Reverse translate
+python /cbcb/project2-scratch/biancani/RevTrans1.4/revtrans.py SL20170927.COI.fasta SL20170927.COI.aa.aln.fasta -O fasta -mtx 5 -match name > SL20170927.COI.revtrans.aln.fasta
+# Build tree
+RAxML -T 36 -s SL20170927.COI.revtrans.aln.fasta -n SL20170927.COI.revtrans.tree -m GTRGAMMA -f a -N 1000 -p 321 -x 654
+#####
+sbatch linsi_hyperiidCOI_aa.sh
+Submitted batch job 95401
+squeue --job 95401
+
+
+
+### Partition by codon position:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi/partitioned
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi/partitioned
+
+# copy files:
+cp ../SL20170927.COI.revtrans.aln.fasta .
+
+nano partitions.txt
+#####
+DNA, codon1 = 1-1707\3
+DNA, codon2 = 2-1707\3
+DNA, codon3 = 3-1707\3
+#####
+
+##### make tree:
+
+# create job:
+nano linsi_hyperiidCOI_aa_partitioned.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=linsi_hyperiidCOI_aa_partitioned
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi/partitioned
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=36
+#SBATCH --mem=36G
+#SBATCH --time=36:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+# Build tree
+RAxML -T 36 -s SL20170927.COI.revtrans.aln.fasta -n SL20170927.COI.revtrans.partitioned.tree -m GTRGAMMA -f a -N 1000 -p 321 -x 654 -q partitions.txt
+
+#####
+sbatch linsi_hyperiidCOI_aa_partitioned.sh
+Submitted batch job 95402
+squeue --job 95402
+
+
+*************run partitioned again:
+### Partition by codon position:
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi/partitioned2
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi/partitioned2
+
+# copy files:
+cp ../SL20170927.COI.revtrans.aln.fasta .
+
+nano partitions.txt
+#####
+DNA, codon1 = 1-1707\3
+DNA, codon2 = 2-1707\3
+DNA, codon3 = 3-1707\3
+#####
+
+##### make tree:
+
+# create job:
+nano linsi_hyperiidCOI_aa_partitioned2.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=linsi_hyperiidCOI_aa_partitioned2
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi/partitioned2
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=36
+#SBATCH --mem=36G
+#SBATCH --time=36:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+# Build tree
+RAxML -T 36 -s SL20170927.COI.revtrans.aln.fasta -n SL20170927.COI.revtrans.partitioned2.tree -m GTRGAMMA -f a -N 1000 -p 739 -x 193 -q partitions.txt
+
+#####
+sbatch linsi_hyperiidCOI_aa_partitioned2.sh
+Submitted batch job 95414
+squeue --job 95414

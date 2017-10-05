@@ -5023,3 +5023,4 @@ RAxML -T 48 -s SL20170927.18S_all.aln.fasta -n SL20170927.18S_qinsi2300_1000.tre
 sbatch qinsi2300_1000.sh
 Submitted batch job 91598
 squeue --job 91598
+Run time 15:24:04

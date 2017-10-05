@@ -1047,6 +1047,8 @@ dataname=paste(TAXA,"18S_good_2000_2200",sep=".")
 create.fasta(dataname,df_18S_good_2000_2200)
 
 df_18S_good_long2250=subset(df_18S_good, bp_length >=2250)
+#dataname=paste(TAXA,"18S_good_long2250",sep=".")
+#create.fasta(dataname,df_18S_good_long2250)
 df_18S_good_2250_2350=subset(df_18S_good_long2250, bp_length <2350)
 len18S_good_2250_2350=df_18S_good_2250_2350$bp_length
 density18S_good_2250_2350=density(len18S_good_2250_2350)
@@ -1087,9 +1089,28 @@ create.fasta(dataname,df_18S_bad_Leu)
 
 16S
 ```{r, eval=FALSE, tidy=TRUE}
+df_16S=df[!(is.na(str_match(df$gene,"mt_16S"))),]#######
+
+#update df_16S with sequence reverseComplement and/or bp lengths of trimmed mt_16S sequences:
+trimming_16S=read.delim("trimming_16S.txt", sep="\t", stringsAsFactors = FALSE)
+
+for (i in row.names(trimming_16S)) {
+  row=(trimming_16S[i,])
+  if (row$accession %in% df$accession){
+    mt16S=df$sequence[df$accession==row$accession]
+    ##trim sequence:
+    mt16S=substr(mt16S,row$start,row$stop)
+    if (row$complement) {
+      mt16S=as.character(reverseComplement(DNAString(mt16S)))
+    }
+    df_16S$sequence[df_16S$accession==row$accession]=mt16S
+    df_16S$bp_length[df_16S$accession==row$accession]=str_length(mt16S)
+  }
+}
+
+
 
 #Plot Lengths of 16S sequences:
-df_16S=df[!(is.na(str_match(df$gene,"mt_16S"))),]#######
 len16S=df_16S$bp_length
 density16S=density(len16S)
 plot(density16S)
@@ -1248,31 +1269,37 @@ density28S=density(len28S)
 plot(density28S)
 
 #Select sequences of different length:
-df_28S_long2000=subset(df_28S, bp_length >= 2000) # 46/228 sequences
-df_28S_1000_2000=subset(df_28S, (bp_length >= 1000 & bp_length < 2000)) # 107/228 sequences
+
+
+df_28S_long1300=subset(df_28S, bp_length >= 1300) 
+dataname=paste(TAXA,"28S_long1300",sep=".")
+create.fasta(dataname,df_28S_long1300)
+df_28S_1000_1300=subset(df_28S, (bp_length >= 1000 & bp_length < 1300))
+dataname=paste(TAXA,"28S_1000_1300",sep=".")
+create.fasta(dataname,df_28S_1000_1300)
 df_28S_frag1000=subset(df_28S, (bp_length < 1000)) # 75/228 sequences
-df_28S_long1000=subset(df_28S, bp_length >= 1000) # 153/228 sequences
-df_28S_long1250=subset(df_28S, bp_length >= 1250) # 103/228 sequences
-df_28S_1000_1250=subset(df_28S, (bp_length >= 1000 & bp_length < 1250)) # 50/228 sequences
-
-
-df_28S_frag1250=subset(df_28S, (bp_length < 1250)) # 125/237 sequences
-
-
-
-#Create FASTA:
-dataname=paste(TAXA,"28S_long2000",sep=".")
-create.fasta(dataname,df_28S_long2000)
-dataname=paste(TAXA,"28S_1000_2000",sep=".")
-create.fasta(dataname,df_28S_1000_2000)
 dataname=paste(TAXA,"28S_frag1000",sep=".")
 create.fasta(dataname,df_28S_frag1000)
-dataname=paste(TAXA,"28S_long1000",sep=".")
-create.fasta(dataname,df_28S_long1000)
+
+df_28S_frag1250=subset(df_28S, (bp_length < 1250)) # 125/237 sequences
 dataname=paste(TAXA,"28S_long1250",sep=".")
 create.fasta(dataname,df_28S_long1250)
+df_28S_1000_1250=subset(df_28S, (bp_length >= 1000 & bp_length < 1250)) # 50/228 sequences
 dataname=paste(TAXA,"28S_1000_1250",sep=".")
 create.fasta(dataname,df_28S_1000_1250)
+
+# df_28S_long2000=subset(df_28S, bp_length >= 2000) # 46/228 sequences
+# df_28S_1000_2000=subset(df_28S, (bp_length >= 1000 & bp_length < 2000)) # 107/228 sequences
+# df_28S_long1000=subset(df_28S, bp_length >= 1000) # 153/228 sequences
+# #Create FASTA:
+# dataname=paste(TAXA,"28S_long2000",sep=".")
+# create.fasta(dataname,df_28S_long2000)
+# dataname=paste(TAXA,"28S_1000_2000",sep=".")
+# create.fasta(dataname,df_28S_1000_2000)
+# dataname=paste(TAXA,"28S_long1000",sep=".")
+# create.fasta(dataname,df_28S_long1000)
+
+
 ```
 
 # H3:
