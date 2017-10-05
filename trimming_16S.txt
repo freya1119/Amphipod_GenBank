@@ -1,0 +1,2 @@
+accession	start	stop	complement
+KC315548.1	531	994	FALSE
