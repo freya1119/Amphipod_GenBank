@@ -400,16 +400,17 @@ for (entry in d910_list[,1]){
   df[df$accession==entry,which(names(df)=="gene")]="n_28Sd910 "
 }
 
+# manually remove AY739182.1 (will not be in selected list after 20171006)
+df=(df[which(df$accession!="AY739182.1"),])
+
 # change gene name for mislabelled 16S sequence
 ## Some genes labelled "large subunit" but blasts and aligns to 16S
 ## MF072683.1, MF072685
-###############################################################
 fix16Slabel=c("MF072683.1", "MF072685.1")
 for (item in fix16Slabel){
   df[df$accession==item,which(names(df)=="gene")]="mt_16S"
 }
 #df[df$accession=="MF072685.1",which(names(df)=="gene")]="mt_16S"
-###############################################################
 
 # update IDs on Bill's hyperiids:
 G_rebecae=c("KC428923","KC428872","KC428974","EF989655")
@@ -1297,8 +1298,21 @@ len28S=df_28S$bp_length
 density28S=density(len28S)
 plot(density28S)
 
-#Select sequences of different length:
+#separate out long branch sequences to add back in later:
+bad_28S=c(
+  "LC214961.1"
+)
+df_28S_bad=df_28S[which(df_28S$accession %in% bad_28S),]
+df_28S=df_28S[which(!(df_28S$accession %in% bad_28S)),]
 
+dataname=paste(TAXA,"28S_bad",sep=".")
+create.fasta(dataname, df_28S_bad)
+
+```
+
+
+Select sequences of different length:
+```{r, eval=FALSE, tidy=TRUE}
 
 df_28S_long1300=subset(df_28S, bp_length >= 1300) 
 dataname=paste(TAXA,"28S_long1300",sep=".")
@@ -1306,14 +1320,14 @@ create.fasta(dataname,df_28S_long1300)
 df_28S_1000_1300=subset(df_28S, (bp_length >= 1000 & bp_length < 1300))
 dataname=paste(TAXA,"28S_1000_1300",sep=".")
 create.fasta(dataname,df_28S_1000_1300)
-df_28S_frag1000=subset(df_28S, (bp_length < 1000)) # 75/228 sequences
+df_28S_frag1000=subset(df_28S, (bp_length < 1000))
 dataname=paste(TAXA,"28S_frag1000",sep=".")
 create.fasta(dataname,df_28S_frag1000)
 
-df_28S_frag1250=subset(df_28S, (bp_length < 1250)) # 125/237 sequences
+df_28S_long1250=subset(df_28S, (bp_length >= 1250))
 dataname=paste(TAXA,"28S_long1250",sep=".")
 create.fasta(dataname,df_28S_long1250)
-df_28S_1000_1250=subset(df_28S, (bp_length >= 1000 & bp_length < 1250)) # 50/228 sequences
+df_28S_1000_1250=subset(df_28S, (bp_length >= 1000 & bp_length < 1250))
 dataname=paste(TAXA,"28S_1000_1250",sep=".")
 create.fasta(dataname,df_28S_1000_1250)
 
