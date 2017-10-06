@@ -1328,6 +1328,7 @@ RAxML -T 36 -s SL20170927.COI.revtrans.aln.fasta -n SL20170927.COI.revtrans.tree
 sbatch linsi_hyperiidCOI_aa.sh
 Submitted batch job 95401
 squeue --job 95401
+Run time 19:42:11
 
 
 
@@ -1371,7 +1372,7 @@ RAxML -T 36 -s SL20170927.COI.revtrans.aln.fasta -n SL20170927.COI.revtrans.part
 sbatch linsi_hyperiidCOI_aa_partitioned.sh
 Submitted batch job 95402
 squeue --job 95402
-
+CANCELLED
 
 *************run partitioned again:
 ### Partition by codon position:
