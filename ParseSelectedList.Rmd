@@ -156,6 +156,7 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 #TAXA = "HL20170821"
 #TAXA = "RNAList" #18S sequences representing taxon sampling for Chapter 2
 TAXA = "SL20170927"
+#TAXA = "HL20171005"
 
 ```
 
@@ -542,7 +543,7 @@ df = df[which(!(df$accession %in% links$partB)),]
 
 ```
 
-Selecting different length 18S Sequences
+Create 18 dataframe, plot sequence lenghts
 ```{r, eval=FALSE}
 library(stringr)
 
@@ -937,7 +938,7 @@ plot(density18S_bad)
 #dataname=paste(TAXA,"18S_bad",sep=".")
 #create.fasta(dataname,df_18S_bad)
 #Separate by size:
-df_18S_bad_long1500=subset(df_18S_bad, bp_length >= 1500)
+#df_18S_bad_long1500=subset(df_18S_bad, bp_length >= 1500)
 #dataname=paste(TAXA,"18S_bad_long1500",sep=".")
 #create.fasta(dataname,df_18S_bad_long1500)
 
@@ -954,11 +955,11 @@ df_18S_bad_1000_2000=subset(df_18S_bad, (bp_length >= 1000 & bp_length < 2000))
 dataname=paste(TAXA,"18S_bad_1000_2000",sep=".")
 create.fasta(dataname,df_18S_bad_1000_2000)
 
-df_18S_bad_500_1500=subset(df_18S_bad, (bp_length >= 500 & bp_length < 1500))
+#df_18S_bad_500_1500=subset(df_18S_bad, (bp_length >= 500 & bp_length < 1500))
 #dataname=paste(TAXA,"18S_bad_500_1500",sep=".")
 #create.fasta(dataname,df_18S_bad_500_1500)
 
-df_18S_bad_frag500=subset(df_18S_bad, bp_length < 500)
+#df_18S_bad_frag500=subset(df_18S_bad, bp_length < 500)
 #dataname=paste(TAXA,"18S_bad_frag500",sep=".")
 #create.fasta(dataname,df_18S_bad_frag500)
 
@@ -984,13 +985,13 @@ plot(density18S_good)
 #len18S_good=df_18S_good_long2000$bp_length
 #density18S_good=density(len18S_good)
 #plot(density18S_good)
-df_18S_good_frag2000=subset(df_18S_good, bp_length <2000)
+#df_18S_good_frag2000=subset(df_18S_good, bp_length <2000)
 #dataname=paste(TAXA,"18S_good_frag2000",sep=".")
 #create.fasta(dataname,df_18S_good_frag2000)
 df_18S_good_1000_2000=subset(df_18S_good_frag2000, bp_length >= 1000)
 dataname=paste(TAXA,"18S_good_1000_2000",sep=".")
 create.fasta(dataname,df_18S_good_1000_2000)
-df_18S_good_frag1000=subset(df_18S_good, bp_length <1000)
+#df_18S_good_frag1000=subset(df_18S_good, bp_length <1000)
 #dataname=paste(TAXA,"18S_good_frag1000",sep=".")
 #create.fasta(dataname,df_18S_good_frag1000)
 df_18S_good_500_1000=subset(df_18S_good_frag2000, (bp_length >= 500 & bp_length <1000))
@@ -1002,14 +1003,14 @@ create.fasta(dataname,df_18S_good_frag500)
 
 
 #Separate by size 2400:
-df_18S_good_long2400=subset(df_18S_good, bp_length >=2400)
+#df_18S_good_long2400=subset(df_18S_good, bp_length >=2400)
 #dataname=paste(TAXA,"18S_good_long2400",sep=".")
 #create.fasta(dataname,df_18S_good_long2400)
 #df_18S_good_2000_2400=subset(df_18S_good,(bp_length >= 2000 & bp_length <2400))
 #dataname=paste(TAXA,"18S_good_2000_2400",sep=".")
 #create.fasta(dataname,df_18S_good_2000_2400)
 
-df_18S_good_long2350=subset(df_18S_good, bp_length >=2350)
+#df_18S_good_long2350=subset(df_18S_good, bp_length >=2350)
 
 
 #Separate by size 2300:
@@ -1020,65 +1021,65 @@ df_18S_good_2000_2300=subset(df_18S_good,(bp_length >= 2000 & bp_length <2300))
 dataname=paste(TAXA,"18S_good_2000_2300",sep=".")
 create.fasta(dataname,df_18S_good_2000_2300)
 
-df_18S_good_long2000=subset(df_18S_good, bp_length >=2000)
-df_18S_good_2000_2500=subset(df_18S_good_long2000, bp_length <2500)
-len18S_good_2000_2500=df_18S_good_2000_2500$bp_length
-density18S_good_2000_2500=density(len18S_good_2000_2500)
-plot(density18S_good_2000_2500)
+#df_18S_good_long2000=subset(df_18S_good, bp_length >=2000)
+#df_18S_good_2000_2500=subset(df_18S_good_long2000, bp_length <2500)
+#len18S_good_2000_2500=df_18S_good_2000_2500$bp_length
+#density18S_good_2000_2500=density(len18S_good_2000_2500)
+#plot(density18S_good_2000_2500)
 
-df_18S_good_long2200=subset(df_18S_good, bp_length >=2200)
-df_18S_good_2200_2400=subset(df_18S_good_long2200, bp_length <2400)
-len18S_good_2200_2400=df_18S_good_2200_2400$bp_length
-density18S_good_2200_2400=density(len18S_good_2200_2400)
-plot(density18S_good_2200_2400)
+#df_18S_good_long2200=subset(df_18S_good, bp_length >=2200)
+#df_18S_good_2200_2400=subset(df_18S_good_long2200, bp_length <2400)
+#len18S_good_2200_2400=df_18S_good_2200_2400$bp_length
+#density18S_good_2200_2400=density(len18S_good_2200_2400)
+#plot(density18S_good_2200_2400)
 
-df_18S_good_2200_2375=subset(df_18S_good_long2200, bp_length <2375)
-len18S_good_2200_2375=df_18S_good_2200_2375$bp_length
-density18S_good_2200_2375=density(len18S_good_2200_2375)
-plot(density18S_good_2200_2375)
-dataname=paste(TAXA,"18S_good_2200_2375",sep=".")
-create.fasta(dataname,df_18S_good_2200_2375)
+#df_18S_good_2200_2375=subset(df_18S_good_long2200, bp_length <2375)
+#len18S_good_2200_2375=df_18S_good_2200_2375$bp_length
+#density18S_good_2200_2375=density(len18S_good_2200_2375)
+#plot(density18S_good_2200_2375)
+#dataname=paste(TAXA,"18S_good_2200_2375",sep=".")
+#create.fasta(dataname,df_18S_good_2200_2375)
 
-df_18S_good_long2375=subset(df_18S_good, bp_length>=2375)
-dataname=paste(TAXA,"18S_good_long2375",sep=".")
-create.fasta(dataname,df_18S_good_long2375)
-df_18S_good_2000_2200=subset(df_18S_good_long2000, bp_length<2200)
-dataname=paste(TAXA,"18S_good_2000_2200",sep=".")
-create.fasta(dataname,df_18S_good_2000_2200)
+#df_18S_good_long2375=subset(df_18S_good, bp_length>=2375)
+#dataname=paste(TAXA,"18S_good_long2375",sep=".")
+#create.fasta(dataname,df_18S_good_long2375)
+#df_18S_good_2000_2200=subset(df_18S_good_long2000, bp_length<2200)
+#dataname=paste(TAXA,"18S_good_2000_2200",sep=".")
+#create.fasta(dataname,df_18S_good_2000_2200)
 
-df_18S_good_long2250=subset(df_18S_good, bp_length >=2250)
+#df_18S_good_long2250=subset(df_18S_good, bp_length >=2250)
 #dataname=paste(TAXA,"18S_good_long2250",sep=".")
 #create.fasta(dataname,df_18S_good_long2250)
-df_18S_good_2250_2350=subset(df_18S_good_long2250, bp_length <2350)
-len18S_good_2250_2350=df_18S_good_2250_2350$bp_length
-density18S_good_2250_2350=density(len18S_good_2250_2350)
-plot(density18S_good_2250_2350)
+#df_18S_good_2250_2350=subset(df_18S_good_long2250, bp_length <2350)
+#len18S_good_2250_2350=df_18S_good_2250_2350$bp_length
+#density18S_good_2250_2350=density(len18S_good_2250_2350)
+#plot(density18S_good_2250_2350)
 
-df_18S_good_long2225=subset(df_18S_good, bp_length >=2225)
-df_18S_good_2225_2325=subset(df_18S_good_long2225, bp_length <2325)
-len18S_good_2225_2325=df_18S_good_2225_2325$bp_length
-density18S_good_2225_2325=density(len18S_good_2225_2325)
-plot(density18S_good_2225_2325)
+#df_18S_good_long2225=subset(df_18S_good, bp_length >=2225)
+#df_18S_good_2225_2325=subset(df_18S_good_long2225, bp_length <2325)
+#len18S_good_2225_2325=df_18S_good_2225_2325$bp_length
+#density18S_good_2225_2325=density(len18S_good_2225_2325)
+#plot(density18S_good_2225_2325)
 ```
 
 Test qinsi on longest peak (instead of all longest sequences) on Leu sequences.
 Does it work to use addfragments for a very long sequence?
 ```{r, eval=FALSE, tidy=TRUE}
-
-#separate Leucothoidae sequences:
-df_18S_longLeu=subset(df_18S, (accession == "DQ378025.1"))
-dataname=paste(TAXA,"18S_longLeu",sep=".")
-create.fasta(dataname,df_18S_longLeu)
-
-df_18S_good_Leu=subset(df_18S_good, (str_detect(species_name,"[Aa]namixis") | str_detect(species_name,"Leucothoe")))
-df_18S_good_Leu_short=subset(df_18S_good_Leu, bp_length < 2000)
-dataname=paste(TAXA,"18S_good_Leu_short",sep=".")
-create.fasta(dataname,df_18S_good_Leu_short)
-
-df_18S_bad_Leu=subset(df_18S_bad, (str_detect(species_name,"[Aa]namixis") | str_detect(species_name,"Leucothoe")))
-dataname=paste(TAXA,"18S_bad_Leu",sep=".")
-create.fasta(dataname,df_18S_bad_Leu)
-
+# 
+# #separate Leucothoidae sequences:
+# df_18S_longLeu=subset(df_18S, (accession == "DQ378025.1"))
+# dataname=paste(TAXA,"18S_longLeu",sep=".")
+# create.fasta(dataname,df_18S_longLeu)
+# 
+# df_18S_good_Leu=subset(df_18S_good, (str_detect(species_name,"[Aa]namixis") | str_detect(species_name,"Leucothoe")))
+# df_18S_good_Leu_short=subset(df_18S_good_Leu, bp_length < 2000)
+# dataname=paste(TAXA,"18S_good_Leu_short",sep=".")
+# create.fasta(dataname,df_18S_good_Leu_short)
+# 
+# df_18S_bad_Leu=subset(df_18S_bad, (str_detect(species_name,"[Aa]namixis") | str_detect(species_name,"Leucothoe")))
+# dataname=paste(TAXA,"18S_bad_Leu",sep=".")
+# create.fasta(dataname,df_18S_bad_Leu)
+# 
 
 
 
@@ -1115,51 +1116,73 @@ len16S=df_16S$bp_length
 density16S=density(len16S)
 plot(density16S)
 
-df_16S_100_325=subset(df_16S, (bp_length >= 100 & bp_length<325))
-len16S=df_16S_100_325$bp_length
-density16S=density(len16S)
-plot(density16S)
+df_16S_long315=subset(df_16S, bp_length >= 315)
+dataname=paste(TAXA,"16S_long315",sep=".")
+create.fasta(dataname,df_16S_long315)
+df_16S_300_315=subset(df_16S, (bp_length >= 300 & bp_length<315))
+dataname=paste(TAXA,"16S_300_315",sep=".")
+create.fasta(dataname,df_16S_300_315)
+df_16S_frag300=subset(df_16S, bp_length <300)
+dataname=paste(TAXA,"16S_frag300",sep=".")
+create.fasta(dataname,df_16S_frag300)
 
-#Create fasta of all 16S sequences:
-dataname=paste(TAXA,"16S",sep=".")
-create.fasta(dataname,df_16S)
-
-#Select sequences >=400bp (full length) and < 400bp (fragments):
 df_16S_long400=subset(df_16S, bp_length >= 400)
-df_16S_frag400=subset(df_16S, bp_length < 400)
-#Create Fasta files for FL and fragment 16S:
 dataname=paste(TAXA,"16S_long400",sep=".")
 create.fasta(dataname,df_16S_long400)
-dataname=paste(TAXA,"16S_frag400",sep=".")
-create.fasta(dataname,df_16S_frag400)
+df_16S_300_400=subset(df_16S, (bp_length >= 300 & bp_length<400))
+dataname=paste(TAXA,"16S_300_400",sep=".")
+create.fasta(dataname,df_16S_300_400)
 
-#Select sequences >=350bp (full length) and < 350bp (fragments):
-df_16S_long350=subset(df_16S, bp_length >= 350)
-df_16S_frag350=subset(df_16S, bp_length < 350)
-#Create Fasta files for FL and fragment 16S:
-dataname=paste(TAXA,"16S_long350",sep=".")
-create.fasta(dataname,df_16S_long350)
-dataname=paste(TAXA,"16S_frag350",sep=".")
-create.fasta(dataname,df_16S_frag350)
 
-#Select sequences >=325bp (full length) and < 325bp (fragments):
-df_16S_long325=subset(df_16S, bp_length >= 325)
-df_16S_frag325=subset(df_16S, bp_length < 325)
-#Create Fasta files for FL and fragment 16S:
-dataname=paste(TAXA,"16S_long325",sep=".")
-create.fasta(dataname,df_16S_long325)
-dataname=paste(TAXA,"16S_frag325",sep=".")
-create.fasta(dataname,df_16S_frag325)
 
-#Select sequences >=275bp and <325:
-df_16S_275_325=subset(df_16S_frag325, bp_length>=275)
-dataname=paste(TAXA,"16S_275_325",sep=".")
-create.fasta(dataname,df_16S_275_325)
 
-#Select sequences <275:
-df_16S_frag275=subset(df_16S, bp_length<275)
-dataname=paste(TAXA,"16S_frag275",sep=".")
-create.fasta(dataname,df_16S_frag275)
+#Create fasta of all 16S sequences:
+#dataname=paste(TAXA,"16S",sep=".")
+#create.fasta(dataname,df_16S)
+
+
+# df_16S_100_325=subset(df_16S, (bp_length >= 100 & bp_length<325))
+# len16S=df_16S_100_325$bp_length
+# density16S=density(len16S)
+# plot(density16S)
+# 
+# 
+# #Select sequences >=400bp (full length) and < 400bp (fragments):
+# df_16S_long400=subset(df_16S, bp_length >= 400)
+# df_16S_frag400=subset(df_16S, bp_length < 400)
+# #Create Fasta files for FL and fragment 16S:
+# dataname=paste(TAXA,"16S_long400",sep=".")
+# create.fasta(dataname,df_16S_long400)
+# dataname=paste(TAXA,"16S_frag400",sep=".")
+# create.fasta(dataname,df_16S_frag400)
+# 
+# #Select sequences >=350bp (full length) and < 350bp (fragments):
+# df_16S_long350=subset(df_16S, bp_length >= 350)
+# df_16S_frag350=subset(df_16S, bp_length < 350)
+# #Create Fasta files for FL and fragment 16S:
+# dataname=paste(TAXA,"16S_long350",sep=".")
+# create.fasta(dataname,df_16S_long350)
+# dataname=paste(TAXA,"16S_frag350",sep=".")
+# create.fasta(dataname,df_16S_frag350)
+# 
+# #Select sequences >=325bp (full length) and < 325bp (fragments):
+# df_16S_long325=subset(df_16S, bp_length >= 325)
+# df_16S_frag325=subset(df_16S, bp_length < 325)
+# #Create Fasta files for FL and fragment 16S:
+# dataname=paste(TAXA,"16S_long325",sep=".")
+# create.fasta(dataname,df_16S_long325)
+# dataname=paste(TAXA,"16S_frag325",sep=".")
+# create.fasta(dataname,df_16S_frag325)
+# 
+# #Select sequences >=275bp and <325:
+# df_16S_275_325=subset(df_16S_frag325, bp_length>=275)
+# dataname=paste(TAXA,"16S_275_325",sep=".")
+# create.fasta(dataname,df_16S_275_325)
+# 
+# #Select sequences <275:
+# df_16S_frag275=subset(df_16S, bp_length<275)
+# dataname=paste(TAXA,"16S_frag275",sep=".")
+# create.fasta(dataname,df_16S_frag275)
 ```
 
 
