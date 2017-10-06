@@ -155,8 +155,8 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 #TAXA = "HL20170820"
 #TAXA = "HL20170821"
 #TAXA = "RNAList" #18S sequences representing taxon sampling for Chapter 2
-TAXA = "SL20170927"
-#TAXA = "HL20171005"
+#TAXA = "SL20170927"
+TAXA = "HL20171005"
 
 ```
 
@@ -915,6 +915,8 @@ bad=c(
 "KC527601.1",
 "JX145103.1",#
 "JX145102.1",#
+"JX145104.1",
+"JX145105.1",
 "KC527598.1",
 "JX145101.1",
 "JX145115.1",
@@ -985,7 +987,7 @@ plot(density18S_good)
 #len18S_good=df_18S_good_long2000$bp_length
 #density18S_good=density(len18S_good)
 #plot(density18S_good)
-#df_18S_good_frag2000=subset(df_18S_good, bp_length <2000)
+df_18S_good_frag2000=subset(df_18S_good, bp_length <2000)
 #dataname=paste(TAXA,"18S_good_frag2000",sep=".")
 #create.fasta(dataname,df_18S_good_frag2000)
 df_18S_good_1000_2000=subset(df_18S_good_frag2000, bp_length >= 1000)

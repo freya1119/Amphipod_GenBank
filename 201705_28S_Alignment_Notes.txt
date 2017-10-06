@@ -401,6 +401,37 @@ sbatch qinsi1250.sh
 Submitted batch job 95831
 squeue --job 95831
 
+#### qinsi1250_2 ####
+Bootstraps were very slow for job 95831: rerun RAxML with alignment from 95831 and new random number seeds.
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171004/qinsi1250_2
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171004/qinsi1250_2
+
+# add files:
+cp /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171004/qinsi1250/SL20170927.28S_all.aln.fasta .
+
+nano qinsi1250_2.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=qinsi1250_2
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171004/qinsi1250_2
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=50G
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+RAxML -T 48 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_qinsi1250_2.tree -m GTRGAMMA -f a -N 1000 -p 345 -x 136
+#####
+sbatch qinsi1250_2.sh
+Submitted batch job 100643
+squeue --job 100643
+
 #### einsi1250 ####
 
 mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171004/einsi1250
@@ -436,6 +467,7 @@ RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1250.tree -m 
 sbatch einsi1250.sh
 Submitted batch job 95833
 squeue --job 95833
+Run time 16:27:40
 
 #### einsi1300 ####
 
@@ -472,3 +504,4 @@ RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1300.tree -m 
 sbatch einsi1300.sh
 Submitted batch job 95834
 squeue --job 95834
+Run time 15:39:17
