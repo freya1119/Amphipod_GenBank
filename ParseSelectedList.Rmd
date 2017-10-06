@@ -155,8 +155,8 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 #TAXA = "HL20170820"
 #TAXA = "HL20170821"
 #TAXA = "RNAList" #18S sequences representing taxon sampling for Chapter 2
-#TAXA = "SL20170927"
-TAXA = "HL20171005"
+TAXA = "SL20170927"
+#TAXA = "HL20171005"
 
 ```
 
@@ -392,13 +392,13 @@ sequence=append(sequence,dna)
 df=data.frame(species_name,organism,taxon_id,voucher,isolate,country,accession,accession_gb,gene,bp_length,author_ref1,title_ref1,journal_ref1,author_ref2,title_ref2,journal_ref2,author_ref3,title_ref3,journal_ref3,description,fasta_header,sequence,frame,stringsAsFactors=FALSE)
 
 # change gene name for 28S D9-10 genes (listed in 28SD910.txt):
-### these genes have been removed, this change is now unnecessary
-# d910_list=read.table("28SD910.txt", stringsAsFactors=FALSE)
-# for (entry in d910_list[,1]){
-#   print(entry)
-#   print(df[df$accession==entry,which(names(df)=="gene")])
-#   df[df$accession==entry,which(names(df)=="gene")]="n_28Sd910 "
-# }
+### these genes have been removed, this *should* be unnecessary
+d910_list=read.table("28SD910.txt", stringsAsFactors=FALSE)
+for (entry in d910_list[,1]){
+  print(entry)
+  print(df[df$accession==entry,which(names(df)=="gene")])
+  df[df$accession==entry,which(names(df)=="gene")]="n_28Sd910 "
+}
 
 # change gene name for mislabelled 16S sequence
 ## Some genes labelled "large subunit" but blasts and aligns to 16S
@@ -930,6 +930,10 @@ bad=c(
 "JF506085.1"
 )
 
+```
+
+Separate 18S by length:
+```{r, eval=FALSE, tidy=TRUE}
 df_18S_bad=subset(df_18S, accession %in% bad)
 #Plot Lengths of bad 18S sequences:
 len18S_bad=df_18S_bad$bp_length
@@ -981,9 +985,9 @@ plot(density18S_good)
 #create.fasta(dataname,df_18S_good)
 
 #Separate by size 2000:
-#df_18S_good_long2000=subset(df_18S_good, bp_length >=2000)
-#dataname=paste(TAXA,"18S_good_long2000",sep=".")
-#create.fasta(dataname,df_18S_good_long2000)
+df_18S_good_long2000=subset(df_18S_good, bp_length >=2000)
+dataname=paste(TAXA,"18S_good_long2000",sep=".")
+create.fasta(dataname,df_18S_good_long2000)
 #len18S_good=df_18S_good_long2000$bp_length
 #density18S_good=density(len18S_good)
 #plot(density18S_good)
