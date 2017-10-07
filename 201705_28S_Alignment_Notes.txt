@@ -433,6 +433,7 @@ RAxML -T 48 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_qinsi1250_2.tree -
 sbatch qinsi1250_2.sh
 Submitted batch job 100643
 squeue --job 100643
+CANCELLED
 
 #### einsi1250 ####
 

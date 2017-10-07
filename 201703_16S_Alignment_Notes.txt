@@ -612,6 +612,7 @@ RAxML -T 12 -s SL20170927.16S_all.aln.fasta -n SL20170927.16S_qinsi315.tree -m G
 sbatch qinsi315.sh
 Submitted batch job 96532
 squeue --job 96532
+ Run time 04:11:31
 
 #### qinsi400 ####
 
@@ -648,6 +649,7 @@ RAxML -T 12 -s SL20170927.16S_all.aln.fasta -n SL20170927.16S_qinsi400.tree -m G
 sbatch qinsi400.sh
 Submitted batch job 96533
 squeue --job 96533
+Run time 03:31:18
 
 #### einsi315 ####
 
@@ -684,6 +686,7 @@ RAxML -T 12 -s SL20170927.16S_all.aln.fasta -n SL20170927.16S_einsi315.tree -m G
 sbatch einsi315.sh
 Submitted batch job 96998
 squeue --job 96998
+Run time 03:00:53
 
 #### einsi400 ####
 
@@ -720,3 +723,4 @@ RAxML -T 12 -s SL20170927.16S_all.aln.fasta -n SL20170927.16S_einsi400.tree -m G
 sbatch einsi400.sh
 Submitted batch job 96999
 squeue --job 96999
+Run time 03:13:47

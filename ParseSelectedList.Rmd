@@ -158,6 +158,7 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 TAXA = "SL20170927"
 #TAXA = "HL20171005"
 #TAXA = "HSL20171006"
+#TAXA = "HSL20171007"
 ```
 
 ##Read Data into R
