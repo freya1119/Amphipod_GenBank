@@ -552,6 +552,7 @@ RAxML -T 48 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_qinsi1300.tree -m 
 sbatch qinsi1300.sh
 Submitted batch job 101273
 squeue --job 101273
+Run time 16:45:38
 
 
 #### qinsi1250 ####
@@ -590,6 +591,7 @@ RAxML -T 48 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_qinsi1250.tree -m 
 sbatch qinsi1250.sh
 Submitted batch job 101274
 squeue --job 101274
+CANCELLED - running for 1-00:02:05 and on bootstrap 0, also Melita sp. had not been removed.
 
 
 #### einsi1250 ####
@@ -628,6 +630,37 @@ RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1250.tree -m 
 sbatch einsi1250.sh
 Submitted batch job 101425
 squeue --job 101425
+Timed out: 18 hours (at 54 bootstraps)
+
+#### einsi1250 - rerun tree
+
+remove files from previous run:
+rm einsi1250.sh
+rm RAxML*
+rm SL20170927.28S_all.aln.fasta.reduced
+
+nano einsi1250.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=einsi1250
+#SBATCH --qos=workstation
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171006/einsi1250
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=32G
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1250.tree -m GTRGAMMA -f a -N 1000 -p 234 -x 925
+#####
+sbatch einsi1250.sh
+Submitted batch job 101991
+squeue --job 101991
+CANCELLED - Melita sp. not removed
 
 #### einsi1300 ####
 
@@ -665,4 +698,192 @@ RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1300.tree -m 
 sbatch einsi1300.sh
 Submitted batch job 101428
 squeue --job 101428
+Failed, Run time 18:00:22, TIMEOUT (during ML search)
 
+#### einsi1300 - rerun tree
+
+rm einsi1300.sh
+rm RAxML*
+rm SL20170927.28S_all.aln.fasta.reduced
+
+nano einsi1300.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=einsi1300
+#SBATCH --qos=workstation
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171006/einsi1300
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=32G
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1300.tree -m GTRGAMMA -f a -N 1000 -p 234 -x 925
+#####
+sbatch einsi1300.sh
+Submitted batch job 101992
+squeue --job 101992
+CANCELLED - Melita sp. not removed
+
+-----------------------------------------------------------------------------------------
+20171007
+-----------------------------------------------------------------------------------------
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007
+#copy files to mac:
+scp -r biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007 ~/Desktop/sandbox/28S/
+
+#### qinsi1300 ####
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/qinsi1300
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/qinsi1300
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.28S* biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/qinsi1300
+
+nano qinsi1300.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=qinsi1300
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/qinsi1300
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=50G
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 48 SL20170927.28S_long1300.fasta > SL20170927.28S_long1300.aln.fasta
+
+mafft --thread 48 --addfragments SL20170927.28S_1000_1300.fasta --adjustdirectionaccurately --reorder SL20170927.28S_long1300.aln.fasta > SL20170927.28S_long1000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.28S_frag1000.fasta --adjustdirectionaccurately --reorder SL20170927.28S_long1000.aln.fasta > SL20170927.28S_good.aln.fasta
+mafft --thread 48 --addfragments SL20170927.28S_bad.fasta --adjustdirectionaccurately --reorder SL20170927.28S_good.aln.fasta > SL20170927.28S_all.aln.fasta
+
+
+RAxML -T 48 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_qinsi1300.tree -m GTRGAMMA -f a -N 1000 -p 438 -x 173
+#####
+sbatch qinsi1300.sh
+Submitted batch job 101997
+squeue --job 101997
+
+
+#### qinsi1250 ####
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/qinsi1250
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/qinsi1250
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.28S* biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/qinsi1250
+
+nano qinsi1250.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=qinsi1250
+#SBATCH --qos=large
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/qinsi1250
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=50G
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft-qinsi --adjustdirectionaccurately --reorder --thread 48 SL20170927.28S_long1250.fasta > SL20170927.28S_long1250.aln.fasta
+
+mafft --thread 48 --addfragments SL20170927.28S_1000_1250.fasta --adjustdirectionaccurately --reorder SL20170927.28S_long1250.aln.fasta > SL20170927.28S_long1000.aln.fasta
+mafft --thread 48 --addfragments SL20170927.28S_frag1000.fasta --adjustdirectionaccurately --reorder SL20170927.28S_long1000.aln.fasta > SL20170927.28S_good.aln.fasta
+mafft --thread 48 --addfragments SL20170927.28S_bad.fasta --adjustdirectionaccurately --reorder SL20170927.28S_good.aln.fasta > SL20170927.28S_all.aln.fasta
+
+RAxML -T 48 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_qinsi1250.tree -m GTRGAMMA -f a -N 1000 -p 438 -x 173
+#####
+sbatch qinsi1250.sh
+Submitted batch job 101998
+squeue --job 101998
+
+
+#### einsi1250 ####
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/einsi1250
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/einsi1250
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.28S* biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/einsi1250
+
+nano einsi1250.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=einsi1250
+#SBATCH --qos=workstation
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/einsi1250
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=32G
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --maxiterate 1000 --retree 1 --genafpair --adjustdirectionaccurately --reorder --thread 32 SL20170927.28S_long1250.fasta > SL20170927.28S_long1250.aln.fasta
+
+mafft --thread 32 --addfragments SL20170927.28S_1000_1250.fasta --adjustdirectionaccurately --reorder SL20170927.28S_long1250.aln.fasta > SL20170927.28S_long1000.aln.fasta
+mafft --thread 32 --addfragments SL20170927.28S_frag1000.fasta --adjustdirectionaccurately --reorder SL20170927.28S_long1000.aln.fasta > SL20170927.28S_good.aln.fasta
+mafft --thread 32 --addfragments SL20170927.28S_bad.fasta --adjustdirectionaccurately --reorder SL20170927.28S_good.aln.fasta > SL20170927.28S_all.aln.fasta
+
+RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1250.tree -m GTRGAMMA -f a -N 1000 -p 438 -x 173
+#####
+sbatch einsi1250.sh
+Submitted batch job 101999
+squeue --job 101999
+
+
+#### einsi1300 ####
+
+mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/einsi1300
+cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/einsi1300
+
+# add files:
+scp /Users/Freya/Dropbox/Documents/Current_Projects/Hyperiids/Amphipod_GenBank/SL20170927.28S* biancani@cbcbsub00.umiacs.umd.edu:/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/einsi1300
+
+nano einsi1300.sh
+#####
+#!/usr/bin/bash
+#SBATCH --job-name=einsi1300
+#SBATCH --qos=workstation
+#SBATCH --workdir=/cbcb/project2-scratch/biancani/AmphipodaIsopoda/alignments/28S/20171007/einsi1300
+#SBATCH --partition=dpart
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=32G
+#SBATCH --time=48:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=leann.biancani@gmail.com
+
+PATH=$PATH:/cbcb/project2-scratch/biancani/MAFFT/bin
+PATH=$PATH:/cbcb/project2-scratch/biancani/RAXML/bin
+
+mafft --maxiterate 1000 --retree 1 --genafpair --adjustdirectionaccurately --reorder --thread 32 SL20170927.28S_long1300.fasta > SL20170927.28S_long1300.aln.fasta
+
+mafft --thread 32 --addfragments SL20170927.28S_1000_1300.fasta --adjustdirectionaccurately --reorder SL20170927.28S_long1300.aln.fasta > SL20170927.28S_long1000.aln.fasta
+mafft --thread 32 --addfragments SL20170927.28S_frag1000.fasta --adjustdirectionaccurately --reorder SL20170927.28S_long1000.aln.fasta > SL20170927.28S_good.aln.fasta
+mafft --thread 32 --addfragments SL20170927.28S_bad.fasta --adjustdirectionaccurately --reorder SL20170927.28S_good.aln.fasta > SL20170927.28S_all.aln.fasta
+
+RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1300.tree -m GTRGAMMA -f a -N 1000 -p 438 -x 173
+#####
+sbatch einsi1300.sh
+Submitted batch job 102000
+squeue --job 102000

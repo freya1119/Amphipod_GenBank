@@ -397,7 +397,7 @@ d910_list=read.table("28SD910.txt", stringsAsFactors=FALSE)
 for (entry in d910_list[,1]){
   #print(entry)
   #print(df[df$accession==entry,which(names(df)=="gene")])
-  df[df$accession==entry,which(names(df)=="gene")]="n_28Sd910 "
+  df[df$accession==entry,which(names(df)=="gene")]="n_d910_28S "
 }
 
 # manually remove AY739182.1 (will not be in selected list after 20171006)
@@ -1307,7 +1307,6 @@ bad_28S=c(
 )
 df_28S_bad=df_28S[which(df_28S$accession %in% bad_28S),]
 df_28S=df_28S[which(!(df_28S$accession %in% bad_28S)),]
-
 dataname=paste(TAXA,"28S_bad",sep=".")
 create.fasta(dataname, df_28S_bad)
 
