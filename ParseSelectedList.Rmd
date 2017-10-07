@@ -157,7 +157,7 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 #TAXA = "RNAList" #18S sequences representing taxon sampling for Chapter 2
 TAXA = "SL20170927"
 #TAXA = "HL20171005"
-
+#TAXA = "HSL20171006"
 ```
 
 ##Read Data into R
@@ -402,6 +402,9 @@ for (entry in d910_list[,1]){
 
 # manually remove AY739182.1 (will not be in selected list after 20171006)
 df=(df[which(df$accession!="AY739182.1"),])
+# manually remove JQ319551.1 (will not be in selected list after 20171007)
+df=(df[which(df$accession!="JQ319551.1"),])
+
 
 # change gene name for mislabelled 16S sequence
 ## Some genes labelled "large subunit" but blasts and aligns to 16S
@@ -1459,21 +1462,6 @@ dataname=paste(TAXA,"COI",sep=".")
 create.fasta(dataname,df_COI)
 ```
 
-```{r, eval=FALSE}
-###DRAFT###
-
-# translate COI
-COI_seq=DNAString(df_COI$sequence) # not working
-
-for (seq in df_COI$sequence){
-}
-
-SGC4 <- getGeneticCode("SGC4") # Invertebrate Mitochondrial code
-COI_aa=translate(df_COI$sequence, genetic.code = SGC4, if.fuzzy.codon="solve")
-
-
-```
-
 ```{r, eval=FALSE, tidy=TRUE}
 
 ####### subsets of COI data (lists are out-dated!!)
@@ -1498,20 +1486,20 @@ COI_aa=translate(df_COI$sequence, genetic.code = SGC4, if.fuzzy.codon="solve")
 # lenCOI=subset(df_COI, bp_length > 500 & bp_length< 1000)
 # lenCOI=lenCOI$bp_length
 
-lenCOI=df_COI$bp_length
-densityCOI=density(lenCOI)
-plot(densityCOI)
+# lenCOI=df_COI$bp_length
+# densityCOI=density(lenCOI)
+# plot(densityCOI)
 
-#Select sequences of different length:
-df_COI_long900=subset(df_COI, bp_length >= 900) # 23/462 sequences
-df_COI_800_900=subset(df_COI, (bp_length >= 800 & bp_length < 900)) # 69/462 sequences
-df_COI_700_800=subset(df_COI, (bp_length >= 700 & bp_length < 800)) # 30/462 sequences
-df_COI_600_700=subset(df_COI, (bp_length >= 600 & bp_length < 700)) # 226/462 sequences
-df_COI_frag600=subset(df_COI, (bp_length < 600)) # 114/462 sequences
-
-df_COI_long750=subset(df_COI, bp_length >= 750) # 87/378 sequences
-df_COI_600_750=subset(df_COI, (bp_length >= 600 & bp_length < 750)) # 204/378 sequences
-#df_COI_frag600=subset(df_COI, (bp_length < 600)) # 87/378 sequences
+# #Select sequences of different length:
+# df_COI_long900=subset(df_COI, bp_length >= 900) # 23/462 sequences
+# df_COI_800_900=subset(df_COI, (bp_length >= 800 & bp_length < 900)) # 69/462 sequences
+# df_COI_700_800=subset(df_COI, (bp_length >= 700 & bp_length < 800)) # 30/462 sequences
+# df_COI_600_700=subset(df_COI, (bp_length >= 600 & bp_length < 700)) # 226/462 sequences
+# df_COI_frag600=subset(df_COI, (bp_length < 600)) # 114/462 sequences
+# 
+# df_COI_long750=subset(df_COI, bp_length >= 750) # 87/378 sequences
+# df_COI_600_750=subset(df_COI, (bp_length >= 600 & bp_length < 750)) # 204/378 sequences
+# df_COI_frag600=subset(df_COI, (bp_length < 600)) # 87/378 sequences
 
 
 # df_COI_long1200=subset(df_COI, bp_length >= 1200) # 9/462 sequences
@@ -1520,22 +1508,22 @@ df_COI_600_750=subset(df_COI, (bp_length >= 600 & bp_length < 750)) # 204/378 se
 # df_COI_200_600=subset(df_COI, (bp_length >= 200 & bp_length < 600)) # 110/462 sequences
 # df_COI_frag200=subset(df_COI, (bp_length < 200)) # 4/462 sequences
 
-# create fasta files
-dataname=paste(TAXA,"COI_long900",sep=".")
-create.fasta(dataname,df_COI_long900)
-dataname=paste(TAXA,"COI_800_900",sep=".")
-create.fasta(dataname,df_COI_800_900)
-dataname=paste(TAXA,"COI_700_800",sep=".")
-create.fasta(dataname,df_COI_700_800)
-dataname=paste(TAXA,"COI_600_700",sep=".")
-create.fasta(dataname,df_COI_600_700)
-dataname=paste(TAXA,"COI_frag600",sep=".")
-create.fasta(dataname,df_COI_frag600)
-
-dataname=paste(TAXA,"COI_long750",sep=".")
-create.fasta(dataname,df_COI_long750)
-dataname=paste(TAXA,"COI_600_750",sep=".")
-create.fasta(dataname,df_COI_600_750)
+# # create fasta files
+# dataname=paste(TAXA,"COI_long900",sep=".")
+# create.fasta(dataname,df_COI_long900)
+# dataname=paste(TAXA,"COI_800_900",sep=".")
+# create.fasta(dataname,df_COI_800_900)
+# dataname=paste(TAXA,"COI_700_800",sep=".")
+# create.fasta(dataname,df_COI_700_800)
+# dataname=paste(TAXA,"COI_600_700",sep=".")
+# create.fasta(dataname,df_COI_600_700)
+# dataname=paste(TAXA,"COI_frag600",sep=".")
+# create.fasta(dataname,df_COI_frag600)
+# 
+# dataname=paste(TAXA,"COI_long750",sep=".")
+# create.fasta(dataname,df_COI_long750)
+# dataname=paste(TAXA,"COI_600_750",sep=".")
+# create.fasta(dataname,df_COI_600_750)
 
 # dataname=paste(TAXA,"COI_long1200",sep=".")
 # create.fasta(dataname,df_COI_long1200)
@@ -1548,7 +1536,10 @@ create.fasta(dataname,df_COI_600_750)
 # dataname=paste(TAXA,"COI_frag200",sep=".")
 # create.fasta(dataname,df_COI_frag200)
 
+```
 # Translate COI
+
+```{r, eval=FALSE, tidy=TRUE}
 #install.packages("seqinr")
 library(seqinr)
 
@@ -1564,36 +1555,36 @@ for (i in row.names(df_COI_aa)){
 dataname=paste(TAXA,"COI_aa",sep=".")
 create.fasta(dataname,df_COI_aa)
 
-# separate aa sequences by length:
-lenCOIaa=df_COI_aa$bp_length
-densityCOIaa=density(lenCOIaa)
-plot(densityCOIaa)
-
-df_COI_aa_long900=subset(df_COI_aa, bp_length >= 900) # 23/462 sequences
-df_COI_aa_800_900=subset(df_COI_aa, (bp_length >= 800 & bp_length < 900)) # 69/462 sequences
-df_COI_aa_700_800=subset(df_COI_aa, (bp_length >= 700 & bp_length < 800)) # 30/462 sequences
-df_COI_aa_600_700=subset(df_COI_aa, (bp_length >= 600 & bp_length < 700)) # 226/462 sequences
-df_COI_aa_frag600=subset(df_COI_aa, (bp_length < 600)) # 114/462 sequences
-
-df_COI_aa_long750=subset(df_COI_aa, bp_length >= 750) # 87/378 sequences
-df_COI_aa_600_750=subset(df_COI_aa, (bp_length >= 600 & bp_length < 750)) # 204/378 sequences
-
-# create fasta files
-dataname=paste(TAXA,"COI_aa_long900",sep=".")
-create.fasta(dataname,df_COI_aa_long900)
-dataname=paste(TAXA,"COI_aa_800_900",sep=".")
-create.fasta(dataname,df_COI_aa_800_900)
-dataname=paste(TAXA,"COI_aa_700_800",sep=".")
-create.fasta(dataname,df_COI_aa_700_800)
-dataname=paste(TAXA,"COI_aa_600_700",sep=".")
-create.fasta(dataname,df_COI_aa_600_700)
-dataname=paste(TAXA,"COI_aa_frag600",sep=".")
-create.fasta(dataname,df_COI_aa_frag600)
-
-dataname=paste(TAXA,"COI_aa_long750",sep=".")
-create.fasta(dataname,df_COI_aa_long750)
-dataname=paste(TAXA,"COI_aa_600_750",sep=".")
-create.fasta(dataname,df_COI_aa_600_750)
+# # separate aa sequences by length:
+# lenCOIaa=df_COI_aa$bp_length
+# densityCOIaa=density(lenCOIaa)
+# plot(densityCOIaa)
+# 
+# df_COI_aa_long900=subset(df_COI_aa, bp_length >= 900) # 23/462 sequences
+# df_COI_aa_800_900=subset(df_COI_aa, (bp_length >= 800 & bp_length < 900)) # 69/462 sequences
+# df_COI_aa_700_800=subset(df_COI_aa, (bp_length >= 700 & bp_length < 800)) # 30/462 sequences
+# df_COI_aa_600_700=subset(df_COI_aa, (bp_length >= 600 & bp_length < 700)) # 226/462 sequences
+# df_COI_aa_frag600=subset(df_COI_aa, (bp_length < 600)) # 114/462 sequences
+# 
+# df_COI_aa_long750=subset(df_COI_aa, bp_length >= 750) # 87/378 sequences
+# df_COI_aa_600_750=subset(df_COI_aa, (bp_length >= 600 & bp_length < 750)) # 204/378 sequences
+# 
+# # create fasta files
+# dataname=paste(TAXA,"COI_aa_long900",sep=".")
+# create.fasta(dataname,df_COI_aa_long900)
+# dataname=paste(TAXA,"COI_aa_800_900",sep=".")
+# create.fasta(dataname,df_COI_aa_800_900)
+# dataname=paste(TAXA,"COI_aa_700_800",sep=".")
+# create.fasta(dataname,df_COI_aa_700_800)
+# dataname=paste(TAXA,"COI_aa_600_700",sep=".")
+# create.fasta(dataname,df_COI_aa_600_700)
+# dataname=paste(TAXA,"COI_aa_frag600",sep=".")
+# create.fasta(dataname,df_COI_aa_frag600)
+# 
+# dataname=paste(TAXA,"COI_aa_long750",sep=".")
+# create.fasta(dataname,df_COI_aa_long750)
+# dataname=paste(TAXA,"COI_aa_600_750",sep=".")
+# create.fasta(dataname,df_COI_aa_600_750)
 ```
 
 

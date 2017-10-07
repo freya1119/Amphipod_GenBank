@@ -1331,7 +1331,6 @@ squeue --job 95401
 Run time 19:42:11
 
 
-
 ### Partition by codon position:
 mkdir /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi/partitioned
 cd /cbcb/project2-scratch/biancani/AmphipodaIsopoda/COI_alignments/20171004/SL20170927.COI_aa.linsi/partitioned
@@ -1458,3 +1457,4 @@ RAxML -T 48 -s SL20170927.COI.revtrans.aln.fasta -n SL20170927.COI.revtrans.part
 sbatch linsi_hyperiidCOI_aa_partitioned3.sh
 Submitted batch job 98358
 squeue --job 98358
+Run time 1-01:44:10

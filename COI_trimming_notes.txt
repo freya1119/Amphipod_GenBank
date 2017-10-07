@@ -55,3 +55,7 @@ GACGATATATTTCATATTCGGCATATGGAGGGGTTTAGCTGGAGCTGCTTATAGATCTTTAATTCGAAAAATATTTGGCA
 Consider Removing: - "similar to COI", no translation or reading frame provided, won't align and only sequence and only gene available for genus
 stop codons in all 3 reading frames
 *** EF989662.1 won't align- not annotated with protein sequence or reading frame. Reading frame identified manually and first 62bp trimmed to remove 2 stop codons in an un-alinable section
+
+>Mysticotalitrus_cryptus|JQ319551.1|
+<1..190
+*** trimmed, then removed because only 190 bp of far 3' end of COI remained

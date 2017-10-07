@@ -401,6 +401,7 @@ RAxML -T 48 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_qinsi1250.tree -m 
 sbatch qinsi1250.sh
 Submitted batch job 95831
 squeue --job 95831
+CANCELLED
 
 #### qinsi1250_2 ####
 Bootstraps were very slow for job 95831: rerun RAxML with alignment from 95831 and new random number seeds.
