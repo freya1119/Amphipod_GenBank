@@ -1447,7 +1447,7 @@ for (pA in COI_links$partA){
   len_pAB=len_pA+len_pB
   seq_pA=df_COI[df_COI$accession==pA,which(names(df_COI)=="sequence")]
   seq_pB=df_COI[df_COI$accession==pB,which(names(df_COI)=="sequence")]
-  seq_pAB=paste(seq_pA,seq_pB,sep="---")
+  seq_pAB=paste(seq_pA,seq_pB,sep="")
   #update df_COI for pA (adding pB info):
   df_COI[df_COI$accession==pA,which(names(df_COI)=="bp_length")]=len_pAB
   df_COI[df_COI$accession==pA,which(names(df_COI)=="sequence")]=seq_pAB
@@ -1547,7 +1547,10 @@ df_COI_aa=df_COI
 for (i in row.names(df_COI_aa)){
   row=df_COI_aa[i,]
   #aa_seq=paste(translate(unlist(str_split(row$sequence,"")), frame = (row$frame - 1), numcode = 5),collapse="")
-  aa_seq=paste(translate(unlist(str_split(row$sequence,"")), frame = 0, numcode = 5),collapse="")
+  aa_seq=paste(translate(unlist(str_split(row$sequence,"")), frame = 0, ambiguous = TRUE,numcode = 5),collapse="")
+  ##Mafft is droppoing the "*" stop codons used by seqinr translate (Aliview uses X):
+  ##Replace all * with X:
+  aa_seq=str_replace_all(aa_seq,coll("*"),"X")
   df_COI_aa[i,]$sequence=aa_seq
 }
 
