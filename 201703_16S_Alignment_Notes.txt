@@ -804,3 +804,6 @@ RAxML -T 12 -s SL20170927.16S_all.aln.fasta -n SL20170927.16S_qinsi400_2.tree -m
 sbatch qinsi400_2.sh
 Submitted batch job 102011
 squeue --job 102011
+Run time 03:45:31
+****** Use this tree for proposal *******
+

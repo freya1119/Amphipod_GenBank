@@ -155,10 +155,10 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 #TAXA = "HL20170820"
 #TAXA = "HL20170821"
 #TAXA = "RNAList" #18S sequences representing taxon sampling for Chapter 2
-#TAXA = "SL20170927"
+TAXA = "SL20170927"
 #TAXA = "HL20171005"
 #TAXA = "HSL20171006"
-TAXA = "HSL20171007"
+#TAXA = "HSL20171007"
 ```
 
 ##Read Data into R
@@ -1295,9 +1295,28 @@ for (pA in links$partA){
 # remove pB lines from df:
 df = df[-which(df$accession %in% links$partB),]
 
-
-
 df_28S=df[!(is.na(str_match(df$gene,"n_28S"))),]
+
+#update df_28S with sequence reverseComplement and/or bp lengths of trimmed n_28S sequences:
+complement_28S=read.delim("complement_28S.txt", sep="\t", stringsAsFactors = FALSE)
+
+for (i in row.names(complement_28S)) {
+  row=(complement_28S[i,])
+  if (row$accession %in% df$accession){
+    n28S=df$sequence[df$accession==row$accession]
+    ##trim sequence:
+    n28S=substr(n28S,row$start,row$stop)
+    if (row$complement) {
+      n28S=as.character(reverseComplement(DNAString(n28S)))
+    }
+    df_28S$sequence[df_28S$accession==row$accession]=n28S
+    df_28S$bp_length[df_28S$accession==row$accession]=str_length(n28S)
+  }
+}
+
+
+
+
 len28S=df_28S$bp_length
 density28S=density(len28S)
 plot(density28S)

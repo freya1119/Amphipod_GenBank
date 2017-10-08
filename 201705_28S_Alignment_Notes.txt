@@ -774,6 +774,7 @@ RAxML -T 48 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_qinsi1300.tree -m 
 sbatch qinsi1300.sh
 Submitted batch job 101997
 squeue --job 101997
+Run time 15:41:52
 
 
 #### qinsi1250 ####
@@ -850,7 +851,7 @@ RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1250.tree -m 
 sbatch einsi1250.sh
 Submitted batch job 101999
 squeue --job 101999
-
+Run time 15:14:28
 
 #### einsi1300 ####
 
@@ -888,3 +889,4 @@ RAxML -T 32 -s SL20170927.28S_all.aln.fasta -n SL20170927.28S_einsi1300.tree -m 
 sbatch einsi1300.sh
 Submitted batch job 102000
 squeue --job 102000
+Run time 15:04:06
