@@ -133,6 +133,34 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 - trim Leu taxon selection based on COI & 18S trees of all Leu sequences
 - add new sequences from GenBank
 
+2018.01.09
+- update SL with new GenBank seqs
+- remove a few seqs replaced by GenBank seqs
+- no changes to 18S sequences
+
+2018.01.15
+- Using SL updated on 1/9/2017 created 2 new hyperiid lists:
+HypALL_20180109
+- All hyperiid sequences (except DQ37805 which is not a hyperiid), All Leucothoidae seq (missing some COI of repeat taxa), All Colomastigidae seqs (1), All Amphilochidae seqs (8)
+HypSL_20180109
+- Current list of selected Hyperiid, Leucothoidae, Colomastigidae, and Amphilochidae sequences
+Above with Caprella danilevskii 18S sequence added:
+HypALLout_20180109
+HypSLout_20180109
+
+2018.01.17
+- To above datasets, add 5 more outgroup sequences (to total 6 outgroup sequences) and remove the long-branch Lestrigonous from HypSLout6
+TAXA = "HypALLout6_20180117"
+TAXA = "HypSLout6_20180117"
+
+2018.01.27
+- updated SL: added Amphipoda sequences through 1/27/18, (did not go through new Isopoda sequences), Removed super long branch Lestrigonous bengalensis
+TAXA = "SL20180127A" #Amphipoda only
+TAXA = "SL20180127I" #Amphipoda and Isopodsa
+
+2018.02.17
+- went through new NCBI sequences but none added to Selected List
+
 
 ```{r eval=FALSE}
 #TAXA = "SelectedList_2017021"
@@ -155,10 +183,22 @@ create Hyperiid list w/ all hyperiid sequences & outgroup seqs for COI & 18S
 #TAXA = "HL20170820"
 #TAXA = "HL20170821"
 #TAXA = "RNAList" #18S sequences representing taxon sampling for Chapter 2
-TAXA = "SL20170927"
+#TAXA = "SL20170927"
 #TAXA = "HL20171005"
 #TAXA = "HSL20171006"
 #TAXA = "HSL20171007"
+#TAXA = "HypALL_20180109"
+#TAXA = "HypSL_20180109"
+#TAXA = "HypALLout_20180109"
+#TAXA = "HypSLout_20180109"
+#TAXA = "HypALLout6_20180117"
+#TAXA = "HypSLout6_20180117"
+#TAXA = "HypALLout5_20180121"
+#TAXA = "HypSLout5_20180121"
+TAXA = "SL20180127A" #Amphipoda only
+#TAXA = "SL20180127I" #Amphipoda and Isopodsa
+#TAXA = "SL20180127Iso" #Isopoda only
+
 ```
 
 ##Read Data into R
@@ -894,92 +934,67 @@ Separate Leu sequences (old version):
 
 Remove and re-aline long branch sequences:
 ```{r, eval=FALSE, tidy=TRUE}
-
 bad=c(
-"JX545417.1-JX545381.1",
-"JX545416.1-JX545380.1",
-"KT808785.1",
-"GU969187.1",
-#"KC428904.1",#Lestrigonous schizogeneious
-"KT808784.1",
-"DQ378031.1",
-"AF419235.1",
-"DQ378015.1",
-"AF419231.1",
-"AF419230.1",
-"AF419236.1",
-"DQ378038.1",
-"KT808783.1",
-"KT808782.1",
-"KT808776.1",
-"KJ182987.1",
-"KJ182986.1",
-"KC428896.1",
-"KC428899.1",
 #bad Leu:
-"KC527601.1",
-"JX145103.1",#
-"JX145102.1",#
-"JX145104.1",
-"JX145105.1",
-"KC527598.1",
-"JX145101.1",
-"JX145115.1",
-"JX145107.1",#
-"JX145106.1",#
-"JX145108.1",
-"JX145081.1",
-"JF506091.1",
-"JF506091.1",
-"JF506069.1",
-"JF506085.1"
+"KC527601.1",##
+"JX145103.1",##
+"JX145102.1",##
+"JX145107.1",##
+"JX145106.1",##
+"JF506091.1",##
+"JF506085.1"##
 )
 
-```
 
-Separate 18S by length:
-```{r, eval=FALSE, tidy=TRUE}
+##Old "bad" list:
+# bad=c(
+# "JX545417.1-JX545381.1",
+# "JX545416.1-JX545380.1",
+# "KT808785.1",
+# "GU969187.1",
+# #"KC428904.1",#Lestrigonous schizogeneious
+# "KT808784.1",
+# "DQ378031.1",
+# "AF419235.1",
+# "DQ378015.1",
+# "AF419231.1",
+# "AF419230.1",
+# "AF419236.1",
+# "DQ378038.1",
+# "KT808783.1",
+# "KT808782.1",
+# "KT808776.1",
+# "KJ182987.1",
+# "KJ182986.1",
+# "KC428896.1",
+# "KC428899.1",
+# #bad Leu:
+# "KC527601.1",
+# "JX145103.1",#
+# "JX145102.1",#
+# "JX145104.1",
+# "JX145105.1",
+# "KC527598.1",
+# "JX145101.1",
+# "JX145115.1",
+# "JX145107.1",#
+# "JX145106.1",#
+# "JX145108.1",
+# "JX145081.1",
+# "JF506091.1",
+# "JF506091.1",
+# "JF506069.1",
+# "JF506085.1"
+# )
 df_18S_bad=subset(df_18S, accession %in% bad)
 #Plot Lengths of bad 18S sequences:
 len18S_bad=df_18S_bad$bp_length
 density18S_bad=density(len18S_bad)
 plot(density18S_bad)
 
-
-#dataname=paste(TAXA,"18S_bad",sep=".")
-#create.fasta(dataname,df_18S_bad)
-#Separate by size:
-#df_18S_bad_long1500=subset(df_18S_bad, bp_length >= 1500)
-#dataname=paste(TAXA,"18S_bad_long1500",sep=".")
-#create.fasta(dataname,df_18S_bad_long1500)
-
-df_18S_bad_long2000=subset(df_18S_bad, bp_length >= 2000)
-dataname=paste(TAXA,"18S_bad_long2000",sep=".")
-create.fasta(dataname,df_18S_bad_long2000)
-
-#remove Lestrigonous bengalensis:
-#df_18S_trimmed_bad_long2000=subset(df_18S_bad_long2000, accession != "GU969187.1")
-#dataname=paste(TAXA,"18S_trimmed_bad_long2000",sep=".")
-#create.fasta(dataname,df_18S_trimmed_bad_long2000)
-
-df_18S_bad_1000_2000=subset(df_18S_bad, (bp_length >= 1000 & bp_length < 2000))
-dataname=paste(TAXA,"18S_bad_1000_2000",sep=".")
-create.fasta(dataname,df_18S_bad_1000_2000)
-
-#df_18S_bad_500_1500=subset(df_18S_bad, (bp_length >= 500 & bp_length < 1500))
-#dataname=paste(TAXA,"18S_bad_500_1500",sep=".")
-#create.fasta(dataname,df_18S_bad_500_1500)
-
-#df_18S_bad_frag500=subset(df_18S_bad, bp_length < 500)
-#dataname=paste(TAXA,"18S_bad_frag500",sep=".")
-#create.fasta(dataname,df_18S_bad_frag500)
-
-df_18S_bad_frag1000=subset(df_18S_bad, bp_length < 1000)
-dataname=paste(TAXA,"18S_bad_frag1000",sep=".")
-create.fasta(dataname,df_18S_bad_frag1000)
-
 #create df of good sequences:
 #df_18S_good=subset(rbind(df_18S_notLeu, df_18S_longLeu), !(accession %in% bad))
+#df_18S_good=df_18S #skips separating out "bad" sequences
 df_18S_good=subset(df_18S, !(accession %in% bad))
 #Plot Lengths of good 18S sequences:
 len18S_good=df_18S_good$bp_length
@@ -988,6 +1003,54 @@ plot(density18S_good)
 
 #dataname=paste(TAXA,"18S_good",sep=".")
 #create.fasta(dataname,df_18S_good)
+
+```
+
+Separate 18S by length:
+```{r, eval=FALSE, tidy=TRUE}
+#TAXA=paste(TAXA,"bysize",sep="")
+
+#dataname=paste(TAXA,"18S",sep=".")
+#create.fasta(dataname,df_18S)
+
+dataname=paste(TAXA,"18S_bad",sep=".")
+create.fasta(dataname,df_18S_bad)
+
+#Separate by size:
+#df_18S_bad_long1500=subset(df_18S_bad, bp_length >= 1500)
+#dataname=paste(TAXA,"18S_bad_long1500",sep=".")
+#create.fasta(dataname,df_18S_bad_long1500)
+
+##df_18S_bad_long2000=subset(df_18S_bad, bp_length >= 2000)
+##dataname=paste(TAXA,"18S_bad_long2000",sep=".")
+##create.fasta(dataname,df_18S_bad_long2000)
+#df_18S_bad_long1500=subset(df_18S_bad, bp_length >= 1500)
+#dataname=paste(TAXA,"18S_bad_long1500",sep=".")
+#create.fasta(dataname,df_18S_bad_long1500)
+
+##df_18S_bad_1000_2000=subset(df_18S_bad, (bp_length >= 1000 & bp_length < 2000))
+##dataname=paste(TAXA,"18S_bad_1000_2000",sep=".")
+##create.fasta(dataname,df_18S_bad_1000_2000)
+#df_18S_bad_1000_1500=subset(df_18S_bad, (bp_length >= 1000 & bp_length < 1500))
+#dataname=paste(TAXA,"18S_bad_1000_1500",sep=".")
+#create.fasta(dataname,df_18S_bad_1000_1500)
+
+
+
+df_18S_good_925_1575=subset(df_18S_good, (bp_length >= 925 & bp_length < 1575))
+df_18S_good_frag925=subset(df_18S_good, bp_length <925)
+
+
+
+#df_18S_bad_frag500=subset(df_18S_bad, bp_length < 500)
+#dataname=paste(TAXA,"18S_bad_frag500",sep=".")
+#create.fasta(dataname,df_18S_bad_frag500)
+
+#df_18S_bad_frag1000=subset(df_18S_bad, bp_length < 1000)
+#dataname=paste(TAXA,"18S_bad_frag1000",sep=".")
+#create.fasta(dataname,df_18S_bad_frag1000)
+
+
 
 #Separate by size 2000:
 df_18S_good_long2000=subset(df_18S_good, bp_length >=2000)
@@ -999,9 +1062,30 @@ create.fasta(dataname,df_18S_good_long2000)
 df_18S_good_frag2000=subset(df_18S_good, bp_length <2000)
 #dataname=paste(TAXA,"18S_good_frag2000",sep=".")
 #create.fasta(dataname,df_18S_good_frag2000)
-df_18S_good_1000_2000=subset(df_18S_good_frag2000, bp_length >= 1000)
-dataname=paste(TAXA,"18S_good_1000_2000",sep=".")
-create.fasta(dataname,df_18S_good_1000_2000)
+
+
+df_18S_good_long2200=subset(df_18S_good, bp_length >=2200)
+dataname=paste(TAXA,"18S_good_long2200",sep=".")
+create.fasta(dataname,df_18S_good_long2200)
+
+df_18S_good_long2250=subset(df_18S_good, bp_length >=2250)
+dataname=paste(TAXA,"18S_good_long2250",sep=".")
+create.fasta(dataname,df_18S_good_long2250)
+
+
+
+
+##df_18S_good_1000_2000=subset(df_18S_good_frag2000, bp_length >= 1000)
+##dataname=paste(TAXA,"18S_good_1000_2000",sep=".")
+##create.fasta(dataname,df_18S_good_1000_2000)
+df_18S_good_1500_2000=subset(df_18S_good_frag2000, bp_length >= 1500)
+dataname=paste(TAXA,"18S_good_1500_2000",sep=".")
+create.fasta(dataname,df_18S_good_1500_2000)
+df_18S_good_frag1500=subset(df_18S_good, bp_length <1500)
+df_18S_good_1000_1500=subset(df_18S_good_frag1500, bp_length >= 1000)
+dataname=paste(TAXA,"18S_good_1000_1500",sep=".")
+create.fasta(dataname,df_18S_good_1000_1500)
+
 #df_18S_good_frag1000=subset(df_18S_good, bp_length <1000)
 #dataname=paste(TAXA,"18S_good_frag1000",sep=".")
 #create.fasta(dataname,df_18S_good_frag1000)
@@ -1028,9 +1112,14 @@ create.fasta(dataname,df_18S_good_frag500)
 df_18S_good_long2300=subset(df_18S_good, bp_length >=2300)
 dataname=paste(TAXA,"18S_good_long2300",sep=".")
 create.fasta(dataname,df_18S_good_long2300)
+
 df_18S_good_2000_2300=subset(df_18S_good,(bp_length >= 2000 & bp_length <2300))
 dataname=paste(TAXA,"18S_good_2000_2300",sep=".")
 create.fasta(dataname,df_18S_good_2000_2300)
+
+df_18S_good_2000_2250=subset(df_18S_good,(bp_length >= 2000 & bp_length <2250))
+dataname=paste(TAXA,"18S_good_2000_2250",sep=".")
+create.fasta(dataname,df_18S_good_2000_2250)
 
 #df_18S_good_long2000=subset(df_18S_good, bp_length >=2000)
 #df_18S_good_2000_2500=subset(df_18S_good_long2000, bp_length <2500)
